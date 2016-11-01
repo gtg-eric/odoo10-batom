@@ -1,62 +1,68 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * report_intrastat
-#
+# 
 # Translators:
+# Jeffery Chenn <jeffery9@gmail.com>, 2016
+# Gary Wei <Gary.wei@elico-corp.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# liAnGjiA <liangjia@qq.com>, 2016
+# waveyeung <waveyeung@qq.com>, 2016
+# 鍾小華 <mackz@sina.com>, 2016
+# ChinaMaker <tiexinliu@126.com>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-18 14:07+0000\n"
-"PO-Revision-Date: 2016-06-13 09:58+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/odoo/odoo-9/"
-"language/zh_TW/)\n"
-"Language: zh_TW\n"
+"POT-Creation-Date: 2016-09-07 08:57+0000\n"
+"PO-Revision-Date: 2016-09-07 08:57+0000\n"
+"Last-Translator: ChinaMaker <tiexinliu@126.com>, 2016\n"
+"Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
+"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "<strong>Comment:</strong>"
-msgstr ""
+msgstr "<strong>備註:</strong>"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "<strong>Document:</strong>"
-msgstr ""
+msgstr "<strong>文檔:</strong>"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "<strong>Fiscal Position:</strong>"
-msgstr ""
+msgstr "<strong>財政狀況:</strong>"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "<strong>Invoice Date:</strong>"
-msgstr ""
+msgstr "<strong>發票日期:</strong>"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "<strong>Partner Ref.:</strong>"
-msgstr ""
+msgstr "<strong>業務夥伴參照.:</strong>"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
-msgid "<strong>Payment Term:</strong>"
-msgstr "<strong>付款條件：</strong>"
+msgid "<strong>Payment Terms:</strong>"
+msgstr "<strong>付款條款:</strong>"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "<strong>Total Without Taxes</strong>"
-msgstr "<strong>未稅總計</strong>"
+msgstr "<strong>不含稅總計</strong>"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "<strong>Total</strong>"
-msgstr "<strong>合計</strong>"
+msgstr "<strong>總計</strong>"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
@@ -86,17 +92,17 @@ msgstr "公司"
 #. module: report_intrastat
 #: model:ir.model,name:report_intrastat.model_res_country
 msgid "Country"
-msgstr "國家/地區"
+msgstr "國家"
 
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_code
 msgid "Country code"
-msgstr ""
+msgstr "國家代碼"
 
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_currency_id
 msgid "Currency"
-msgstr "貨幣"
+msgstr "幣種"
 
 #. module: report_intrastat
 #: selection:report.intrastat,month:0
@@ -121,12 +127,12 @@ msgstr "顯示名稱"
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "Draft Invoice"
-msgstr "發票草稿"
+msgstr "草稿發票"
 
 #. module: report_intrastat
 #: selection:report.intrastat,type:0
 msgid "Export"
-msgstr "匯出"
+msgstr "導出"
 
 #. module: report_intrastat
 #: selection:report.intrastat,month:0
@@ -136,37 +142,37 @@ msgstr "二月"
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_id
 msgid "ID"
-msgstr "編號"
+msgstr "ID"
 
 #. module: report_intrastat
 #: selection:report.intrastat,type:0
 msgid "Import"
-msgstr "匯入"
+msgstr "導入"
 
 #. module: report_intrastat
 #: model:ir.actions.act_window,name:report_intrastat.action_report_intrastat_tree_all
 #: model:ir.ui.menu,name:report_intrastat.menu_report_intrastat_all
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "Intrastat"
-msgstr ""
+msgstr "國際間組織"
 
 #. module: report_intrastat
 #: model:ir.actions.act_window,name:report_intrastat.action_report_intrastat_code_tree
 #: model:ir.ui.menu,name:report_intrastat.menu_report_intrastat_code
 #: model:ir.ui.view,arch_db:report_intrastat.view_report_intrastat_code_form
 msgid "Intrastat Code"
-msgstr ""
+msgstr "國際間組織代碼"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.view_report_intrastat_search
 #: model:ir.ui.view,arch_db:report_intrastat.view_report_intrastat_tree
 msgid "Intrastat Data"
-msgstr ""
+msgstr "國際間組織數據"
 
 #. module: report_intrastat
 #: model:ir.actions.report.xml,name:report_intrastat.account_intrastatinvoices
 msgid "Intrastat Invoices"
-msgstr ""
+msgstr "國際間組織發票"
 
 #. module: report_intrastat
 #: model:ir.model,name:report_intrastat.model_report_intrastat_code
@@ -174,17 +180,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_intrastat_id
 #: model:ir.ui.view,arch_db:report_intrastat.view_report_intrastat_code_tree
 msgid "Intrastat code"
-msgstr ""
+msgstr "國際間組織代碼"
 
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_res_country_intrastat
 msgid "Intrastat member"
-msgstr ""
+msgstr "國際間組織成員"
 
 #. module: report_intrastat
 #: model:ir.model,name:report_intrastat.model_report_intrastat
 msgid "Intrastat report"
-msgstr ""
+msgstr "國際間組織報告"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
@@ -209,7 +215,7 @@ msgstr "六月"
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat___last_update
 msgid "Last Modified on"
-msgstr "最後修改:"
+msgstr "最後修改日"
 
 #. module: report_intrastat
 #: selection:report.intrastat,month:0
@@ -224,7 +230,7 @@ msgstr "五月"
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_month
 msgid "Month"
-msgstr "月"
+msgstr "月份"
 
 #. module: report_intrastat
 #: selection:report.intrastat,month:0
@@ -239,12 +245,12 @@ msgstr "十月"
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "PRO-FORMA"
-msgstr "形式發票"
+msgstr "PRO-FORMA"
 
 #. module: report_intrastat
 #: model:ir.model,name:report_intrastat.model_product_template
 msgid "Product Template"
-msgstr "產品範本"
+msgstr "產品模板"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
@@ -254,7 +260,7 @@ msgstr "數量"
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "Refund"
-msgstr "折讓"
+msgstr "退款"
 
 #. module: report_intrastat
 #: selection:report.intrastat,month:0
@@ -264,22 +270,22 @@ msgstr "九月"
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_ref
 msgid "Source document"
-msgstr ""
+msgstr "源單據"
 
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_supply_units
 msgid "Supply Units"
-msgstr ""
+msgstr "供應單位"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "Tax"
-msgstr "稅別"
+msgstr "稅金"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "Taxes"
-msgstr "稅別"
+msgstr "稅金"
 
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_type
@@ -294,7 +300,7 @@ msgstr "單價"
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "Unit of measure"
-msgstr ""
+msgstr "計量單位"
 
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_value
@@ -304,12 +310,12 @@ msgstr "值"
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "Vendor Bill"
-msgstr ""
+msgstr "供應商帳單"
 
 #. module: report_intrastat
 #: model:ir.ui.view,arch_db:report_intrastat.report_intrastatinvoice_document
 msgid "Vendor Refund"
-msgstr ""
+msgstr "供應商退款"
 
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_weight
@@ -320,4 +326,4 @@ msgstr "重量"
 #. module: report_intrastat
 #: model:ir.model.fields,field_description:report_intrastat.field_report_intrastat_name
 msgid "Year"
-msgstr "年份"
+msgstr "年"

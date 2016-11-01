@@ -3,15 +3,17 @@
 # * l10n_br
 #
 # Translators:
+# jeffery9, 2015
+# 珠海-老天 <liangjia@qq.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo 9.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-18 08:19+0000\n"
-"PO-Revision-Date: 2015-09-19 08:22+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/odoo/odoo-9/"
-"language/zh_TW/)\n"
+"PO-Revision-Date: 2015-12-27 10:39+0000\n"
+"Last-Translator: 珠海-老天 <liangjia@qq.com>\n"
+"Language-Team: Chinese (China) (http://www.transifex.com/odoo/odoo-9/"
+"language/zh_CN/)\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,46 +23,46 @@ msgstr ""
 #. module: l10n_br
 #: model:ir.ui.menu,name:l10n_br.account_reports_br_statements_menu
 msgid "Brazilian Statements"
-msgstr ""
+msgstr "巴西財務報表"
 
 #. module: l10n_br
 #: model:ir.model.fields,field_description:l10n_br.field_account_tax_tax_discount
 #: model:ir.model.fields,field_description:l10n_br.field_account_tax_template_tax_discount
 msgid "Discount this Tax in Prince"
-msgstr ""
+msgstr "外國商業票據"
 
 #. module: l10n_br
 #: model:ir.model.fields,field_description:l10n_br.field_account_tax_amount_mva
 #: model:ir.model.fields,field_description:l10n_br.field_account_tax_template_amount_mva
 msgid "MVA Percent"
-msgstr ""
+msgstr "MVA百分比"
 
 #. module: l10n_br
 #: model:ir.model.fields,help:l10n_br.field_account_tax_tax_discount
 #: model:ir.model.fields,help:l10n_br.field_account_tax_template_tax_discount
 msgid "Mark it for (ICMS, PIS e etc.)."
-msgstr ""
+msgstr "將其標記為（ICMS，PISE等）。"
 
 #. module: l10n_br
 #: model:ir.actions.client,name:l10n_br.action_client_l10n_br_menu
 msgid "Open Account Dashboard Menu"
-msgstr ""
+msgstr "打開會計看板菜單"
 
 #. module: l10n_br
 #: model:ir.model.fields,field_description:l10n_br.field_account_tax_base_reduction
 #: model:ir.model.fields,field_description:l10n_br.field_account_tax_template_base_reduction
 msgid "Redution"
-msgstr ""
+msgstr "Redution"
 
 #. module: l10n_br
 #: model:ir.model,name:l10n_br.model_account_tax
 msgid "Tax"
-msgstr "稅別"
+msgstr "稅金"
 
 #. module: l10n_br
 #: model:ir.model,name:l10n_br.model_account_tax_template
 msgid "Templates for Taxes"
-msgstr ""
+msgstr "稅金模板"
 
 #. module: l10n_br
 #: model:ir.model.fields,help:l10n_br.field_account_tax_amount_mva
@@ -68,4 +70,4 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_br.field_account_tax_template_amount_mva
 #: model:ir.model.fields,help:l10n_br.field_account_tax_template_base_reduction
 msgid "Um percentual decimal em % entre 0-1."
-msgstr ""
+msgstr "嗯百分比計算的小數點EM％恩特雷裡奧斯0-1。"

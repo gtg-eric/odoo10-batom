@@ -1,27 +1,53 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * website_portal
-#
+# 
 # Translators:
+# fausthuang <faust_huang@hotmail.com>, 2016
+# Talway <9010446@qq.com>, 2016
+# Jeffery Chenn <jeffery9@gmail.com>, 2016
+# waveyeung <waveyeung@qq.com>, 2016
+# glovebx <ruinning@163.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Michael Chong <michaelchong2005@gmail.com>, 2016
+# 鍾小華 <mackz@sina.com>, 2016
+# SHOM <shanmuxin@yeah.net>, 2016
+# liAnGjiA <liangjia@qq.com>, 2016
+# 卓憶科技 <zhanghao@jointd.com>, 2016
+# ChinaMaker <tiexinliu@126.com>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-18 14:08+0000\n"
-"PO-Revision-Date: 2016-02-10 09:49+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/odoo/odoo-9/"
-"language/zh_TW/)\n"
-"Language: zh_TW\n"
+"POT-Creation-Date: 2016-09-07 08:57+0000\n"
+"PO-Revision-Date: 2016-09-07 08:57+0000\n"
+"Last-Translator: ChinaMaker <tiexinliu@126.com>, 2016\n"
+"Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
+"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: website_portal
-#: model:ir.ui.view,arch_db:website_portal.account
+#: model:ir.ui.view,arch_db:website_portal.portal_layout
+msgid ""
+"<span class=\"sr-only\">Toggle navigation</span>\n"
+"                            <span class=\"icon-bar\"/>\n"
+"                            <span class=\"icon-bar\"/>"
+msgstr ""
+"<span class=\"sr-only\">切換導航</span><span class=\"icon-bar\"/><span class"
+"=\"icon-bar\"/><span class=\"icon-bar\"/>"
+
+#. module: website_portal
+#: model:ir.ui.view,arch_db:website_portal.portal_archive_groups
+msgid "Archives"
+msgstr "歸檔"
+
+#. module: website_portal
+#: model:ir.ui.view,arch_db:website_portal.portal_layout
 msgid "Change"
-msgstr "改變"
+msgstr "更改"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
@@ -37,9 +63,10 @@ msgstr "公司名稱"
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid ""
 "Confirm\n"
-"                                        <span class=\"fa fa-long-arrow-right"
-"\"/>"
+"                                        <span class=\"fa fa-long-arrow-right\"/>"
 msgstr ""
+"確認\n"
+"                                        <span class=\"fa fa-long-arrow-right\"/>"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.contact
@@ -49,42 +76,42 @@ msgstr "聯絡人"
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "Contact Details"
-msgstr "連絡人詳細資料"
+msgstr "聯絡人詳情"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "Country"
-msgstr "國家/地區"
+msgstr "國家"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "Country..."
-msgstr ""
+msgstr "國家..."
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.custom_panel
 msgid "Custom Panel"
-msgstr ""
+msgstr "自定義模板"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "Details"
-msgstr "詳情"
+msgstr "詳細信息"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "Email"
-msgstr "電郵"
+msgstr "Email"
 
 #. module: website_portal
-#: code:addons/website_portal/controllers/main.py:73
+#: code:addons/website_portal/controllers/main.py:103
 #, python-format
 msgid "Invalid Email! Please enter a valid email address."
-msgstr ""
+msgstr "不合規電郵！ 請輸入有效的電子郵件地址。"
 
 #. module: website_portal
-#: model:ir.ui.view,arch_db:website_portal.details
 #: model:ir.ui.view,arch_db:website_portal.my_account_link
+#: model:ir.ui.view,arch_db:website_portal.portal_layout
 msgid "My Account"
 msgstr "我的帳戶"
 
@@ -96,18 +123,18 @@ msgstr "電話"
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.custom_panel
 msgid "Place your content here."
-msgstr ""
+msgstr "在這裡放置你的內容"
 
 #. module: website_portal
-#: code:addons/website_portal/controllers/main.py:88
+#: code:addons/website_portal/controllers/main.py:119
 #, python-format
 msgid "Some required fields are empty."
-msgstr ""
+msgstr "一些必須的字段是空的"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "State / Province"
-msgstr ""
+msgstr "州/省"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
@@ -117,24 +144,24 @@ msgstr "街道"
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "VAT Number"
-msgstr ""
+msgstr "增值稅號碼"
 
 #. module: website_portal
-#: model:ir.ui.view,arch_db:website_portal.account
+#: model:ir.ui.view,arch_db:website_portal.portal_layout
 msgid "Your Details"
-msgstr ""
+msgstr "你的詳細信息"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "Your Name"
-msgstr ""
+msgstr "你的姓名"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "Zip / Postal Code"
-msgstr ""
+msgstr "郵政代碼"
 
 #. module: website_portal
 #: model:ir.ui.view,arch_db:website_portal.details
 msgid "select..."
-msgstr ""
+msgstr "請選擇……"

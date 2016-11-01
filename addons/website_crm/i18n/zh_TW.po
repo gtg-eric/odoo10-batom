@@ -1,27 +1,42 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * website_crm
-#
+# 
 # Translators:
+# xiaobin wu <bd5dml@gmail.com>, 2016
+# Wei "oldrev" Li <liwei@sandwych.com>, 2016
+# Jeffery Chenn <jeffery9@gmail.com>, 2016
+# mrshelly <mrshelly@hotmail.com>, 2016
+# waveyeung <waveyeung@qq.com>, 2016
+# Michael Chong <michaelchong2005@gmail.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Talway <9010446@qq.com>, 2016
+#  <pehotaolega.ru@mail.ru>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-18 14:08+0000\n"
-"PO-Revision-Date: 2015-09-08 09:54+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/odoo/odoo-9/"
-"language/zh_TW/)\n"
-"Language: zh_TW\n"
+"POT-Creation-Date: 2016-09-07 08:57+0000\n"
+"PO-Revision-Date: 2016-09-07 08:57+0000\n"
+"Last-Translator:  <pehotaolega.ru@mail.ru>, 2016\n"
+"Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
+"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: website_crm
+#. openerp-web
+#: code:addons/website_crm/static/src/xml/website_crm_dashboard.xml:35
+#, python-format
+msgid "% Leads"
+msgstr "線索"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_thanks
 msgid "&amp;times;"
-msgstr ""
+msgstr "&amp;次數;"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_form
@@ -33,42 +48,70 @@ msgstr ""
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_form
 msgid "Email"
-msgstr "電郵"
+msgstr "Email"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_thanks
 msgid "If you have an emergency, do not hesitate to contact us by phone:"
-msgstr ""
+msgstr "如果你遇到了急待解決的問題，請不要猶豫，立即通過電話聯絡我們："
 
 #. module: website_crm
 #: model:ir.model,name:website_crm.model_crm_lead
 msgid "Lead/Opportunity"
-msgstr "潛在客戶/商機"
+msgstr "線索/商機"
+
+#. module: website_crm
+#. openerp-web
+#: code:addons/website_crm/static/src/xml/website_crm_dashboard.xml:34
+#, python-format
+msgid "Leads"
+msgstr "線索"
+
+#. module: website_crm
+#. openerp-web
+#: code:addons/website_crm/static/src/xml/website_crm_dashboard.xml:8
+#, python-format
+msgid "Leads Acquisition /"
+msgstr "線索採集 /"
+
+#. module: website_crm
+#. openerp-web
+#: code:addons/website_crm/static/src/xml/website_crm_dashboard.xml:13
+#, python-format
+msgid "Leads Analysis"
+msgstr "線索分析"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_form
 msgid "Phone Number"
-msgstr ""
+msgstr "電話號碼"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_form
 msgid "Subject"
-msgstr "主旨"
+msgstr "主題"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_thanks
 msgid "Thanks!"
+msgstr "感謝！"
+
+#. module: website_crm
+#. openerp-web
+#: code:addons/website_crm/static/src/xml/website_crm_dashboard.xml:15
+#, python-format
+msgid "There is no recent lead."
 msgstr ""
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_thanks
 msgid "We will get back to you shortly."
-msgstr ""
+msgstr "我們將很快回復。"
 
 #. module: website_crm
 #: model:ir.actions.act_url,name:website_crm.action_open_website
 msgid "Website Contact Form"
-msgstr ""
+msgstr "網站聯絡窗體"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_form
@@ -78,17 +121,14 @@ msgstr "您的公司"
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_form
 msgid "Your Name"
-msgstr ""
+msgstr "你的姓名"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_form
 msgid "Your Question"
-msgstr ""
+msgstr "你的問題"
 
 #. module: website_crm
 #: model:ir.ui.view,arch_db:website_crm.contactus_thanks
 msgid "Your message has been sent successfully."
-msgstr ""
-
-#~ msgid "Send"
-#~ msgstr "傳送"
+msgstr "你的消息已成功發出。"
