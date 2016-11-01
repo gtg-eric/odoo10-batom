@@ -1,0 +1,59 @@
+<openerp>
+  <data>
+    <!-- explicit list view definition -->
+    <!--
+    <record model="ir.ui.view" id="production_flow.list">
+      <field name="name">production_flow list</field>
+      <field name="model">production_flow.production_flow</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+    -->
+
+    <!-- actions opening views on models -->
+    <!--
+    <record model="ir.actions.act_window" id="production_flow.action_window">
+      <field name="name">production_flow window</field>
+      <field name="res_model">production_flow.production_flow</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    -->
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="production_flow.action_server">
+      <field name="name">production_flow server</field>
+      <field name="model_id" ref="model_production_flow_production_flow"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="production_flow" id="production_flow.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="production_flow.menu_1" parent="production_flow.menu_root"/>
+    <menuitem name="Menu 2" id="production_flow.menu_2" parent="production_flow.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="production_flow.menu_1_list" parent="production_flow.menu_1"
+              action="production_flow.action_window"/>
+    <menuitem name="Server to list" id="production_flow" parent="production_flow.menu_2"
+              action="production_flow.action_server"/>
+    -->
+  </data>
+</openerp>
