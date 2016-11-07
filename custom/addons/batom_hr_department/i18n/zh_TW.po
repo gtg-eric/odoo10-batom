@@ -1,23 +1,27 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# * account_voucher
-# 
-# Translators:
+#	* batom_hr_department
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-18 08:10+0000\n"
-"PO-Revision-Date: 2016-06-13 10:08+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/odoo/odoo-9/language/zh_TW/)\n"
+"POT-Creation-Date: 2016-11-03 03:21+0000\n"
+"PO-Revision-Date: 2016-11-03 03:21+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: zh_TW\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: \n"
 
 #. module: batom_hr_department
-#: model:ir.model.fields,field_description:batom_hr_department.x_code
+#: model:ir.model.fields,field_description:batom_hr_department.field_hr_department_x_code
 msgid "Department Code"
-msgstr "部門代號"
+msgstr "部門代碼"
+
+#. module: batom_hr_department
+#: model:ir.model,name:batom_hr_department.model_hr_department
+msgid "Hr Department"
+msgstr "部門"
+
