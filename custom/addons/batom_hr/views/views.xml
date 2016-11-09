@@ -11,6 +11,17 @@
         </field>
     </record>
 
+    <record id="my_view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">batom.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="before">
+                <field name="x_code"/>
+            </xpath>
+        </field>
+    </record>
+
     <!-- explicit list view definition -->
     <!--
     <record model="ir.ui.view" id="batom_hr_department.list">

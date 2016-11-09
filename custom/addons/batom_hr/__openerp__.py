@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "batom_hr_department",
+    'name': "batom_hr",
 
-    'summary': "Batom customized department",
+    'summary': "Batom customized HR module",
 
     'description': """
         Long description of module's purpose
     """,
 
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
+    'author': "Batom Co., Ltd.",
+    'website': "http://www.greattaiwangear.com",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
