@@ -19,6 +19,9 @@
             <xpath expr="//field[@name='user_id']" position="before">
                 <field name="x_code"/>
             </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="notes"/>
+            </xpath>
         </field>
     </record>
 
