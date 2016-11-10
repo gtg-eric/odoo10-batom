@@ -46,7 +46,7 @@ msgstr "將其標記為（ICMS，PISE等）。"
 #. module: l10n_br
 #: model:ir.actions.client,name:l10n_br.action_client_l10n_br_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"
 
 #. module: l10n_br
 #: model:ir.model.fields,field_description:l10n_br.field_account_tax_base_reduction

@@ -6233,7 +6233,7 @@ msgid ""
 "                operations on a specific product. You can filter on the product\n"
 "                to see all the past or future movements for the product."
 msgstr ""
-"這個菜單能讓你完整的追蹤某一特定產品的盤點作業\n"
+"這個選單能讓你完整的追蹤某一特定產品的盤點作業\n"
 "你可以在產品上篩選這個產品過去和將來的的所有的移動　　　　　　　　"
 
 #. module: stock

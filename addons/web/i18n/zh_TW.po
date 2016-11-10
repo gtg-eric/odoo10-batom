@@ -1242,7 +1242,7 @@ msgstr "登錄"
 #: code:addons/web/static/src/xml/base.xml:1273
 #, python-format
 msgid "Log out"
-msgstr "註銷"
+msgstr "登出"
 
 #. module: web
 #. openerp-web
@@ -1696,7 +1696,7 @@ msgstr "由<span>Odoo</span>提供技術支持"
 #: code:addons/web/static/src/xml/base.xml:1271
 #, python-format
 msgid "Preferences"
-msgstr "個人資料"
+msgstr "喜好設定"
 
 #. module: web
 #. openerp-web

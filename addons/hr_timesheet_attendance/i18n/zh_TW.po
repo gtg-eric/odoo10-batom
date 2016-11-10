@@ -33,7 +33,7 @@ msgstr "<span class=\"o_stat_text\">工時單</span>"
 msgid ""
 "Allowed difference in hours between the sign in/out and the timesheet "
 "computation for one sheet. Set this to 0 if you do not want any control."
-msgstr "登錄/註銷和在一個計工單裡的容許的差異小時。如果您不想這樣控制設為0."
+msgstr "上下班打卡和在一個工時表裡的容許的差異小時。如果您不想這樣控制設為0."
 
 #. module: hr_timesheet_attendance
 #: model:ir.model,name:hr_timesheet_attendance.model_hr_attendance
@@ -161,7 +161,7 @@ msgstr ""
 #. module: hr_timesheet_attendance
 #: model:ir.actions.act_window,name:hr_timesheet_attendance.act_hr_timesheet_sheet_sheet_by_account
 msgid "Timesheet by Account"
-msgstr "計工單 按帳戶"
+msgstr "工時表 按帳戶"
 
 #. module: hr_timesheet_attendance
 #: model:ir.actions.act_window,name:hr_timesheet_attendance.act_hr_timesheet_sheet_sheet_by_day

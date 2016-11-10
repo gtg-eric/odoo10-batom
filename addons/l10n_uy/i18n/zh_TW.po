@@ -22,7 +22,7 @@ msgstr ""
 #. module: l10n_uy
 #: model:ir.actions.client,name:l10n_uy.action_client_l10n_uy_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"
 
 #. module: l10n_uy
 #: model:ir.ui.menu,name:l10n_uy.account_reports_uy_statements_menu

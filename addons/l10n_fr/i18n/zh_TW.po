@@ -37,7 +37,7 @@ msgstr "法國財務報表"
 #. module: l10n_fr
 #: model:ir.actions.client,name:l10n_fr.action_client_l10n_fr_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"
 
 #. module: l10n_fr
 #: model:ir.model.fields,field_description:l10n_fr.field_res_company_siret

@@ -187,12 +187,12 @@ msgstr ""
 msgid ""
 "Creates menus Introduction, Location and Register on the page  of the event "
 "on the website."
-msgstr "在網站上的事件頁面上創建菜單介紹，地理位置和註冊。"
+msgstr "在網站上的事件頁面上創建選單介紹，地理位置和註冊。"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event_show_menu
 msgid "Dedicated Menu"
-msgstr "專用菜單"
+msgstr "專用選單"
 
 #. module: website_event
 #. openerp-web
@@ -239,7 +239,7 @@ msgstr "活動地點"
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event_menu_id
 msgid "Event Menu"
-msgstr "活動菜單"
+msgstr "活動選單"
 
 #. module: website_event
 #: model:ir.ui.view,arch_db:website_event.registration_template
@@ -511,7 +511,7 @@ msgstr "Twitter主題標籤"
 #. module: website_event
 #: model:ir.ui.view,arch_db:website_event.index
 msgid "Use the top menu <i>'Content'</i> to create your first event."
-msgstr "使用頂部菜單<I>「內容」</I>創建您的第一個事件。"
+msgstr "使用頂部選單<I>「內容」</I>創建您的第一個事件。"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event_website_published

@@ -1827,7 +1827,7 @@ msgid ""
 "Note that you may use the menu <i>Your Session</i>\n"
 "                to quickly open a new session."
 msgstr ""
-"注意你可能用到<i>你的會話</i>這個菜單\n"
+"注意你可能用到<i>你的會話</i>這個選單\n"
 "來快速的開啟一個會話"
 
 #. module: point_of_sale
@@ -1910,7 +1910,7 @@ msgstr "打開錢箱"
 #. module: point_of_sale
 #: model:ir.actions.client,name:point_of_sale.action_client_pos_menu
 msgid "Open POS Menu"
-msgstr "打開POS菜單"
+msgstr "打開POS選單"
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_open_statement
@@ -3530,7 +3530,7 @@ msgid ""
 "Use this menu to browse previous orders. To record new\n"
 "                orders, you may use the menu <i>Your Session</i> for\n"
 "                the touchscreen interface."
-msgstr "用該菜單瀏覽之前的訂單。你可以在觸摸屏界面用<i>你的會話</i>記錄新的訂單"
+msgstr "用該選單瀏覽之前的訂單。你可以在觸摸屏界面用<i>你的會話</i>記錄新的訂單"
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_session_search
@@ -3699,8 +3699,8 @@ msgid ""
 "methods directly from menu \"PoS Backend / Configuration / Payment "
 "Methods\"."
 msgstr ""
-"使用菜單\"科目/配置/分類帳/分類帳\"，通過再次使用銀行和現金，你必須定義哪個付款方法必須在PoS中有效。選擇一個分類帳並在 "
-"\"PoS\"選項卡中點選\"PoS付款方式\"。你也可以直接通過菜單 \"PoS後台 / 配置 /付款方式\"來新建一個付款方式。"
+"使用選單\"科目/配置/分類帳/分類帳\"，通過再次使用銀行和現金，你必須定義哪個付款方法必須在PoS中有效。選擇一個分類帳並在 "
+"\"PoS\"選項卡中點選\"PoS付款方式\"。你也可以直接通過選單 \"PoS後台 / 配置 /付款方式\"來新建一個付款方式。"
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_order.py:658

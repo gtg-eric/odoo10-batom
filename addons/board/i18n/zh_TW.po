@@ -134,7 +134,7 @@ msgid ""
 "                    Dashboard'</i> in the extended search options."
 msgstr ""
 "要添加第一個報表到這個儀表板，去任意\n"
-"菜單，切換到列表或圖表檢視，然後單擊<I>「添加到\n"
+"選單，切換到列表或圖表檢視，然後單擊<I>「添加到\n"
 "儀表板「</I>在擴展的搜索選項。"
 
 #. module: board

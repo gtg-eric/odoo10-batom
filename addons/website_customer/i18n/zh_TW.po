@@ -104,7 +104,7 @@ msgstr "最後更新時間"
 msgid ""
 "Manage the partner tags to better classify them on your website.\n"
 "                    You can add the filter by tag on your website in the \"Customize\" menu."
-msgstr "管理合作夥伴的標籤，以更好地他們對你網站分類，可以在你的網站「自定義」菜單上上添加標籤的篩選。"
+msgstr "管理合作夥伴的標籤，以更好地他們對你網站分類，可以在你的網站「自定義」選單上上添加標籤的篩選。"
 
 #. module: website_customer
 #: model:ir.ui.view,arch_db:website_customer.index

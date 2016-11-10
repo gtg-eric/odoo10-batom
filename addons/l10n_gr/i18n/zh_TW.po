@@ -27,4 +27,4 @@ msgstr "希臘財務報表"
 #. module: l10n_gr
 #: model:ir.actions.client,name:l10n_gr.action_client_l10n_gr_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"

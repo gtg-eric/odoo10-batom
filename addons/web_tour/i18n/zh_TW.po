@@ -68,7 +68,7 @@ msgstr "加載xmlid"
 #. module: web_tour
 #: model:ir.ui.view,arch_db:web_tour.edit_tour_list
 msgid "Menu"
-msgstr "菜單"
+msgstr "選單"
 
 #. module: web_tour
 #. openerp-web

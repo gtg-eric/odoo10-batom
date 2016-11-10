@@ -86,7 +86,7 @@ msgstr "Interes Minoritario"
 #. module: l10n_pe
 #: model:ir.actions.client,name:l10n_pe.action_client_l10n_pe_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"
 
 #. module: l10n_pe
 #: model:account.account.type,name:l10n_pe.account_account_type_EGP_NA_130

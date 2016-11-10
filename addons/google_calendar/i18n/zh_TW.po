@@ -226,7 +226,7 @@ msgid ""
 "In the menu on left side, select the sub menu <b>'Credentials'</b> (from menu APIs and auth) and click on button <b>'Create new Client ID'</b>\n"
 "                                    <br/><br/>"
 msgstr ""
-"在左側的菜單中，選擇子菜單<B>「憑據」</B>(從菜單API和驗證)，然後點擊按鈕<B>「創建新的客戶端ID」</B><BR/><BR/>"
+"在左側的選單中，選擇子選單<B>「憑據」</B>(從選單API和驗證)，然後點擊按鈕<B>「創建新的客戶端ID」</B><BR/><BR/>"
 
 #. module: google_calendar
 #: model:ir.ui.view,arch_db:google_calendar.view_calendar_config_settings
@@ -236,7 +236,7 @@ msgid ""
 "                                    <br/> When it's done, the Calendar API overview will be available\n"
 "                                    <br/><br/>"
 msgstr ""
-"在左側的菜單中，選擇子菜單的API(從菜單中的API和身份驗證) 並點擊 <b>'日曆 API'</b>.\n"
+"在左側的選單中，選擇子選單的API(從選單中的API和身份驗證) 並點擊 <b>'日曆 API'</b>.\n"
 "                                    <br/> 點擊藍色按鈕激活日曆 <b>'Enable API'</b>.\n"
 "                                    <br/> 完成後，日曆API 檢視就可用了。\n"
 "                                    <br/><br/>"

@@ -558,7 +558,7 @@ msgstr ""
 msgid ""
 "<strong>Click on 'Reporting' in the main menu </strong>and browse "
 "statistics:"
-msgstr "<strong>在主菜單上點擊「報表」</strong>並查看相關統計分析:"
+msgstr "<strong>在主選單上點擊「報表」</strong>並查看相關統計分析:"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -3517,7 +3517,7 @@ msgstr "銷售員"
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid ""
 "Save filters or add any report to your dashboard with the Favorites menu."
-msgstr "保存篩選或向您的儀表板添加任何報告以最喜歡的菜單."
+msgstr "保存篩選或用我的最愛選單添加任何報告到您的儀表板。"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_activity_log_view_form_schedule
@@ -3644,7 +3644,7 @@ msgstr "設置你的域名別名"
 #. module: crm
 #: model:res.groups,name:crm.group_use_lead
 msgid "Show Lead Menu"
-msgstr "顯示線索菜單"
+msgstr "顯示線索選單"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner

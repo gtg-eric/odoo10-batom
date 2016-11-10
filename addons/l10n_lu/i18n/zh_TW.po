@@ -566,7 +566,7 @@ msgstr ""
 #. module: l10n_lu
 #: model:ir.actions.client,name:l10n_lu.action_client_l10n_lu_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"
 
 #. module: l10n_lu
 #: model:account.financial.report,name:l10n_lu.account_financial_report_66

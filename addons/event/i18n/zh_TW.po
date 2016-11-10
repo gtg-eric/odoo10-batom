@@ -504,7 +504,7 @@ msgstr "允許賣票"
 #. module: event
 #: selection:event.config.settings,module_website_event_track:0
 msgid "Allow tracks, agenda and dedicated menus/website per event"
-msgstr "允許追蹤，排程和專用菜單/事件的網頁"
+msgstr "允許追蹤，排程和專用選單/事件的網頁"
 
 #. module: event
 #: model:ir.ui.view,arch_db:event.view_event_configuration

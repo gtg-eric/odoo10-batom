@@ -648,7 +648,7 @@ msgstr ""
 msgid ""
 "<strong>Click on 'Reporting' on the main menu</strong> and generate "
 "statistics relevent to each profiles:"
-msgstr "<strong>點擊 主菜單上」報表「功能</strong>並生成和每個配置相關的統計:"
+msgstr "<strong>點擊 主選單上」報表「功能</strong>並生成和每個配置相關的統計:"
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
@@ -3461,7 +3461,7 @@ msgstr "全部的過程可能要花費你幾個小時，但是不要擔心，你
 msgid ""
 "This will add an Invoice Tasks menu in the Project module, that can be used "
 "to select the Timesheet to invoice."
-msgstr "這會在項目模塊中增加一個新的菜單，它可以被用來去選擇要開票的工時單"
+msgstr "這會在項目模塊中增加一個新的選單，它可以被用來去選擇要開票的工時單"
 
 #. module: project
 #: model:ir.model.fields,help:project.field_account_analytic_account_company_uom_id

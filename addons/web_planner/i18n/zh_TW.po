@@ -89,7 +89,7 @@ msgstr "標記為完成"
 #. module: web_planner
 #: model:ir.model.fields,field_description:web_planner.field_web_planner_menu_id
 msgid "Menu"
-msgstr "菜單"
+msgstr "選單"
 
 #. module: web_planner
 #: model:ir.model.fields,field_description:web_planner.field_web_planner_name

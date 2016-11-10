@@ -817,7 +817,7 @@ msgstr ""
 msgid ""
 "<strong>With that in mind, try to define the structure of your main "
 "menu:</strong>"
-msgstr "<STRONG>考慮到這一點，試圖定義你的主菜單的結構：</STRONG>"
+msgstr "<STRONG>考慮到這一點，試圖定義你的主選單的結構：</STRONG>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -936,14 +936,14 @@ msgstr "添加"
 #: model:ir.ui.view,arch_db:website.s_image_gallery
 #, python-format
 msgid "Add Images from the 'Customize' menu"
-msgstr "添加圖像從「自定義」菜單"
+msgstr "添加圖像從「自定義」選單"
 
 #. module: website
 #. openerp-web
 #: code:addons/website/static/src/xml/website.contentMenu.xml:47
 #, python-format
 msgid "Add Menu Entry"
-msgstr "添加菜單項"
+msgstr "添加選單項"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_feature_grid
@@ -969,7 +969,7 @@ msgstr "添加關鍵字:"
 #: code:addons/website/static/src/js/website.contentMenu.js:72
 #, python-format
 msgid "Add page in menu"
-msgstr "在菜單添加頁面"
+msgstr "在選單添加頁面"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1217,7 +1217,7 @@ msgstr "在決定與您合作之前，請檢查您參考"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu_child_id
 msgid "Child Menus"
-msgstr "下級菜單"
+msgstr "下級選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_big_picture
@@ -1321,7 +1321,7 @@ msgstr "配置網站"
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
 msgid "Configure website menus"
-msgstr "設置網站菜單"
+msgstr "設置網站選單"
 
 #. module: website
 #. openerp-web
@@ -1464,7 +1464,7 @@ msgstr "定制主題"
 msgid ""
 "Customize any block through this menu. Try to change the background of the "
 "banner."
-msgstr "通過這個菜單定制任何塊。嘗試改變橫幅的背景。"
+msgstr "通過這個選單定制任何塊。嘗試改變橫幅的背景。"
 
 #. module: website
 #: model:ir.ui.menu,name:website.menu_dashboard
@@ -1625,7 +1625,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.contentMenu.xml:42
 #, python-format
 msgid "Drag a menu to the right to create a sub-menu"
-msgstr "向右拖動菜單創建子菜單"
+msgstr "向右拖動選單創建子選單"
 
 #. module: website
 #. openerp-web
@@ -1667,12 +1667,12 @@ msgstr "編輯"
 #: model:ir.ui.view,arch_db:website.user_navbar
 #, python-format
 msgid "Edit Menu"
-msgstr "編輯菜單"
+msgstr "編輯選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.user_navbar
 msgid "Edit Top Menu"
-msgstr "編輯頂層菜單"
+msgstr "編輯頂層選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.publish_management
@@ -1798,7 +1798,7 @@ msgstr "功能二"
 msgid ""
 "Finally don't try to make all your content accessible from the main menu or the footer.\n"
 "                            Indeed, a page can also be accessible through a direct link or button, from any other page of your website."
-msgstr "最後，不要試圖讓所有的內容訪問從主菜單或頁腳.實際上頁面還可以通過直接鏈接或按鈕訪問，或從您的網站的其他頁面。"
+msgstr "最後，不要試圖讓所有的內容訪問從主選單或頁腳.實際上頁面還可以通過直接鏈接或按鈕訪問，或從您的網站的其他頁面。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2335,12 +2335,12 @@ msgstr "加載..."
 #. module: website
 #: model:ir.ui.view,arch_db:website.layout
 msgid "Logout"
-msgstr "註銷"
+msgstr "登出"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu_id
 msgid "Main Menu"
-msgstr "主菜單"
+msgstr "主選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -2368,7 +2368,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
 #, python-format
 msgid "Menu"
-msgstr "菜單"
+msgstr "選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.template_partner_comment
@@ -2679,7 +2679,7 @@ msgstr "父級左"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu_parent_id
 msgid "Parent Menu"
-msgstr "上級菜單"
+msgstr "上級選單"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu_parent_right
@@ -2974,7 +2974,7 @@ msgstr "保存"
 #. module: website
 #: model:ir.ui.view,arch_db:website.menu_search
 msgid "Search Menus"
-msgstr "搜索菜單"
+msgstr "搜索選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_search_box
@@ -3001,7 +3001,7 @@ msgstr "看到和購買你的產品"
 #: code:addons/website/static/src/js/website.contentMenu.js:184
 #, python-format
 msgid "Select a Menu"
-msgstr "選擇菜單"
+msgstr "選擇選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_feature_grid
@@ -3371,7 +3371,7 @@ msgstr ""
 #: model:website.menu,name:website.website2_main_menu
 #, python-format
 msgid "Top Menu"
-msgstr "頂層菜單"
+msgstr "頂層選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.http_error_debug
@@ -3513,7 +3513,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Use the <i>Customize</i> menu to change the look of your theme:"
-msgstr "使用定制菜單改變你的主題的外觀"
+msgstr "使用定制選單改變你的主題的外觀"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3678,7 +3678,7 @@ msgstr "網站主頁"
 #: model:ir.actions.act_window,name:website.action_website_menu
 #: model:ir.model,name:website.model_website_menu
 msgid "Website Menu"
-msgstr "網站菜單"
+msgstr "網站選單"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_config_settings_website_name
@@ -3740,7 +3740,7 @@ msgstr "網站網址"
 #. module: website
 #: model:ir.ui.view,arch_db:website.menu_tree
 msgid "Website menu"
-msgstr "網站菜單"
+msgstr "網站選單"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_blog_blog_website_meta_description
@@ -4018,7 +4018,7 @@ msgstr "你的主頁"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Your Main Menu"
-msgstr "你的主菜單"
+msgstr "你的主選單"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner

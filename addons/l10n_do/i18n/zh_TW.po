@@ -27,4 +27,4 @@ msgstr "多米尼加財務報表"
 #. module: l10n_do
 #: model:ir.actions.client,name:l10n_do.action_client_l10n_do_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"

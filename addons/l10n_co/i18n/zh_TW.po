@@ -29,7 +29,7 @@ msgstr "哥倫比亞財務報表"
 #. module: l10n_co
 #: model:ir.actions.client,name:l10n_co.action_client_l10n_co_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"
 
 #. module: l10n_co
 #: model:account.tax.group,name:l10n_co.tax_group_retention

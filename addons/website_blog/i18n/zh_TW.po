@@ -764,7 +764,7 @@ msgstr "紅色"
 #: code:addons/website_blog/static/src/js/website.tour.blog.js:15
 #, python-format
 msgid "Select this menu item to create a new blog post."
-msgstr "選擇此菜單項新建一篇博文"
+msgstr "選擇此選單項新建一篇博文"
 
 #. module: website_blog
 #. openerp-web

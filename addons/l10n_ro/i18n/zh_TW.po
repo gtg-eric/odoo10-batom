@@ -33,7 +33,7 @@ msgstr "NRC"
 #. module: l10n_ro
 #: model:ir.actions.client,name:l10n_ro.action_client_l10n_ro_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"
 
 #. module: l10n_ro
 #: model:ir.model,name:l10n_ro.model_res_partner

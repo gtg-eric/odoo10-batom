@@ -62,7 +62,7 @@ msgstr "職業方面"
 #. module: l10n_cr
 #: model:ir.actions.client,name:l10n_cr.action_client_l10n_cr_menu
 msgid "Open Account Dashboard Menu"
-msgstr "打開會計看板菜單"
+msgstr "打開會計看板選單"
 
 #. module: l10n_cr
 #: model:res.partner.title,shortcut:l10n_cr.res_partner_title_sal

@@ -84,7 +84,7 @@ msgstr ""
 "此模塊為POS模塊中新加入以下功能:\n"
 "- 賬單打印: 您可在收到錢款時打印一份收據\n"
 "- 賬單分拆: 在支付之前您可將一張訂單分拆為多份\n"
-"- 菜單打印: 允許您在廚房或吧檯打印點餐單\n"
+"- 選單打印: 允許您在廚房或吧檯打印點餐單\n"
 "\n"
 
 #. module: base
@@ -576,7 +576,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"在前端為問題添加計工單支持"
+"在前端為問題添加工時表支持"
 
 #. module: base
 #: model:ir.module.module,description:base.module_website_portal_sale
@@ -598,7 +598,7 @@ msgid ""
 "The wizard to launch the report has several options to help you get the data you need.\n"
 msgstr ""
 "\n"
-"在產品上添加一個報告菜單，用於按發票計算銷售、採購、毛利和其他有趣的指標。\n"
+"在產品上添加一個報告選單，用於按發票計算銷售、採購、毛利和其他有趣的指標。\n"
 "=============================================================================================================================\n"
 "\n"
 "此嚮導加載的報表有若干選項用來幫助您獲取您需要的數據。\n"
@@ -769,11 +769,11 @@ msgstr ""
 "\n"
 "會計斷言。\n"
 "======================\n"
-"在這個模塊你可以從菜單 報告->財務->財務檢測 來手工檢查記帳模塊的一致性。\n"
+"在這個模塊你可以從選單 報告->財務->財務檢測 來手工檢查記帳模塊的一致性。\n"
 "\n"
-"進入菜單  報告->會計測試，你可以寫一個查詢去創建一致性測試， \n"
+"進入選單  報告->會計測試，你可以寫一個查詢去創建一致性測試， \n"
 "最後能得到PDF格式的測試結果，\n"
-"選擇測試的頂部菜單執行打印按鈕來打印。\n"
+"選擇測試的頂部選單執行打印按鈕來打印。\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_account_asset
@@ -1445,7 +1445,7 @@ msgstr ""
 "嚮導為稅創建了分割符來收集MOSS的VAT總額\n"
 "，所以提取MOSS數據會很容易。\n"
 "查找稅中的 \"歐盟MOSS VAT 圖\" \n"
-"在稅報表菜單 (總賬報表).\n"
+"在稅報表選單 (總賬報表).\n"
 "\n"
 "參考\n"
 "++++++++++\n"
@@ -2501,7 +2501,7 @@ msgstr ""
 "\n"
 "支持:\n"
 "- 贊助商\n"
-"- 每個活動的專用菜單\n"
+"- 每個活動的專用選單\n"
 "- 每個活動的新聞\n"
 "-跟蹤\n"
 "- 日程\n"
@@ -2948,7 +2948,7 @@ msgstr ""
 "\n"
 "問卷調查 - CRM (橋接模塊)\n"
 "=================================================================================\n"
-"本模塊在線索/客戶視圖的「更多下拉菜單中， 增加了群發問卷調查郵件的 菜單項 \n"
+"本模塊在線索/客戶視圖的「更多下拉選單中， 增加了群發問卷調查郵件的 選單項 \n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_ch
@@ -3582,10 +3582,10 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"如果你安裝了銷售模塊和門戶模塊的話，這模塊會增加一個銷售菜單到你的門戶頁面。\n"
+"如果你安裝了銷售模塊和門戶模塊的話，這模塊會增加一個銷售選單到你的門戶頁面。\n"
 "======================================================================================\n"
 "\n"
-"安裝後，門戶的用戶可以通過以下菜單訪問自己的文檔：\n"
+"安裝後，門戶的用戶可以通過以下選單訪問自己的文檔：\n"
 " - 報價單 - 銷售訂單\n"
 " - 發貨單\n"
 " - 產品（公共的）\n"
@@ -4704,7 +4704,7 @@ msgstr "- 大小="
 #. module: base
 #: model:ir.ui.view,arch_db:base.module_form
 msgid "-This module does not create menu."
-msgstr "-這個模塊不創建菜單。"
+msgstr "-這個模塊不創建選單。"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.module_form
@@ -4862,7 +4862,7 @@ msgstr "<strong>標籤</strong>"
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodulereference
 msgid "<strong>Menu :</strong>"
-msgstr "<strong>菜單：</strong>"
+msgstr "<strong>選單：</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
@@ -4947,7 +4947,7 @@ msgid ""
 "to see. Whether they can have a read, write, create and delete access right "
 "can be managed from here."
 msgstr ""
-"用戶組用於把一系列功能分配給用戶，使其能夠訪問特定的模塊和功能。可以新建或修改現有的用戶組，這樣就可以自定義該組用戶的菜單，或者對某個對象的插刪改查權限。"
+"用戶組用於把一系列功能分配給用戶，使其能夠訪問特定的模塊和功能。可以新建或修改現有的用戶組，這樣就可以自定義該組用戶的選單，或者對某個對象的插刪改查權限。"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_hw_posbox_homepage
@@ -5065,7 +5065,7 @@ msgstr "訪問組"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_groups_menu_access
 msgid "Access Menu"
-msgstr "訪問菜單"
+msgstr "訪問選單"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.edit_menu_access
@@ -5343,12 +5343,12 @@ msgstr "添加RML 頁首"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
 msgid "Add in the 'More' menu"
-msgstr "在'更多'菜單添加"
+msgstr "在'更多'選單添加"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.act_report_xml_view
 msgid "Add in the 'Print' menu"
-msgstr "在'打印'菜單添加"
+msgstr "在'打印'選單添加"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_report_xml_header
@@ -6440,7 +6440,7 @@ msgstr "乍得"
 #. module: base
 #: model:ir.actions.act_window,name:base.action_res_users_my
 msgid "Change My Preferences"
-msgstr "更改我的個人資料"
+msgstr "更改我的喜好設定"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.change_password_wizard_action
@@ -7286,17 +7286,17 @@ msgstr "從聯繫表單創建線索"
 #: model:ir.actions.act_window,name:base.act_menu_create
 #: model:ir.ui.view,arch_db:base.view_model_menu_create
 msgid "Create Menu"
-msgstr "創建菜單"
+msgstr "創建選單"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_model_menu_create
 msgid "Create _Menu"
-msgstr "創建菜單(_M)"
+msgstr "創建選單(_M)"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_model_form
 msgid "Create a Menu"
-msgstr "創建菜單"
+msgstr "創建選單"
 
 #. module: base
 #: selection:ir.actions.server,use_create:0
@@ -7358,7 +7358,7 @@ msgstr "創建/寫入目標模型的名字"
 #. module: base
 #: model:ir.ui.view,arch_db:base.module_form
 msgid "Created Menus"
-msgstr "創建的菜單"
+msgstr "創建的選單"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.module_form
@@ -8443,7 +8443,7 @@ msgstr "厄立特裡亞"
 #: code:addons/base/res/res_partner.py:87
 #, python-format
 msgid "Error ! You can not create recursive tags."
-msgstr "錯誤！不可以創建遞歸菜單"
+msgstr "錯誤！不可以創建遞歸選單"
 
 #. module: base
 #: code:addons/base/res/res_company.py:354
@@ -8477,7 +8477,7 @@ msgstr "constraint 檢查錯誤"
 #: code:addons/base/ir/ir_ui_menu.py:88
 #, python-format
 msgid "Error! You cannot create recursive menus."
-msgstr "錯誤！不能創建循環引用的菜單。"
+msgstr "錯誤！不能創建循環引用的選單。"
 
 #. module: base
 #: model:res.country,name:base.ee
@@ -9948,7 +9948,7 @@ msgstr "圖標網址"
 msgid ""
 "If checked and the action is bound to a model, it will only appear in the "
 "More menu on list views"
-msgstr "如果選中，並且該動作被綁定到一個模型，它只會出現在列表視圖的』更多『菜單裡。"
+msgstr "如果選中，並且該動作被綁定到一個模型，它只會出現在列表視圖的』更多『選單裡。"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_mail_server_smtp_debug
@@ -10009,7 +10009,7 @@ msgstr ""
 msgid ""
 "If specified, this action will be opened at log on for this user, in "
 "addition to the standard menu."
-msgstr "如果指定的話，這個動作將在該用戶賬號登錄後與標準的菜單一起執行。就是說登錄第一畫面將看到指定的菜單頁面，懂嗎"
+msgstr "如果指定的話，這個動作將在該用戶賬號登錄後與標準的選單一起執行。就是說登錄第一畫面將看到指定的選單頁面，懂嗎"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_partner_lang
@@ -10072,7 +10072,7 @@ msgid ""
 "If you have groups, the visibility of this menu will be based on these "
 "groups. If this field is empty, Odoo will compute visibility based on the "
 "related object's read access."
-msgstr "如果您歸屬於用戶群組，則此菜單的可見性將有這些用戶群組決定。如果該字段為空，系統將基於關聯對象的讀取權限計算可見性。"
+msgstr "如果您歸屬於用戶群組，則此選單的可見性將有這些用戶群組決定。如果該字段為空，系統將基於關聯對象的讀取權限計算可見性。"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_access_active
@@ -11341,7 +11341,7 @@ msgid ""
 " line and then delete it through the button that appeared. Items can be "
 "assigned to specific groups in order to make them accessible to some users "
 "within the system."
-msgstr "管理和自定義用戶的菜單項。你可以用勾選一些菜單項，然後刪除。菜單項可以分配給某些特定的用戶群組，以便他們使用系統的某些特定的功能"
+msgstr "管理和自定義用戶的選單項。你可以用勾選一些選單項，然後刪除。選單項可以分配給某些特定的用戶群組，以便他們使用系統的某些特定的功能"
 
 #. module: base
 #: model:ir.actions.act_window,help:base.action_res_bank_form
@@ -11519,29 +11519,29 @@ msgstr "記事簿"
 #: model:ir.ui.view,arch_db:base.edit_menu_access_search
 #: model:ir.ui.view,arch_db:base.view_menu
 msgid "Menu"
-msgstr "菜單"
+msgstr "選單"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.grant_menu_access
 #: model:ir.ui.menu,name:base.menu_grant_menu_access
 msgid "Menu Items"
-msgstr "菜單項目"
+msgstr "選單項目"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create_name
 msgid "Menu Name"
-msgstr "菜單名稱"
+msgstr "選單名稱"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module_menus_by_module
 #: model:ir.ui.view,arch_db:base.view_groups_form
 msgid "Menus"
-msgstr "菜單"
+msgstr "選單"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_users_form
 msgid "Menus Customization"
-msgstr "菜單定制"
+msgstr "選單定制"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_pos_mercury
@@ -11880,13 +11880,13 @@ msgstr "蒙特塞拉特"
 #: model:ir.model.fields,field_description:base.field_ir_act_report_xml_ir_values_id
 #: model:ir.model.fields,field_description:base.field_ir_act_server_menu_ir_values_id
 msgid "More Menu entry"
-msgstr "更多的菜單項"
+msgstr "更多的選單項"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_report_xml_ir_values_id
 #: model:ir.model.fields,help:base.field_ir_act_server_menu_ir_values_id
 msgid "More menu entry."
-msgstr "更多的菜單項。"
+msgstr "更多的選單項。"
 
 #. module: base
 #: model:res.country,name:base.ma
@@ -12443,7 +12443,7 @@ msgstr "打開應用"
 #. module: base
 #: model:ir.actions.client,name:base.action_client_base_menu
 msgid "Open Settings Menu"
-msgstr "打開設置菜單"
+msgstr "打開設置選單"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_window_action_tree
@@ -12691,7 +12691,7 @@ msgstr "上級公司"
 #: model:ir.model.fields,field_description:base.field_ir_ui_menu_parent_id
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create_menu_id
 msgid "Parent Menu"
-msgstr "上級菜單"
+msgstr "上級選單"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_menu_parent_left
@@ -12969,7 +12969,7 @@ msgstr "請指定要運行的動作！"
 msgid ""
 "Please use the change password wizard (in User Preferences or User menu) to "
 "change your own password."
-msgstr "請使用更改密碼嚮導（在用戶個人資料或用戶菜單中）來更改您的密碼。"
+msgstr "請使用更改密碼嚮導（在用戶喜好設定或用戶選單中）來更改您的密碼。"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_point_of_sale
@@ -13034,7 +13034,7 @@ msgid ""
 "Portal members have specific access rights (such as record rules and restricted menus).\n"
 "                They usually do not belong to the usual Odoo groups."
 msgstr ""
-"門戶成員有特定的訪問權限 (如記錄規則和限制菜單)。\n"
+"門戶成員有特定的訪問權限 (如記錄規則和限制選單)。\n"
 "他們通常不屬於普通的Odoo群組。"
 
 #. module: base
@@ -13075,7 +13075,7 @@ msgstr "實現多對多關係的 PostgreSQL 表名"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_users_form
 msgid "Preferences"
-msgstr "個人資料"
+msgstr "喜好設定"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence_prefix
@@ -13220,7 +13220,7 @@ msgstr "公開"
 msgid ""
 "Public users have specific access rights (such as record rules and restricted menus).\n"
 "                They usually do not belong to the usual Odoo groups."
-msgstr "公眾用戶有特定的訪問權限 (如記錄規則和限制菜單)。 他們通常不屬於通常的Odoo群組"
+msgstr "公眾用戶有特定的訪問權限 (如記錄規則和限制選單)。 他們通常不屬於通常的Odoo群組"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_membership
@@ -13572,12 +13572,12 @@ msgstr "從附件重新載入"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
 msgid "Remove from the 'More' menu"
-msgstr "從'更多'菜單中移走"
+msgstr "從'更多'選單中移走"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.act_report_xml_view
 msgid "Remove from the 'Print' menu"
-msgstr "從'打印'菜單中移走"
+msgstr "從'打印'選單中移走"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.act_report_xml_view
@@ -13965,7 +13965,7 @@ msgstr "銷售團隊"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_timesheet
 msgid "Sales Timesheet"
-msgstr "銷售計工單"
+msgstr "銷售工時表"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_mrp
@@ -14752,7 +14752,7 @@ msgstr "主題"
 #. module: base
 #: model:ir.ui.view,arch_db:base.edit_menu_access
 msgid "Submenus"
-msgstr "子菜單"
+msgstr "子選單"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence_date_range_ids
@@ -15177,7 +15177,7 @@ msgid ""
 "choose to restart some wizards manually from this menu."
 msgstr ""
 "配置嚮導將幫助您設置一個新的 Odoo 實例。\n"
-"嚮導將在安裝新模塊的時候啟動，但是您也可以在此菜單中手工重新啟動一些嚮導。"
+"嚮導將在安裝新模塊的時候啟動，但是您也可以在此選單中手工重新啟動一些嚮導。"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields_related
@@ -15282,7 +15282,7 @@ msgstr "擴展當前模型的模型清單。"
 msgid ""
 "The menu action this filter applies to. When left empty the filter applies "
 "to all menus for this model."
-msgstr "這個篩選應用的菜單動作。如果留空，篩選將應用於這個模型的所有菜單。"
+msgstr "這個篩選應用的選單動作。如果留空，篩選將應用於這個模型的所有選單。"
 
 #. module: base
 #: code:addons/base/ir/ir_model.py:100
@@ -15424,7 +15424,7 @@ msgstr ""
 msgid ""
 "The selected language has been successfully installed. You must change the "
 "preferences of the user and open a new menu to view the changes."
-msgstr "所選的語言包已經成功安裝。你需要修改用戶使用語言並重新打開新菜單以查看改變內容"
+msgstr "所選的語言包已經成功安裝。你需要修改用戶使用語言並重新打開新選單以查看改變內容"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_base_module_upgrade_install
@@ -16228,7 +16228,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_window_usage
 msgid "Used to filter menu and home actions from the user form."
-msgstr "用於篩選菜單，以及用戶表單的主頁動作。"
+msgstr "用於篩選選單，以及用戶表單的主頁動作。"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_users_login
@@ -16590,7 +16590,7 @@ msgstr "警告"
 #: model:ir.ui.view,arch_db:base.view_base_module_upgrade_install
 msgid ""
 "We suggest to reload the menu tab to see the new menus (Ctrl+T then Ctrl+R)."
-msgstr "我們提議重載菜單來查看新菜單（Ctrl+T then Ctrl+R）"
+msgstr "我們提議重載選單來查看新選單（Ctrl+T then Ctrl+R）"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web
@@ -17132,7 +17132,7 @@ msgstr ""
 msgid ""
 "You will be able to define additional access rights by editing the newly "
 "created user under the Settings / Users menu."
-msgstr "通過編輯在設置/用戶菜單下的新建用戶，你將能夠定義額外的進入權限"
+msgstr "通過編輯在設置/用戶選單下的新建用戶，你將能夠定義額外的進入權限"
 
 #. module: base
 #: code:addons/base/ir/ir_mail_server.py:206
@@ -17794,7 +17794,7 @@ msgstr "test_convert"
 msgid ""
 "the user will be able to manage his own human resources stuff (leave "
 "request, timesheets, ...), if he is linked to an employee in the system."
-msgstr "如果在系統中管理到一個員工，用戶能管理自己的人力資源資料(休假請求，計工單，... ... )"
+msgstr "如果在系統中管理到一個員工，用戶能管理自己的人力資源資料(休假請求，工時表，... ... )"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form

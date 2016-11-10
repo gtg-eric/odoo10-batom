@@ -1689,7 +1689,7 @@ msgstr "文本內容中不包含 '__URL__'.                     __URL__ 會被�
 #. module: survey
 #: model:survey.label,value:survey.choice_2_4_1
 msgid "The current menu structure is good"
-msgstr "當前的菜單結構很好"
+msgstr "當前的選單結構很好"
 
 #. module: survey
 #: sql_constraint:survey.user_input:0
@@ -1699,7 +1699,7 @@ msgstr "截止日期不能是過去的時間。"
 #. module: survey
 #: model:survey.label,value:survey.frow_2_5_5
 msgid "The groups set on menu items are relevant"
-msgstr "在菜單上設置分組是相關的"
+msgstr "在選單上設置分組是相關的"
 
 #. module: survey
 #: model:survey.label,value:survey.choice_2_6_3
@@ -1724,7 +1724,7 @@ msgstr "定義太多組，安全設置起來太複雜"
 #. module: survey
 #: model:survey.label,value:survey.choice_2_4_3
 msgid "There are too much menus, it's complex to understand"
-msgstr "有太多的菜單,理解起來比較複雜"
+msgstr "有太多的選單,理解起來比較複雜"
 
 #. module: survey
 #: model:survey.page,description:survey.feedback_2
@@ -1986,7 +1986,7 @@ msgstr "你怎麼看待Odoo的流程檢視,在web客戶端是否匹配?"
 #: model:survey.question,question:survey.feedback_2_4
 #: model:survey.question,question:survey.feedback_2_6
 msgid "What do you think about the structure of the menus?"
-msgstr "你怎麼看菜單的結構?"
+msgstr "你怎麼看選單的結構?"
 
 #. module: survey
 #: model:survey.question,question:survey.feedback_4_1

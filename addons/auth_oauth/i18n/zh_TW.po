@@ -278,7 +278,7 @@ msgid ""
 "On the left side menu, select the sub menu <b>Credentials</b> \n"
 "                                        (from <b>API Manager</b>) then select <b>OAuth consent screen</b>."
 msgstr ""
-"在左側菜單中, 選擇子菜單 <b> Credentials </b> (從 <b>API Manager</b>)開始\n"
+"在左側選單中, 選擇子選單 <b> Credentials </b> (從 <b>API Manager</b>)開始\n"
 ",然後選擇 <b>OAuth consent screen</b>."
 
 #. module: auth_oauth

@@ -345,7 +345,7 @@ msgstr "允許在銷售訂單明細行上折扣"
 msgid ""
 "Allow to edit sales order from the 'Sales Order' menu (not from the "
 "Quotation menu)"
-msgstr "允許在「銷售訂單」菜單中編輯銷售訂單(不通過報價菜單)"
+msgstr "允許在「銷售訂單」選單中編輯銷售訂單(不通過報價選單)"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_config_settings_group_sale_pricelist
@@ -2124,7 +2124,7 @@ msgstr "首付必須為正數。"
 msgid ""
 "There is no income account defined for this product: \"%s\". You may have to"
 " install a chart of account from Accounting app, settings menu."
-msgstr "本產品：「%s」 未定義應收科目。你可能需要從會計應用程序的設置菜單中安裝一個科目表。"
+msgstr "本產品：「%s」 未定義應收科目。你可能需要從會計應用程序的設置選單中安裝一個科目表。"
 
 #. module: sale
 #: code:addons/sale/models/sale.py:366 code:addons/sale/models/sale.py:370

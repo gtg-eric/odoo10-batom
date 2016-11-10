@@ -442,7 +442,7 @@ msgstr "增加一條評論"
 #: code:addons/website_forum/static/src/js/website_forum.editor.js:25
 #, python-format
 msgid "Add page in menu"
-msgstr "在菜單添加頁面"
+msgstr "在選單添加頁面"
 
 #. module: website_forum
 #: model:ir.model.fields,help:website_forum.field_forum_forum_allow_share
@@ -2196,7 +2196,7 @@ msgstr "看到:"
 #: code:addons/website_forum/static/src/js/website_tour_forum.js:15
 #, python-format
 msgid "Select this menu item to create a new forum."
-msgstr "選擇這個菜單項來新建一個論壇"
+msgstr "選擇這個選單項來新建一個論壇"
 
 #. module: website_forum
 #: model:gamification.badge,name:website_forum.badge_a_8
@@ -2224,7 +2224,7 @@ msgid ""
 "Share an awesome link. Your post will appear in the 'Newest' top-menu.\n"
 "            If the community vote on your post, it will get traction by being promoted\n"
 "            in the homepage."
-msgstr "分享一個好的鏈接。你的信息會出現在「最新的」頂級菜單。如果您的帖子被社區投票，它會得到推薦到正在推廣的網頁。"
+msgstr "分享一個好的鏈接。你的信息會出現在「最新的」頂級選單。如果您的帖子被社區投票，它會得到推薦到正在推廣的網頁。"
 
 #. module: website_forum
 #. openerp-web

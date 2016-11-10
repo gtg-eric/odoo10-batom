@@ -1114,7 +1114,7 @@ msgid ""
 "Purchase Analysis allows you to easily check and analyse your company "
 "purchase history and performance. From this menu you can track your "
 "negotiation performance, the delivery performance of your vendors, etc."
-msgstr "採購需求能讓你快捷的檢查分析公司的採購記錄和績效。從這個菜單你可以追蹤你的談判績效，以及客戶的交貨表現等等"
+msgstr "採購需求能讓你快捷的檢查分析公司的採購記錄和績效。從這個選單你可以追蹤你的談判績效，以及客戶的交貨表現等等"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_company_po_lead
@@ -1724,7 +1724,7 @@ msgid ""
 "                you can track the related discussion with the vendor, control\n"
 "                the products received and control the vendor bills."
 msgstr ""
-"用這個菜單搜索採購訂單的相關的供應商，產品等等參照。對每一個採購訂單，\n"
+"用這個選單搜索採購訂單的相關的供應商，產品等等參照。對每一個採購訂單，\n"
 "你可以追蹤和供應商的討論，控制產品的收貨和供應商發票"
 
 #. module: purchase

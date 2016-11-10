@@ -243,7 +243,7 @@ msgid ""
 "In this same \"Search\" view, select the menu \"Save Current Filter\", enter"
 " the name (Ex: Create the 01/01/2012) and add the option \"Share with all "
 "users\""
-msgstr "在同一個\"搜索\"檢視，選擇菜單中的\"保存現有的篩選條件\"，輸入名稱（例如：創建於01/01/2012)並且勾選\"共享給其他用戶\"的選項。"
+msgstr "在同一個\"搜索\"檢視，選擇選單中的\"保存現有的篩選條件\"，輸入名稱（例如：創建於01/01/2012)並且勾選\"共享給其他用戶\"的選項。"
 
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_lead_test_customer

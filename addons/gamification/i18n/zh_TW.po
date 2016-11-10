@@ -544,7 +544,7 @@ msgstr "日期字段"
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_challenge_category
 msgid "Define the visibility of the challenge through menus"
-msgstr "通過菜單定義的可見性的挑戰"
+msgstr "通過選單定義的可見性的挑戰"
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_goal_computation_mode
