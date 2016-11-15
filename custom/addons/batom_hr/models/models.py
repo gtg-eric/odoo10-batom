@@ -14,6 +14,8 @@ class batom_hr_employee(models.Model):
     
     _inherit = 'hr.employee'
     x_code = fields.Char('Employee Code')
+    x_on_board_date = fields.Date('On-board Date')
+    x_resignation_date = fields.Date('Resignation Date')
     _order = 'x_code' 
 
 

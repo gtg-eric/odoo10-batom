@@ -19,7 +19,13 @@
             <xpath expr="//field[@name='user_id']" position="before">
                 <field name="x_code"/>
             </xpath>
-            <xpath expr="//field[@name='user_id']" position="after">
+            <xpath expr="//field[@name='x_code']" position="after">
+                <field name="x_on_board_date"/>
+            </xpath>
+            <xpath expr="//field[@name='x_on_board_date']" position="after">
+                <field name="x_resignation_date"/>
+            </xpath>
+            <xpath expr="//field[@name='x_resignation_date']" position="after">
                 <field name="notes"/>
             </xpath>
         </field>

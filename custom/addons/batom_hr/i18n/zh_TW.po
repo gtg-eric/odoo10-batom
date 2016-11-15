@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-09 03:52+0000\n"
-"PO-Revision-Date: 2016-11-09 03:52+0000\n"
+"POT-Creation-Date: 2016-11-15 02:46+0000\n"
+"PO-Revision-Date: 2016-11-15 02:46+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -28,10 +28,20 @@ msgstr "員工"
 #. module: batom_hr
 #: model:ir.model.fields,field_description:batom_hr.field_hr_employee_x_code
 msgid "Employee Code"
-msgstr "部門代碼"
+msgstr "員工代碼"
 
 #. module: batom_hr
 #: model:ir.model,name:batom_hr.model_hr_department
 msgid "Hr Department"
 msgstr "部門"
+
+#. module: batom_hr
+#: model:ir.model.fields,field_description:batom_hr.field_hr_employee_x_on_board_date
+msgid "On-board Date"
+msgstr "到職日"
+
+#. module: batom_hr
+#: model:ir.model.fields,field_description:batom_hr.field_hr_employee_x_resignation_date
+msgid "Resignation Date"
+msgstr "離職日"
 
