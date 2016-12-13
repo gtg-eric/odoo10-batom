@@ -4745,7 +4745,7 @@ msgstr "產品只有一個計量單位"
 msgid ""
 "Products you scrap will be removed from the stock and moved to a specific "
 "scrap location, for reporting purposes."
-msgstr ""
+msgstr "報廢的產品將從庫存中搬出，並為了通報目的而搬到一個特定的報廢地點"
 
 #. module: stock
 #: code:addons/stock/models/product.py:326

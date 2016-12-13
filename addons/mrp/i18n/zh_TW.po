@@ -298,7 +298,7 @@ msgstr ""
 msgid ""
 "An unbuild order will do a reverse bill of materials, unbuilding products\n"
 "            you produced, but you can also use it to unbuild products you purchased."
-msgstr ""
+msgstr "拆解單將會執行物料清單 (BOM) 反向動作，把已生產的產品拆解，但你也可以將採購的產品拆解"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_mrp_config
@@ -2931,7 +2931,7 @@ msgstr "拆解單"
 #: code:addons/mrp/models/mrp_unbuild.py:76
 #, python-format
 msgid "Unbuild Order product quantity has to be strictly positive."
-msgstr ""
+msgstr "拆解單產品數量必須是正數"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.mrp_unbuild
@@ -3022,7 +3022,7 @@ msgstr "用戶"
 #: model:ir.model.fields,field_description:mrp.field_mrp_message_valid_until
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_tree
 msgid "Validity Date"
-msgstr "驗證日期"
+msgstr "有效日期"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_form_embedded_product
