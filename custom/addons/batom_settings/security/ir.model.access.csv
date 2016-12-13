@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_batom_hr_department_batom_hr_department,batom_hr_department.batom_hr_department,model_batom_hr_department_batom_hr_department,,1,0,0,0
