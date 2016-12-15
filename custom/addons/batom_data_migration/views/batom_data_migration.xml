@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<odoo>
+    <!-- DBSource -->
+
+        <record model="ir.ui.view" id="view_partner_migration_tree">
+            <field name="name">batom.partner_migration.tree</field>
+            <field name="model">batom.partner_migration</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Partner Migration" colors="red:in_short_name!=chi_short_name;red:in_full_name!=chi_full_name">
+                    <field name="type"/>
+                    <field name="in_id"/>
+                    <field name="in_short_name"/>
+                    <field name="in_full_name" invisible="1"/>
+                    <field name="chi_id"/>
+                    <field name="chi_short_name"/>
+                    <field name="chi_full_name" invisible="1"/>
+                    <field name="odoo_id"/>
+                    <field name="odoo_short_name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_partner_migration_form">
+            <field name="name">base.partner_migration.form</field>
+            <field name="model">batom.partner_migration</field>
+            <field name="arch" type="xml">
+                <form string="Partner Data Migration">
+                    <sheet>
+                        <group col="1">
+                            <field name="type"/>
+                            <field name="in_id"/>
+                            <field name="in_short_name"/>
+                            <field name="in_full_name"/>
+                            <field name="chi_id"/>
+                            <field name="chi_short_name"/>
+                            <field name="chi_full_name"/>
+                            <field name="odoo_id"/>
+                            <field name="odoo_short_name"/>
+                            <field name="odoo_full_name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_partner_migration_refresh" model="ir.ui.view">
+            <field name="name">Refresh Partner Migration Table</field>
+            <field name="model">batom.partner_migration_refresh</field>
+            <field name="arch" type="xml">
+                <form string="Refresh Partner Migration Table">
+                    <p>
+                        Refresh the partner data migration table.
+                    </p>
+                    <footer>
+                        <button name="refresh_partner_data" string="Refresh" type="object" class="btn-primary"/>
+                        <button special="cancel" string="Cancel" class="btn-default"/>
+                    </footer>
+                </form>
+           </field>
+        </record>
+
+        <record id="action_view_partner_migration_refresh" model="ir.actions.act_window">
+            <field name="name">Refresh Partner Migration Table</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.partner_migration_refresh</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_partner_migration">
+            <field name="name">Partner Data Migration</field>
+            <field name="res_model">batom.partner_migration</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_partner_migration_tree"/>
+        </record>
+
+        <menuitem name="Data Migration" id="menu_data_migration" parent="base.menu_custom"/>
+            <menuitem name="Refresh Partner" id="menu_partner_migration_refresh" parent="menu_data_migration" action="action_view_partner_migration_refresh"/>
+            <menuitem name="Partner" id="menu_partner_migration" parent="menu_data_migration" action="action_partner_migration"/>
+</odoo>
