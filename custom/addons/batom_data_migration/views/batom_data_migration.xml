@@ -45,15 +45,16 @@
         </record>
 
         <record id="view_partner_migration_refresh" model="ir.ui.view">
-            <field name="name">Refresh Partner Migration Table</field>
+            <field name="name">Refresh/Apply Partner Migration Table</field>
             <field name="model">batom.partner_migration_refresh</field>
             <field name="arch" type="xml">
                 <form string="Refresh Partner Migration Table">
                     <p>
-                        Refresh the partner data migration table.
+                        Refresh/Apply the partner data migration table.
                     </p>
                     <footer>
                         <button name="refresh_partner_data" string="Refresh" type="object" class="btn-primary"/>
+                        <button name="apply_partner_data" string="Apply" type="object" class="btn-primary"/>
                         <button special="cancel" string="Cancel" class="btn-default"/>
                     </footer>
                 </form>
@@ -78,6 +79,6 @@
         </record>
 
         <menuitem name="Data Migration" id="menu_data_migration" parent="base.menu_custom"/>
-            <menuitem name="Refresh Partner" id="menu_partner_migration_refresh" parent="menu_data_migration" action="action_view_partner_migration_refresh"/>
+            <menuitem name="Refresh/Apply Partner" id="menu_partner_migration_refresh" parent="menu_data_migration" action="action_view_partner_migration_refresh"/>
             <menuitem name="Partner" id="menu_partner_migration" parent="menu_data_migration" action="action_partner_migration"/>
 </odoo>
