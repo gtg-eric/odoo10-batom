@@ -1,23 +1,6 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    Daniel Reis
-#    2011
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Copyright <2016> <Batom Co., Ltd.>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import os
 import logging
@@ -101,7 +84,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             'commercial_company_name': parentPartner.commercial_company_name,
             'mobile': parentPartner.mobile if (type == 'contact') else None,
             'phone': address.phone,
-            'is_company': 1 if (type != 'contact') else 0,
+            'is_company': 0, # 1 if (type != 'contact') else 0,
             'customer': parentPartner.customer,
             'supplier': parentPartner.supplier,
             'zip': address.zip,
@@ -110,7 +93,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             'street': address.street,
             'street2': address.street2,
             })
-        newPartner.write({'display_name': self._contactDisplayName(type, parentPartner.name, address.contactName)})
+        newPartner.write({'display_name': self._contactDisplayName(type, parentPartner.display_name, address.contactName)})
      
     @api.multi
     def refresh_partner_data(self):
@@ -402,6 +385,53 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             'res_id': 'view_partner_migration_tree',
             'type': 'ir.actions.act_window'
         }
+    
+class BatomCreatSupplierWarehouses(models.TransientModel):
+    _name = "batom.create_supplier_warehouses"
+    _description = "Create Supplier Warehouses"
+
+    @api.multi
+    def create_supplier_warehouses(self):
+        try:
+            self.ensure_one()
+            locationModel = self.env['stock.location']
+            supplierRootLocation = None
+            supplierRootWarehouses = self.env['stock.warehouse'].search([('code', '=', '99')])
+            if len(supplierRootWarehouses) > 0:
+                location_id = supplierRootWarehouses[0].view_location_id[0].id
+                supplierRootLocations = locationModel.search([
+                    ('location_id', '=', location_id),
+                    ('name', '=', u'庫存'),
+                    ])
+                if len(supplierRootLocations) > 0:
+                    supplierRootLocation = supplierRootLocations[0]
+            if supplierRootLocation != None:
+                partnerLocations = locationModel.search_read([
+                    '|', ('active', '=', True), ('active', '=', False),
+                    ('partner_id', '!=', None)
+                    ], ['partner_id'])
+                supplierIdsWithLocations = []
+                for partnerLocation in partnerLocations:
+                    supplierIdsWithLocations.append(partnerLocation['partner_id'][0])
+                suppliers = self.env['res.partner'].search([
+                    ('supplier', '=', True),
+                    ('x_supplier_code', '!=', None),
+                    ('id', 'not in', supplierIdsWithLocations),
+                    ])
+                for supplier in suppliers:
+                    try:
+                        name = supplier.display_name + ' (' + supplier.x_supplier_code + ')'
+                        newLocation = locationModel.create({
+                            'name': name,
+                            'partner_id': supplier.id,
+                            'location_id': supplierRootLocation.id,
+                            'usage': 'supplier',
+                        })
+                    except Exception:
+                        _logger.warning('Exception in create_supplier_warehouses:', exc_info=True)
+                self.env.cr.commit()            
+        except Exception:
+            _logger.warning('Exception in create_supplier_warehouses:', exc_info=True)
 
 class batom_partner_code(models.Model):
     #_name = 'batom.partner_code'
