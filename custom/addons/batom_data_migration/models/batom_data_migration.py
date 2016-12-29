@@ -328,14 +328,15 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                     if address == None:
                                         address = addressOther
                             
+                            categoryId = self._partnerCategoryConversion(migration.type, chiPartner.ClassID)
                             newPartner = partnerModel.create({
                                 codeColumnName: chiPartner.ID,
                                 'country_id': self._countryIdConversion(chiPartner.AreaID),
-                                'category_id': (6, 0, [self._partnerCategoryConversion(migration.type, chiPartner.ClassID)]),
+                                'category_id': [(4, categoryId, 0)] if (categoryId != None) else None,
                                 'property_purchase_currency_id': self._currencyIdConversion(chiPartner.CurrencyID),
                                 'email': chiPartner.Email,
                                 'fax': chiPartner.FaxNo if (chiPartner.FaxNo != None and chiPartner.FaxNo and chiPartner.FaxNo.strip()) else (
-                                    address.fax if address != None else None),
+                                    address.fax if (address != None) else None),
                                 'name': chiPartner.FullName,
                                 'commercial_company_name': chiPartner.InvoiceHead,
                                 'mobile': chiPartner.MobileTel,
@@ -392,6 +393,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
         except Exception:
             _logger.warning('Exception in apply_partner_data:', exc_info=True)
             
+        self.refresh_partner_data()
         return {
             'view_type': 'form',
             'view_mode': 'tree,form',
