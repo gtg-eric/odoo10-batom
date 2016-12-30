@@ -123,5 +123,6 @@ class StockWarehouse(models.Model):
         # change the manufacture procurement rule name
         for warehouse in self:
             if warehouse.manufacture_pull_id:
-                warehouse.manufacture_pull_id.write({'name': warehouse.manufacture_pull_id.name.replace(warehouse.name, name, 1)})
+                if warehouse.manufacture_pull_id.name != None and warehouse.name != None and name != None:
+                    warehouse.manufacture_pull_id.write({'name': warehouse.manufacture_pull_id.name.replace(warehouse.name, name, 1)})
         return res

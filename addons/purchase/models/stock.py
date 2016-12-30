@@ -129,7 +129,8 @@ class StockWarehouse(models.Model):
         warehouse = self[0]
         #change the buy procurement rule name
         if warehouse.buy_pull_id:
-            warehouse.buy_pull_id.write({'name': warehouse.buy_pull_id.name.replace(warehouse.name, name, 1)})
+            if warehouse.buy_pull_id.name != None and warehouse.name != None and name != None:
+                warehouse.buy_pull_id.write({'name': warehouse.buy_pull_id.name.replace(warehouse.name, name, 1)})
         return res
 
     @api.multi
