@@ -389,22 +389,16 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
 class BatomCreatSupplierWarehouses(models.TransientModel):
     _name = "batom.create_supplier_warehouses"
     _description = "Create Supplier Warehouses"
+    root_location_id = fields.Integer(string='Root Location ID', required=True)
 
     @api.multi
     def create_supplier_warehouses(self):
+        this = self[0]
+        location_id = this.root_location_id
         try:
             self.ensure_one()
             locationModel = self.env['stock.location']
-            supplierRootLocation = None
-            supplierRootWarehouses = self.env['stock.warehouse'].search([('code', '=', '99')])
-            if len(supplierRootWarehouses) > 0:
-                location_id = supplierRootWarehouses[0].view_location_id[0].id
-                supplierRootLocations = locationModel.search([
-                    ('location_id', '=', location_id),
-                    ('name', '=', u'庫存'),
-                    ])
-                if len(supplierRootLocations) > 0:
-                    supplierRootLocation = supplierRootLocations[0]
+            supplierRootLocation = locationModel.browse(location_id)
             if supplierRootLocation != None:
                 partnerLocations = locationModel.search_read([
                     '|', ('active', '=', True), ('active', '=', False),

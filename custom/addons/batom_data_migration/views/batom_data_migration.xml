@@ -83,9 +83,9 @@
             <field name="model">batom.create_supplier_warehouses</field>
             <field name="arch" type="xml">
                 <form string="Create Supplier Warehouses">
-                    <p>
-                        Create warehouses for the suppliers.
-                    </p>
+                    <group>
+                        <field name="root_location_id"/>
+                    </group>
                     <footer>
                         <button name="create_supplier_warehouses" string="Create" type="object" class="btn-primary"/>
                         <button special="cancel" string="Cancel" class="btn-default"/>
