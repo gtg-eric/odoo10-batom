@@ -48,7 +48,7 @@ class _partner_migration:
         self.fullName = fullName
 
 class _partner_address:
-    def __init__(self, zip, address, contactName, title, phone, fax, memo):
+    def __init__(self, zip, address, contactName, title, phone, mobile, fax, email, memo):
         self.zip = zip
         self.city = None
         self.state_id = None
@@ -57,7 +57,9 @@ class _partner_address:
         self.contactName = contactName
         self.title = title
         self.phone = phone
+        self.mobile = mobile
         self.fax = fax
+        self.email = email
         self.memo = memo
 
 class BatomPartnerMigrationRefresh(models.TransientModel):
@@ -107,14 +109,22 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
     
     def _createPartnerContact(self, type, parentPartner, address):
         partnerModel = self.env['res.partner']
+        if address.mobile and address.mobile.strip():
+            mobile = address.mobile
+        else:
+            mobile = parentPartner.mobile if (type == 'contact') else None
+        if address.email and address.email.strip():
+            email = address.email
+        else:
+            email = parentPartner.email
         newPartner = partnerModel.create({
             'parent_id': parentPartner.id,
             'type': type,
-            'email': parentPartner.email,
+            'email': email,
             'fax': address.fax,
             'name': address.contactName,
             'commercial_company_name': parentPartner.commercial_company_name,
-            'mobile': parentPartner.mobile if (type == 'contact') else None,
+            'mobile': mobile,
             'phone': address.phone,
             'is_company': 0, # 1 if (type != 'contact') else 0,
             'customer': parentPartner.customer,
@@ -124,6 +134,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             'state_id': address.state_id,
             'street': address.street,
             'street2': address.street2,
+            'comment': address.memo,
             })
         newPartner.write({'display_name': self._contactDisplayName(type, parentPartner.display_name, address.contactName)})
      
@@ -135,7 +146,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
             batomCustomers = dbBatom.execute('SELECT ID, ShortName, FullName FROM Customer ORDER BY ID')
             chiCustomers = dbChi.execute('SELECT ID, ShortName, FullName FROM comCustomer WHERE Flag=1 ORDER BY ID')
-            odooCustomerIds = self.env['res.partner'].search([('is_company', '=', True), ('customer', '=', True)], order='id').ids
+            odooCustomerIds = self.env['res.partner'].search([('is_company', '=', True), ('customer', '=', True)], order='x_customer_code').ids
             odooPartnerMigration = self.env['batom.partner_migration']
             odooPartnerMigration.search([]).unlink() # delete all migration records
             batomCustomer = None
@@ -206,7 +217,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
 
             batomSuppliers = dbBatom.execute('SELECT ID, ShortName, FullName FROM Supplier ORDER BY ID')
             chiSuppliers = dbChi.execute('SELECT ID, ShortName, FullName FROM comCustomer where Flag=2 ORDER BY ID')
-            odooSupplierIds = self.env['res.partner'].search([('is_company', '=', True), ('supplier', '=', True)], order='id').ids
+            odooSupplierIds = self.env['res.partner'].search([('is_company', '=', True), ('supplier', '=', True)], order='x_supplier_code').ids
             batomSupplier = None
             chiSupplier = None
             odooSupplier = None
@@ -332,14 +343,14 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                             addressOther = None
                             if addresses != None:
                                 if addresses.Address1 != None:
-                                    addressShipping = _partner_address(addresses.ZipCode1, addresses.Address1, addresses.LinkMan1, addresses.LinkManProf1, addresses.Telephone1, addresses.FaxNo1, addresses.Memo1)
+                                    addressShipping = _partner_address(addresses.ZipCode1, addresses.Address1, addresses.LinkMan1, addresses.LinkManProf1, addresses.Telephone1, None, addresses.FaxNo1, None, addresses.Memo1)
                                     address = addressShipping
                                 if addresses.Address2 != None:
-                                    addressInvoice = _partner_address(addresses.ZipCode2, addresses.Address2, addresses.LinkMan2, addresses.LinkManProf2, addresses.Telephone2, addresses.FaxNo2, addresses.Memo2)
+                                    addressInvoice = _partner_address(addresses.ZipCode2, addresses.Address2, addresses.LinkMan2, addresses.LinkManProf2, addresses.Telephone2, None, addresses.FaxNo2, None, addresses.Memo2)
                                     if address == None:
                                         address = addressInvoice
                                 if addresses.Address3 != None:
-                                    addressOther = _partner_address(addresses.ZipCode3, addresses.Address3, addresses.LinkMan3, addresses.LinkManProf3, addresses.Telephone3, addresses.FaxNo3, addresses.Memo3)
+                                    addressOther = _partner_address(addresses.ZipCode3, addresses.Address3, addresses.LinkMan3, addresses.LinkManProf3, addresses.Telephone3, None, addresses.FaxNo3, None, addresses.Memo3)
                                     if address == None:
                                         address = addressOther
                             
@@ -373,7 +384,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                             newPartner.write({'display_name': chiPartner.ShortName})
                             
                             if chiPartner.LinkMan != None and chiPartner.LinkMan and chiPartner.LinkMan.strip():
-                                contact = _partner_address(None, None, chiPartner.LinkMan, chiPartner.LinkManProf, newPartner.phone, newPartner.fax, None)
+                                contact = _partner_address(None, None, chiPartner.LinkMan, chiPartner.LinkManProf, newPartner.phone, None, newPartner.fax, None, None)
                                 self._createPartnerContact('contact', newPartner, contact)
                             if addressShipping != None:
                                 self._createPartnerContact('delivery', newPartner, addressShipping)
@@ -381,6 +392,15 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                 self._createPartnerContact('invoice', newPartner, addressInvoice)
                             if addressOther != None:
                                self._createPartnerContact('other', newPartner, addressOther)
+                            linkMans = dbChi.execute(
+                                "SELECT PersonName, ProfTitle, Telephone, Mobile, Email, FaxNo, Memo "
+                                "FROM comLinkMan "
+                                "WHERE Flag=" + str(migration.type) + " AND CustomID='" + chiPartner.ID + "'"
+                                )
+                            if len(linkMans) > 0:
+                                for linkMan in linkMans:
+                                    contact = _partner_address(None, None, linkMan.PersonName, linkMan.ProfTitle, linkMan.Telephone, linkMan.Mobile, linkMan.FaxNo, linkMan.Email, linkMan.Memo)
+                                    self._createPartnerContact('contact', newPartner, contact)
                     elif migration.in_id != None and migration.in_id and migration.in_id.strip():
                         if migration.type == 1:
                             inPartner = dbBatom.execute(

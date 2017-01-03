@@ -213,12 +213,12 @@ msgstr "業務夥伴標籤"
 #. module: batom_data_migration
 #: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_x_phone2
 msgid "Phone 2"
-msgstr "Phone 2"
+msgstr "電話2"
 
 #. module: batom_data_migration
 #: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_x_phone3
 msgid "Phone 3"
-msgstr "Phone 3"
+msgstr "電話3"
 
 #. module: batom_data_migration
 #: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh
@@ -254,12 +254,12 @@ msgstr "Root Location ID"
 #. module: batom_data_migration
 #: selection:batom.partner_migration,type:0
 msgid "Sppplier"
-msgstr "Sppplier"
+msgstr "供應商"
 
 #. module: batom_data_migration
 #: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_x_supplier_code
 msgid "Supplier Code"
-msgstr "Supplier Code"
+msgstr "供應商代號"
 
 #. module: batom_data_migration
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_type
