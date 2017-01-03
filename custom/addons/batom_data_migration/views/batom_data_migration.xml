@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='user_type_id']" position="after">
                     <field name="x_batom_type_id" widget="selection"/>
-                    <field name="x_batom_parent_id" widget="selection"/>
+                    <field name="x_batom_parent_id"/>
                 </xpath>
             </field>
         </record>
