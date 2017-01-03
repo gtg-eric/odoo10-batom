@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <odoo>
-    <!-- DBSource -->
+    <data>
+        <record id="batom_view_account_form_inherit" model="ir.ui.view">
+            <field name="name">batom.account.account.form.inherit</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_type_id']" position="after">
+                    <field name="x_batom_type_id" widget="selection"/>
+                    <field name="x_batom_parent_id" widget="selection"/>
+                </xpath>
+            </field>
+        </record>
 
         <record model="ir.ui.view" id="view_partner_migration_tree">
             <field name="name">batom.partner_migration.tree</field>
@@ -130,4 +141,5 @@
             <menuitem name="Partner" id="menu_partner_migration" parent="menu_data_migration" action="action_partner_migration"/>
             <menuitem name="Create Supplier Warehouses" id="menu_create_supplier_warehouse" parent="menu_data_migration" action="action_create_supplier_warehouse"/>
             <menuitem name="Migrate Chart of Account" id="menu_migrate_chart_of_account" parent="menu_data_migration" action="action_migrate_chart_of_account"/>
+    </data>
 </odoo>

@@ -1,0 +1,298 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* batom_data_migration
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-03 06:53+0000\n"
+"PO-Revision-Date: 2017-01-03 06:53+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: batom_data_migration
+#: model:ir.model,name:batom_data_migration.model_account_account
+msgid "Account"
+msgstr "科目"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_name
+msgid "Account Type"
+msgstr "科目類型"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_code
+msgid "Account Type Code"
+msgstr "Account Type Code"
+
+#. module: batom_data_migration
+#: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh
+msgid "Apply"
+msgstr "應用"
+
+#. module: batom_data_migration
+#: model:ir.model,name:batom_data_migration.model_batom_account_type
+#: model:ir.model.fields,field_description:batom_data_migration.field_account_account_x_batom_type_id
+msgid "Batom Account Type"
+msgstr "正航科目類別"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_account_account_x_batom_parent_id
+msgid "Batom Parent Account"
+msgstr "正航隸屬科目"
+
+#. module: batom_data_migration
+#: model:ir.ui.view,arch_db:batom_data_migration.view_create_supplier_warehouses
+#: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_chart_of_account
+#: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh
+msgid "Cancel"
+msgstr "取消"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_category_x_category_code
+msgid "Category Code"
+msgstr "類型代號"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_category_x_flag
+msgid "Category Flag"
+msgstr "類型旗標"
+
+#. module: batom_data_migration
+#: model:ir.ui.view,arch_db:batom_data_migration.view_create_supplier_warehouses
+msgid "Create"
+msgstr "創建"
+
+#. module: batom_data_migration
+#: model:ir.actions.act_window,name:batom_data_migration.action_create_supplier_warehouse
+#: model:ir.model,name:batom_data_migration.model_batom_create_supplier_warehouses
+#: model:ir.ui.menu,name:batom_data_migration.menu_create_supplier_warehouse
+#: model:ir.ui.view,arch_db:batom_data_migration.view_create_supplier_warehouses
+msgid "Create Supplier Warehouses"
+msgstr "創建供應商倉庫"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_create_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_create_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_create_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_create_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_create_uid
+msgid "Created by"
+msgstr "創建人"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_create_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_create_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_create_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_create_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_create_date
+msgid "Created on"
+msgstr "創建時間"
+
+#. module: batom_data_migration
+#: selection:batom.partner_migration,type:0
+msgid "Customer"
+msgstr "客戶"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_x_customer_code
+msgid "Customer Code"
+msgstr "客戶代號"
+
+#. module: batom_data_migration
+#: model:ir.ui.menu,name:batom_data_migration.menu_data_migration
+msgid "Data Migration"
+msgstr "資料遷移"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_display_name
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_display_name
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_display_name
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_display_name
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_display_name
+msgid "Display Name"
+msgstr "顯示名稱"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_id
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_id
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_id
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_id
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_id
+msgid "ID"
+msgstr "代號"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type___last_update
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses___last_update
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account___last_update
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration___last_update
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh___last_update
+msgid "Last Modified on"
+msgstr "最後修改日"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_write_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_write_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_write_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_write_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_write_uid
+msgid "Last Updated by"
+msgstr "最後更新人"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_write_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_write_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_write_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_write_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_write_date
+msgid "Last Updated on"
+msgstr "最後更新時間"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_category_x_memo
+msgid "Memo"
+msgstr "備忘錄"
+
+#. module: batom_data_migration
+#: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_chart_of_account
+msgid "Migrate"
+msgstr "遷移"
+
+#. module: batom_data_migration
+#: model:ir.actions.act_window,name:batom_data_migration.action_migrate_chart_of_account
+#: model:ir.model,name:batom_data_migration.model_batom_migrate_chart_of_account
+#: model:ir.ui.menu,name:batom_data_migration.menu_migrate_chart_of_account
+#: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_chart_of_account
+msgid "Migrate Chart of Account"
+msgstr "會計科目遷移"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_odoo_full_name
+msgid "Odoo Full Name"
+msgstr "Odoo Full Name"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_odoo_id
+msgid "Odoo ID"
+msgstr "Odoo ID"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_odoo_short_name
+msgid "Odoo Short Name"
+msgstr "Odoo Short Name"
+
+#. module: batom_data_migration
+#: model:ir.model,name:batom_data_migration.model_res_partner
+#: model:ir.ui.menu,name:batom_data_migration.menu_partner_migration
+msgid "Partner"
+msgstr "合作夥伴"
+
+#. module: batom_data_migration
+#: model:ir.actions.act_window,name:batom_data_migration.action_partner_migration
+#: model:ir.model,name:batom_data_migration.model_batom_partner_migration
+#: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_form
+msgid "Partner Data Migration"
+msgstr "合作夥伴資料遷移"
+
+#. module: batom_data_migration
+#: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_tree
+msgid "Partner Migration"
+msgstr "Partner Migration"
+
+#. module: batom_data_migration
+#: model:ir.model,name:batom_data_migration.model_res_partner_category
+msgid "Partner Tags"
+msgstr "業務夥伴標籤"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_x_phone2
+msgid "Phone 2"
+msgstr "Phone 2"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_x_phone3
+msgid "Phone 3"
+msgstr "Phone 3"
+
+#. module: batom_data_migration
+#: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh
+msgid "Refresh"
+msgstr "Refresh"
+
+#. module: batom_data_migration
+#: model:ir.model,name:batom_data_migration.model_batom_partner_migration_refresh
+msgid "Refresh Partner Data Migration Table"
+msgstr "Refresh Partner Data Migration Table"
+
+#. module: batom_data_migration
+#: model:ir.actions.act_window,name:batom_data_migration.action_view_partner_migration_refresh
+#: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh
+msgid "Refresh Partner Migration Table"
+msgstr "Refresh Partner Migration Table"
+
+#. module: batom_data_migration
+#: model:ir.ui.menu,name:batom_data_migration.menu_partner_migration_refresh
+msgid "Refresh/Apply Partner"
+msgstr "Refresh/Apply Partner"
+
+#. module: batom_data_migration
+#: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh
+msgid "Refresh/Apply the partner data migration table."
+msgstr "Refresh/Apply the partner data migration table."
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_root_location_id
+msgid "Root Location ID"
+msgstr "Root Location ID"
+
+#. module: batom_data_migration
+#: selection:batom.partner_migration,type:0
+msgid "Sppplier"
+msgstr "Sppplier"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_x_supplier_code
+msgid "Supplier Code"
+msgstr "Supplier Code"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_type
+msgid "Type"
+msgstr "類型"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_in_full_name
+msgid "入料 Full Name"
+msgstr "入料 Full Name"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_in_id
+msgid "入料 ID"
+msgstr "入料 ID"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_in_short_name
+msgid "入料 Short Name"
+msgstr "入料 Short Name"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_chi_full_name
+msgid "正航 Full Name"
+msgstr "正航 Full Name"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_chi_id
+msgid "正航 ID"
+msgstr "正航 ID"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_chi_short_name
+msgid "正航 Short Name"
+msgstr "正航 Short Name"
+
