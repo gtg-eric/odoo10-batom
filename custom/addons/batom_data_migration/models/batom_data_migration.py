@@ -10,6 +10,37 @@ import odoo.addons.base_external_dbsource
 
 _logger = logging.getLogger(__name__)
 
+class batom_partner_code(models.Model):
+    #_name = 'batom.partner_code'
+    _inherit = 'res.partner'
+    
+    x_customer_code = fields.Char('Customer Code')
+    x_supplier_code = fields.Char('Supplier Code')
+    x_phone2 = fields.Char('Phone 2')
+    x_phone3 = fields.Char('Phone 3')
+
+class batom_partner_category(models.Model):
+    #_name = 'batom.partner.category'
+    _inherit = 'res.partner.category'
+    
+    x_flag = fields.Integer('Category Flag')
+    x_category_code = fields.Char('Category Code', required=False, size=6)
+    x_memo = fields.Char('Memo', required=False)
+
+class BatomAccountType(models.Model):
+    _name = "batom.account.type"
+    _description = "Batom Account Type"
+
+    code = fields.Char(string='Account Type Code', required=True)
+    name = fields.Char(string='Account Type', required=True)
+
+class BatomAccountAccount(models.Model):
+    #_name = 'batom.account.account'
+    _inherit = 'account.account'
+
+    x_batom_type_id = fields.Many2one('batom.account.type', string='Batom Account Type')
+    x_batom_parent_id = fields.Many2one('account.account', string='Batom Parent Account')
+
 class _partner_migration:
     def __init__(self, id, shortName, fullName):
         self.id = id
@@ -53,10 +84,11 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
         return categoryId
     
     def _currencyIdConversion(self, currencyID):
-        currencyIds = self.env['res.currency'].search([('name', '=', currencyID)]).ids
         returnedCurrencyId = None
-        if len(currencyIds) > 0:
-            returnedCurrencyId = currencyIds.pop(0)
+        if currencyID and currencyID.strip():
+            currencyIds = self.env['res.currency'].search([('name', '=', currencyID)]).ids
+            if len(currencyIds) > 0:
+                returnedCurrencyId = currencyIds.pop(0)
         return returnedCurrencyId
         
     def _contactDisplayName(self, type, companyName, contactName):
@@ -426,26 +458,145 @@ class BatomCreatSupplierWarehouses(models.TransientModel):
                 self.env.cr.commit()            
         except Exception:
             _logger.warning('Exception in create_supplier_warehouses:', exc_info=True)
-
-class batom_partner_code(models.Model):
-    #_name = 'batom.partner_code'
-    _inherit = 'res.partner'
     
-    x_customer_code = fields.Char('Customer Code')
-    x_supplier_code = fields.Char('Supplier Code')
-    x_phone2 = fields.Char('Phone 2')
-    x_phone3 = fields.Char('Phone 3')
+class BatomMigrateChartOfAccount(models.TransientModel):
+    _name = "batom.migrate_chart_of_account"
+    _description = "Migrate Chart of Account"
 
-class batom_partner_category(models.Model):
-    #_name = 'batom.partner.category'
-    _inherit = 'res.partner.category'
-    
-    x_flag = fields.Integer('Category Flag')
-    x_category_code = fields.Char('Category Code', required=False, size=6)
-    x_memo = fields.Char('Memo', required=False)
+    def _currencyIdConversion(self, currencyID):
+        returnedCurrencyId = None
+        if currencyID and currencyID.strip():
+            currencyIds = self.env['res.currency'].search([('name', '=', currencyID)]).ids
+            if len(currencyIds) > 0:
+                returnedCurrencyId = currencyIds.pop(0)
+        return returnedCurrencyId
+
+    def _accountTypeIdConversion(self, chiSubClsID, chiSubjectID):
+        returnedUserTypeId = None
+        if chiSubClsID and chiSubClsID.strip():
+            if chiSubClsID == '11':
+                if int(chiSubjectID) < 1130000:
+                    returnedUserTypeId = 3
+                elif int(chiSubjectID) <= 1179000:
+                    returnedUserTypeId = 1
+            else:
+                userTypeIdMap = ({
+                    "12": 5,
+                    "14": 6,
+                    "15": 8,
+                    "16": 6,
+                    "17": 6,
+                    "18": 6,
+                    "21": 9,
+                    "22": 9,
+                    "25": 10,
+                    "28": 10,
+                    "31": 11,
+                    "32": 11,
+                    "33": 11,
+                    "41": 14,
+                    "42": 14,
+                    "43": 14,
+                    "46": 14,
+                    "51": 17,
+                    "52": 17,
+                    "53": 17,
+                    "54": 17,
+                    "55": 17,
+                    "56": 17,
+                    "57": 17,
+                    "59": 17,
+                    "61": 16,
+                    "62": 16,
+                    "63": 16,
+                    "71": 13,
+                    "73": 16,
+                    "81": 16,
+                    "91": 17,
+                    "92": 17,
+                    })
+                try:
+                    returnedUserTypeId = userTypeIdMap[chiSubClsID]
+                except Exception:
+                    _logger.warning('Exception in migrate_chart_of_account:', exc_info=True)
+                
+        return returnedUserTypeId
+        
+    def _odooAccountIdFromCode(self, code):
+        accountId = None
+        if code and code.strip():
+            accountIds = self.env['account.account'].search([('code', '=', code)]).ids
+            if len(accountIds) > 0:
+                accountId = accountIds.pop(0)
+        return accountId
+        
+    @api.multi
+    def migrate_chart_of_account(self):
+        try:
+            self.ensure_one()
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            batomAccountTypes = self.env['batom.account.type'].search([])
+            if len(batomAccountTypes) == 0:
+                chiAccountTypes = dbChi.execute('SELECT SubClsID, SubClsName FROM comSubjectCls ORDER BY SubClsID')
+                while len(chiAccountTypes) > 0:
+                    try:
+                        chiAccountType = chiAccountTypes.pop(0)
+                        self.env['batom.account.type'].create({
+                            'code': chiAccountType.SubClsID,
+                            'name': chiAccountType.SubClsName
+                            })
+                    except Exception:
+                        _logger.warning('Exception in migrate_chart_of_account:', exc_info=True)
+                        continue
+                batomAccountTypes = self.env['batom.account.type'].search([])
+                self.env.cr.commit()            
+            
+            batomAccountTypeIds = {}
+            for batomAccountType in batomAccountTypes:
+                batomAccountTypeIds[batomAccountType.code] = batomAccountType.id
+            # base_external_dbsource seems to have size limit of the query result
+            # query the values directly only returns part of the qualified records
+            # for some reason, '1441000' cannot be retrieved
+            chiAccountIDs = dbChi.execute('SELECT SubjectID FROM comSubject ORDER BY SubjectID')
+            accountModel = self.env['account.account']
+            print 'chiAccountIDs ' + str(len(chiAccountIDs))
+            while len(chiAccountIDs) > 0:
+                try:
+                    chiAccountID = chiAccountIDs.pop(0)
+                    chiAccounts = dbChi.execute("SELECT SubClsID, SubjectID, SubjectName, ParentSubID, CurrID, Description FROM comSubject WHERE SubjectID = '" + chiAccountID.SubjectID + "'")
+                    if len(chiAccounts) > 0:
+                        chiAccount = chiAccounts.pop(0)
+                        currency_id = self._currencyIdConversion(chiAccount.CurrID)
+                        account_type_id = self._accountTypeIdConversion(chiAccount.SubClsID, chiAccount.SubjectID)
+                        reconcile = True if (account_type_id in (1, 2)) else False
+                        parent_id = self._odooAccountIdFromCode(chiAccount.ParentSubID)
+                        if not parent_id:
+                            parent_id = None
+                        accountValues = ({
+                            'name': chiAccount.SubjectName,
+                            'currency_id': currency_id,
+                            'code': chiAccount.SubjectID,
+                            'user_type_id': account_type_id,
+                            'note': chiAccount.Description,
+                            'reconcile': reconcile,
+                            'x_batom_type_id': batomAccountTypeIds[chiAccount.SubClsID],
+                            'x_batom_parent_id': parent_id,
+                            })
+                        
+                        odooAccounts = accountModel.search([('code', '=', chiAccount.SubjectID)])
+                        if len(odooAccounts) == 0:
+                            accountModel.create(accountValues)
+                        else:
+                            odooAccount = odooAccounts[0]
+                            odooAccount.write(accountValues)
+                except Exception:
+                    _logger.warning('Exception in migrate_chart_of_account:', exc_info=True)
+                    continue
+            self.env.cr.commit()            
+        except Exception:
+            _logger.warning('Exception in migrate_chart_of_account:', exc_info=True)
     
 class BatomPartnerMigration(models.Model):
-
     _name = "batom.partner_migration"
     _description = 'Partner Data Migration'
     

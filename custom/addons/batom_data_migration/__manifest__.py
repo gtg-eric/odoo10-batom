@@ -13,6 +13,9 @@
     'depends': [
         'base',
         'base_external_dbsource',
+        'stock',
+        'account',
+        'mrp',
     ],
     'data': [
         'views/batom_data_migration.xml',
