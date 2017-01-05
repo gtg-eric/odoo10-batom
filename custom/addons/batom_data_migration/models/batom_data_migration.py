@@ -808,26 +808,27 @@ class BatomMigrateProduct(models.TransientModel):
         recordsToCommit = 0;
         for process in processes:
             try:
-                odooProducts = productModel.search([('default_code', '=', process.ProcessID)])
-                if len(odooProducts) == 0:
-                    if process.Remark and process.Remark.strip():
-                        name = process.Remark
-                    else:
-                        name = process.ProcessName
-                    sale_ok = False
-                    purchase_ok = True
-                    type = 'service'
-                    productValues = ({
-                        'name': name,
-                        'default_code': process.ProcessID,
-                        'type': type,
-                        'sale_ok': sale_ok,
-                        'purchase_ok': purchase_ok,
-                        'x_is_process': True,
-                        })
-                    
-                    odooProduct = productModel.create(productValues)
-                    _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProcessName)
+                if process.ProcessID and process.ProcessID.strip():
+                    odooProducts = productModel.search([('default_code', '=', process.ProcessID)])
+                    if len(odooProducts) == 0:
+                        if process.Remark and process.Remark.strip():
+                            name = process.Remark
+                        else:
+                            name = process.ProcessName
+                        sale_ok = False
+                        purchase_ok = True
+                        type = 'service'
+                        productValues = ({
+                            'name': name,
+                            'default_code': process.ProcessID,
+                            'type': type,
+                            'sale_ok': sale_ok,
+                            'purchase_ok': purchase_ok,
+                            'x_is_process': True,
+                            })
+                        
+                        odooProduct = productModel.create(productValues)
+                        _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProcessName)
                 recordsToCommit += 1
                 print 'in process - ' + str(recordsToCommit)
             except Exception:
