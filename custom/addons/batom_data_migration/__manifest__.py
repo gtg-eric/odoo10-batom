@@ -16,6 +16,7 @@
         'stock',
         'account',
         'mrp',
+        'product',
     ],
     'data': [
         'views/batom_data_migration.xml',

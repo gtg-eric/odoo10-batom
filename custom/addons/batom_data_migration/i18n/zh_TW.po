@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-03 06:53+0000\n"
-"PO-Revision-Date: 2017-01-03 06:53+0000\n"
+"POT-Creation-Date: 2017-01-05 06:04+0000\n"
+"PO-Revision-Date: 2017-01-05 06:04+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr "科目類型"
 #. module: batom_data_migration
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_code
 msgid "Account Type Code"
-msgstr "Account Type Code"
+msgstr "科目類型代號"
 
 #. module: batom_data_migration
 #: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh
@@ -49,6 +49,7 @@ msgstr "正航隸屬科目"
 #. module: batom_data_migration
 #: model:ir.ui.view,arch_db:batom_data_migration.view_create_supplier_warehouses
 #: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_chart_of_account
+#: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_product
 #: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh
 msgid "Cancel"
 msgstr "取消"
@@ -80,6 +81,7 @@ msgstr "創建供應商倉庫"
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_create_uid
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_create_uid
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_create_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_product_create_uid
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_create_uid
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_create_uid
 msgid "Created by"
@@ -89,6 +91,7 @@ msgstr "創建人"
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_create_date
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_create_date
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_create_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_product_create_date
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_create_date
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_create_date
 msgid "Created on"
@@ -113,6 +116,7 @@ msgstr "資料遷移"
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_display_name
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_display_name
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_display_name
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_product_display_name
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_display_name
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_display_name
 msgid "Display Name"
@@ -122,15 +126,17 @@ msgstr "顯示名稱"
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_id
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_id
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_id
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_product_id
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_id
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_id
 msgid "ID"
-msgstr "代號"
+msgstr "ID"
 
 #. module: batom_data_migration
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type___last_update
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses___last_update
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account___last_update
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_product___last_update
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration___last_update
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh___last_update
 msgid "Last Modified on"
@@ -140,6 +146,7 @@ msgstr "最後修改日"
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_write_uid
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_write_uid
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_write_uid
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_product_write_uid
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_write_uid
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_write_uid
 msgid "Last Updated by"
@@ -149,10 +156,16 @@ msgstr "最後更新人"
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_account_type_write_date
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_create_supplier_warehouses_write_date
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_chart_of_account_write_date
+#: model:ir.model.fields,field_description:batom_data_migration.field_batom_migrate_product_write_date
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_refresh_write_date
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_write_date
 msgid "Last Updated on"
 msgstr "最後更新時間"
+
+#. module: batom_data_migration
+#: model:ir.model.fields,field_description:batom_data_migration.field_product_template_x_is_process
+msgid "Manufacturing Process"
+msgstr "產品製程"
 
 #. module: batom_data_migration
 #: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_category_x_memo
@@ -161,6 +174,7 @@ msgstr "備忘錄"
 
 #. module: batom_data_migration
 #: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_chart_of_account
+#: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_product
 msgid "Migrate"
 msgstr "遷移"
 
@@ -171,6 +185,14 @@ msgstr "遷移"
 #: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_chart_of_account
 msgid "Migrate Chart of Account"
 msgstr "會計科目遷移"
+
+#. module: batom_data_migration
+#: model:ir.actions.act_window,name:batom_data_migration.action_migrate_product
+#: model:ir.model,name:batom_data_migration.model_batom_migrate_product
+#: model:ir.ui.menu,name:batom_data_migration.menu_migrate_product
+#: model:ir.ui.view,arch_db:batom_data_migration.view_migrate_product
+msgid "Migrate Products"
+msgstr "Migrate Products"
 
 #. module: batom_data_migration
 #: model:ir.model.fields,field_description:batom_data_migration.field_batom_partner_migration_odoo_full_name
@@ -219,6 +241,11 @@ msgstr "電話2"
 #: model:ir.model.fields,field_description:batom_data_migration.field_res_partner_x_phone3
 msgid "Phone 3"
 msgstr "電話3"
+
+#. module: batom_data_migration
+#: model:ir.model,name:batom_data_migration.model_product_template
+msgid "Product Template"
+msgstr "產品模板"
 
 #. module: batom_data_migration
 #: model:ir.ui.view,arch_db:batom_data_migration.view_partner_migration_refresh

@@ -9,7 +9,66 @@ import odoo
 import odoo.addons.base_external_dbsource
 
 _logger = logging.getLogger(__name__)
+    
+_currencyMapping = ({
+    'NTD': 'TWD',
+    'GRP': 'GBP',
+    })
+def _currencyIdConversion(self, currencyId):
+    returnedCurrencyId = None
+    if currencyId and currencyId.strip():
+        if currencyId in _currencyMapping:
+            currencyId = _currencyMapping[currencyId]
+        currencyIds = self.env['res.currency'].search([('name', '=', currencyId)]).ids
+        if len(currencyIds) > 0:
+            returnedCurrencyId = currencyIds.pop(0)
+    return returnedCurrencyId
 
+_uomMapping = ({
+    'Kg': 'kg',
+    'M': 'm',
+    u'ＰＣ': 'PC',
+    u'英呎': 'foot(ft)',
+    u'桶': 'barrel',
+    })
+def _uomIdConversion(self, uom):
+    uomId = 1 # uom cannot be null
+    if uom and uom.strip():
+        if uom in _uomMapping:
+            uom = _uomMapping[uom]
+        uomIds = self.env['product.uom'].search([('name', '=', uom)]).ids
+        if len(uomIds) > 0:
+            uomId = uomIds.pop(0)
+    return uomId
+    
+def _updateTranslation(self, name, res_id, src, value):
+    lang = 'zh_TW'
+    type = 'model'
+    state = 'translated'
+    translationModel = self.env['ir.translation']
+    if not value or not value.strip():
+        value = src
+    values = ({
+        'lang': lang,
+        'type': type,
+        'name': name,
+        'res_id': res_id,
+        'src': src,
+        'value': value,
+        'state': state,
+        })
+    translations = translationModel.search([
+        ('lang', '=', lang),
+        ('type', '=', type),
+        ('name', '=', name),
+        ('res_id', '=', res_id),
+        ('src', '=', src),
+        ])
+    if len(translations) == 0:
+        translationModel.create(values)
+    else:
+        translations[0].write(values)
+    
 class batom_partner_code(models.Model):
     #_name = 'batom.partner_code'
     _inherit = 'res.partner'
@@ -40,6 +99,12 @@ class BatomAccountAccount(models.Model):
 
     x_batom_type_id = fields.Many2one('batom.account.type', string='Batom Account Type')
     x_batom_parent_id = fields.Many2one('account.account', string='Batom Parent Account')
+
+class BatomProductTemplate(models.Model):
+    #_name = 'batom.product.template'
+    _inherit = 'product.template'
+
+    x_is_process = fields.Boolean('Manufacturing Process', default=False)
 
 class _partner_migration:
     def __init__(self, id, shortName, fullName):
@@ -84,14 +149,6 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
         if len(categoryIds) > 0:
             categoryId = categoryIds.pop(0)
         return categoryId
-    
-    def _currencyIdConversion(self, currencyID):
-        returnedCurrencyId = None
-        if currencyID and currencyID.strip():
-            currencyIds = self.env['res.currency'].search([('name', '=', currencyID)]).ids
-            if len(currencyIds) > 0:
-                returnedCurrencyId = currencyIds.pop(0)
-        return returnedCurrencyId
         
     def _contactDisplayName(self, type, companyName, contactName):
         try:
@@ -359,7 +416,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                 codeColumnName: chiPartner.ID,
                                 'country_id': self._countryIdConversion(chiPartner.AreaID),
                                 'category_id': [(4, categoryId, 0)] if (categoryId != None) else None,
-                                'property_purchase_currency_id': self._currencyIdConversion(chiPartner.CurrencyID),
+                                'property_purchase_currency_id': _currencyIdConversion(self, chiPartner.CurrencyID),
                                 'email': chiPartner.Email,
                                 'fax': chiPartner.FaxNo if (chiPartner.FaxNo != None and chiPartner.FaxNo and chiPartner.FaxNo.strip()) else (
                                     address.fax if (address != None) else None),
@@ -483,14 +540,6 @@ class BatomMigrateChartOfAccount(models.TransientModel):
     _name = "batom.migrate_chart_of_account"
     _description = "Migrate Chart of Account"
 
-    def _currencyIdConversion(self, currencyID):
-        returnedCurrencyId = None
-        if currencyID and currencyID.strip():
-            currencyIds = self.env['res.currency'].search([('name', '=', currencyID)]).ids
-            if len(currencyIds) > 0:
-                returnedCurrencyId = currencyIds.pop(0)
-        return returnedCurrencyId
-
     def _accountTypeIdConversion(self, chiSubClsID, chiSubjectID):
         returnedUserTypeId = None
         if chiSubClsID and chiSubClsID.strip():
@@ -575,18 +624,16 @@ class BatomMigrateChartOfAccount(models.TransientModel):
             for batomAccountType in batomAccountTypes:
                 batomAccountTypeIds[batomAccountType.code] = batomAccountType.id
             # base_external_dbsource seems to have size limit of the query result
-            # query the values directly only returns part of the qualified records
-            # for some reason, '1441000' cannot be retrieved
+            # query the values directly may not returns all qualified records
+            # for some reason, '1441000' cannot be retrieved.  ignore it for now
             chiAccountIDs = dbChi.execute('SELECT SubjectID FROM comSubject ORDER BY SubjectID')
             accountModel = self.env['account.account']
-            print 'chiAccountIDs ' + str(len(chiAccountIDs))
-            while len(chiAccountIDs) > 0:
+            for chiAccountID in chiAccountIDs:
                 try:
-                    chiAccountID = chiAccountIDs.pop(0)
                     chiAccounts = dbChi.execute("SELECT SubClsID, SubjectID, SubjectName, ParentSubID, CurrID, Description FROM comSubject WHERE SubjectID = '" + chiAccountID.SubjectID + "'")
                     if len(chiAccounts) > 0:
                         chiAccount = chiAccounts.pop(0)
-                        currency_id = self._currencyIdConversion(chiAccount.CurrID)
+                        currency_id = _currencyIdConversion(self, chiAccount.CurrID)
                         account_type_id = self._accountTypeIdConversion(chiAccount.SubClsID, chiAccount.SubjectID)
                         reconcile = True if (account_type_id in (1, 2)) else False
                         parent_id = self._odooAccountIdFromCode(chiAccount.ParentSubID)
@@ -607,14 +654,209 @@ class BatomMigrateChartOfAccount(models.TransientModel):
                         if len(odooAccounts) == 0:
                             accountModel.create(accountValues)
                         else:
-                            odooAccount = odooAccounts[0]
-                            odooAccount.write(accountValues)
+                            odooAccounts[0].write(accountValues)
                 except Exception:
                     _logger.warning('Exception in migrate_chart_of_account:', exc_info=True)
                     continue
             self.env.cr.commit()            
         except Exception:
             _logger.warning('Exception in migrate_chart_of_account:', exc_info=True)
+    
+class BatomMigrateProduct(models.TransientModel):
+    _name = "batom.migrate_product"
+    _description = "Migrate Products"
+        
+    def migrate_chiProduct(self, cursorChi):
+        # base_external_dbsource seems to have size limit of the query result
+        # query the values directly may not returns all qualified records
+        chiProductIDs = cursorChi.execute('SELECT ProdID FROM comProduct ORDER BY ProdID').fetchall()
+        productModel = self.env['product.product']
+        productIDs = []
+        for chiProductID in chiProductIDs:
+            productIDs.append(chiProductID.ProdID)
+            
+        recordsToCommit = 0;
+        for productID in productIDs:
+            try:
+                chiProduct = cursorChi.execute(u"SELECT ProdID, ClassID, ProdForm, Unit, ProdName, EngName, ProdDesc, "
+                    u"CurrID, CAvgCost, SuggestPrice, NWeight, NUnit "
+                    u"FROM comProduct "
+                    u"WHERE ProdID = '" + productID.decode('utf-8') + u"'"
+                    ).fetchone()
+                if chiProduct != None:
+                    if chiProduct.EngName and chiProduct.EngName.strip():
+                        name = chiProduct.EngName
+                    else:
+                        name = chiProduct.ProdName
+                    currency_id = _currencyIdConversion(self, chiProduct.CurrID)
+                    uom_id = _uomIdConversion(self, chiProduct.Unit)
+                    # ProdForm: 1-物料，2半成品，3-成品，4-採購件，5-組合品，6-非庫存品，7-非庫存品(管成本)，8-易耗品
+                    sale_ok = False
+                    purchase_ok = False
+                    type = 'consu' # 'consu', 'service', 'product'
+                    if chiProduct.ProdForm == 3:
+                        sale_ok = True
+                    if chiProduct.ProdForm == 4:
+                        purchase_ok = True
+                    if chiProduct.ProdForm <= 5:
+                        type = 'product'
+                    productValues = ({
+                        'name': name,
+                        'default_code': chiProduct.ProdID,
+                        'type': type,
+                        'description': chiProduct.ProdDesc,
+                        'sale_ok': sale_ok,
+                        'purchase_ok': purchase_ok,
+                        'currency_id': currency_id,
+                        'standard_price': chiProduct.CAvgCost,
+                        'price': chiProduct.SuggestPrice,
+                        'uom_id': uom_id,
+                        'uom_po_id': uom_id,
+                        'weight': chiProduct.NWeight,
+                        # warehouse_id, location_id, routes_id,
+                        })
+                    
+                    odooProducts = productModel.search([('default_code', '=', chiProductID.ProdID)])
+                    if len(odooProducts) == 0:
+                        odooProduct = productModel.create(productValues)
+                    else:
+                        odooProduct = odooProducts[0]
+                        odooProduct.write(productValues)
+                    _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, chiProduct.ProdName)
+                recordsToCommit += 1
+                print 'chi product - ' + str(recordsToCommit)
+            except Exception:
+                _logger.warning('Exception in migrate_product:', exc_info=True)
+                continue
+        self.env.cr.commit()
+        
+    def migrate_inProduct(self, cursorBatom):
+        inProducts = cursorBatom.execute('SELECT ProdID, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdID').fetchall()
+        productModel = self.env['product.product']
+        recordsToCommit = 0
+        for inProduct in inProducts:
+            try:
+                odooProducts = productModel.search([('default_code', '=', inProduct.ProdID)])
+                if len(odooProducts) == 0:
+                    if inProduct.EngName and inProduct.EngName.strip():
+                        name = inProduct.EngName
+                    else:
+                        name = inProduct.ProdName
+                    uom_id = _uomIdConversion(self, inProduct.Unit)
+                    sale_ok = False
+                    purchase_ok = False
+                    type = 'product'
+                    productValues = ({
+                        'name': name,
+                        'default_code': inProduct.ProdID,
+                        'type': type,
+                        'sale_ok': sale_ok,
+                        'purchase_ok': purchase_ok,
+                        'description': inProduct.Remark,
+                        'uom_id': uom_id,
+                        'uom_po_id': uom_id,
+                        })
+                    
+                    odooProduct = productModel.create(productValues)
+                    _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, inProduct.ProdName)
+                recordsToCommit += 1
+                print 'in product - ' + str(recordsToCommit)
+            except Exception:
+                _logger.warning('Exception in migrate_product:', exc_info=True)
+                continue
+        self.env.cr.commit()
+        
+    def migrate_chiProcess(self, cursorChi):
+        processes = cursorChi.execute('SELECT ProgramID, ProgramName, Remark FROM prdMakeProgram ORDER BY ProgramID').fetchall()
+        productModel = self.env['product.product']
+        recordsToCommit = 0;
+        for process in processes:
+            try:
+                if process.Remark and process.Remark.strip():
+                    name = process.Remark
+                else:
+                    name = process.ProgramName
+                sale_ok = False
+                purchase_ok = True
+                type = 'service'
+                productValues = ({
+                    'name': name,
+                    'default_code': process.ProgramID,
+                    'type': type,
+                    'sale_ok': sale_ok,
+                    'purchase_ok': purchase_ok,
+                    'x_is_process': True,
+                    })
+                
+                odooProducts = productModel.search([('default_code', '=', process.ProgramID)])
+                if len(odooProducts) == 0:
+                    odooProduct = productModel.create(productValues)
+                else:
+                    odooProduct = odooProducts[0]
+                    odooProduct.write(productValues)
+                _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProgramName)
+                recordsToCommit += 1
+                print 'chi process - ' + str(recordsToCommit)
+            except Exception:
+                _logger.warning('Exception in migrate_product:', exc_info=True)
+                continue
+        self.env.cr.commit()
+        
+    def migrate_inProcess(self, cursorBatom):
+        processes = cursorBatom.execute('SELECT ProcessID, ProcessName, Remark FROM Process ORDER BY ProcessID').fetchall()
+        productModel = self.env['product.product']
+        recordsToCommit = 0;
+        for process in processes:
+            try:
+                odooProducts = productModel.search([('default_code', '=', process.ProcessID)])
+                if len(odooProducts) == 0:
+                    if process.Remark and process.Remark.strip():
+                        name = process.Remark
+                    else:
+                        name = process.ProcessName
+                    sale_ok = False
+                    purchase_ok = True
+                    type = 'service'
+                    productValues = ({
+                        'name': name,
+                        'default_code': process.ProcessID,
+                        'type': type,
+                        'sale_ok': sale_ok,
+                        'purchase_ok': purchase_ok,
+                        'x_is_process': True,
+                        })
+                    
+                    odooProduct = productModel.create(productValues)
+                    _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProcessName)
+                recordsToCommit += 1
+                print 'in process - ' + str(recordsToCommit)
+            except Exception:
+                _logger.warning('Exception in migrate_product:', exc_info=True)
+                continue
+        self.env.cr.commit()
+            
+    @api.multi
+    def migrate_product(self):
+        try:
+            self.ensure_one()
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+
+            # self.migrate_chiProduct(cursorChi)
+            self.migrate_inProduct(cursorBatom)
+            self.migrate_chiProcess(cursorChi)
+            self.migrate_inProcess(cursorBatom)
+            connChi.close()
+        except Exception:
+            _logger.warning('Exception in migrate_product:', exc_info=True)
+            if connChi:
+                connChi.close()
+            if connBatom:
+                connBatom.close()
     
 class BatomPartnerMigration(models.Model):
     _name = "batom.partner_migration"
