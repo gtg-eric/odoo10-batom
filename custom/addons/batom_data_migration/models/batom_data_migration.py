@@ -675,7 +675,6 @@ class BatomMigrateProduct(models.TransientModel):
         for chiProductID in chiProductIDs:
             productIDs.append(chiProductID.ProdID)
             
-        recordsToCommit = 0;
         for productID in productIDs:
             try:
                 chiProduct = cursorChi.execute(u"SELECT ProdID, ClassID, ProdForm, Unit, ProdName, EngName, ProdDesc, "
@@ -723,8 +722,6 @@ class BatomMigrateProduct(models.TransientModel):
                         odooProduct = odooProducts[0]
                         odooProduct.write(productValues)
                     _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, chiProduct.ProdName)
-                recordsToCommit += 1
-                print 'chi product - ' + str(recordsToCommit)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
@@ -733,7 +730,6 @@ class BatomMigrateProduct(models.TransientModel):
     def migrate_inProduct(self, cursorBatom):
         inProducts = cursorBatom.execute('SELECT ProdID, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdID').fetchall()
         productModel = self.env['product.product']
-        recordsToCommit = 0
         for inProduct in inProducts:
             try:
                 odooProducts = productModel.search([('default_code', '=', inProduct.ProdID)])
@@ -759,8 +755,6 @@ class BatomMigrateProduct(models.TransientModel):
                     
                     odooProduct = productModel.create(productValues)
                     _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, inProduct.ProdName)
-                recordsToCommit += 1
-                print 'in product - ' + str(recordsToCommit)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
@@ -769,7 +763,6 @@ class BatomMigrateProduct(models.TransientModel):
     def migrate_chiProcess(self, cursorChi):
         processes = cursorChi.execute('SELECT ProgramID, ProgramName, Remark FROM prdMakeProgram ORDER BY ProgramID').fetchall()
         productModel = self.env['product.product']
-        recordsToCommit = 0;
         for process in processes:
             try:
                 if process.Remark and process.Remark.strip():
@@ -795,8 +788,6 @@ class BatomMigrateProduct(models.TransientModel):
                     odooProduct = odooProducts[0]
                     odooProduct.write(productValues)
                 _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProgramName)
-                recordsToCommit += 1
-                print 'chi process - ' + str(recordsToCommit)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
@@ -805,7 +796,6 @@ class BatomMigrateProduct(models.TransientModel):
     def migrate_inProcess(self, cursorBatom):
         processes = cursorBatom.execute('SELECT ProcessID, ProcessName, Remark FROM Process ORDER BY ProcessID').fetchall()
         productModel = self.env['product.product']
-        recordsToCommit = 0;
         for process in processes:
             try:
                 if process.ProcessID and process.ProcessID.strip():
@@ -829,8 +819,6 @@ class BatomMigrateProduct(models.TransientModel):
                         
                         odooProduct = productModel.create(productValues)
                         _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProcessName)
-                recordsToCommit += 1
-                print 'in process - ' + str(recordsToCommit)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
@@ -847,7 +835,7 @@ class BatomMigrateProduct(models.TransientModel):
             connBatom = dbBatom.conn_open()
             cursorBatom = connBatom.cursor()
 
-            # self.migrate_chiProduct(cursorChi)
+            self.migrate_chiProduct(cursorChi)
             self.migrate_inProduct(cursorBatom)
             self.migrate_chiProcess(cursorChi)
             self.migrate_inProcess(cursorBatom)
