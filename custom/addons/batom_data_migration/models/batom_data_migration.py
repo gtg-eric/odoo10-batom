@@ -685,15 +685,36 @@ class BatomMigrateProduct(models.TransientModel):
                 if chiProduct != None:
                     if chiProduct.EngName and chiProduct.EngName.strip():
                         name = chiProduct.EngName
-                    else:
+                    elif chiProduct.ProdName and chiProduct.ProdName.strip():
                         name = chiProduct.ProdName
+                    else:
+                        name = chiProduct.ProdID
                     currency_id = _currencyIdConversion(self, chiProduct.CurrID)
                     uom_id = _uomIdConversion(self, chiProduct.Unit)
                     # ProdForm: 1-物料，2半成品，3-成品，4-採購件，5-組合品，6-非庫存品，7-非庫存品(管成本)，8-易耗品
+                    # ClassID ClassName
+                    # --------------
+                    # *	特殊科目
+                    # 1	運費
+                    # 2	雜項支出
+                    # 3	包裝費
+                    # 4	樣品費
+                    # 5	製-包裝費
+                    # 6	進料
+                    # 7	製-模具費
+                    # A	原料
+                    # B	半成品
+                    # C	成品
+                    # D	零配件
+                    # E	物料
+                    # F	模治具
+                    # G	紙箱
+                    # H	開發件
+                    # I	商品
                     sale_ok = False
                     purchase_ok = False
                     type = 'consu' # 'consu', 'service', 'product'
-                    if chiProduct.ProdForm == 3:
+                    if chiProduct.ProdForm == 3 or chiProduct.ClassID == 'C' or chiProduct.ClassID == 'I':
                         sale_ok = True
                     if chiProduct.ProdForm == 4:
                         purchase_ok = True
@@ -736,8 +757,10 @@ class BatomMigrateProduct(models.TransientModel):
                 if len(odooProducts) == 0:
                     if inProduct.EngName and inProduct.EngName.strip():
                         name = inProduct.EngName
-                    else:
+                    elif inProduct.ProdName and inProduct.ProdName.strip():
                         name = inProduct.ProdName
+                    else:
+                        name = inProduct.ProdID
                     uom_id = _uomIdConversion(self, inProduct.Unit)
                     sale_ok = False
                     purchase_ok = False
@@ -840,6 +863,7 @@ class BatomMigrateProduct(models.TransientModel):
             self.migrate_chiProcess(cursorChi)
             self.migrate_inProcess(cursorBatom)
             connChi.close()
+            connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_product:', exc_info=True)
             if connChi:
