@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="batom_mrp_bom_form_view_inherit" model="ir.ui.view">
+            <field name="name">batom.mrp.bom.form.inherit</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='code']" position="before">
+                    <field name="x_version_description"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
