@@ -1,6 +1,23 @@
 <?xml version="1.0"?>
 <odoo>
     <data>
+        <record id="batom_view_partner_form_inherit" model="ir.ui.view">
+            <field name="name">batom.res.partner.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position="before">
+                    <field name="display_name"/>
+                </xpath>
+                <xpath expr="//page[@name='sales_purchases']//group[@name='sale']/field[@name='customer']" position="after">
+                    <field name="x_customer_code" attrs="{'readonly': [('x_customer_code', '!=', False)]}"/>
+                </xpath>
+                <xpath expr="//page[@name='sales_purchases']//group[@name='purchase']/field[@name='supplier']" position="after">
+                    <field name="x_supplier_code" attrs="{'readonly': [('x_supplier_code', '!=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+        
         <record id="batom_view_account_form_inherit" model="ir.ui.view">
             <field name="name">batom.account.account.form.inherit</field>
             <field name="model">account.account</field>
@@ -172,11 +189,34 @@
             <field name="target">new</field>
         </record>
 
+        <record id="view_migrate_bom" model="ir.ui.view">
+            <field name="name">Migrate BoM</field>
+            <field name="model">batom.migrate_bom</field>
+            <field name="arch" type="xml">
+                <form string="Migrate Bom">
+                    <footer>
+                        <button name="migrate_bom" string="Migrate" type="object" class="btn-primary"/>
+                        <button special="cancel" string="Cancel" class="btn-default"/>
+                    </footer>
+                </form>
+           </field>
+        </record>
+
+        <record id="action_migrate_bom" model="ir.actions.act_window">
+            <field name="name">Migrate BoM</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.migrate_bom</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
         <menuitem name="Data Migration" id="menu_data_migration" parent="base.menu_custom"/>
             <menuitem name="Refresh/Apply Partner" id="menu_partner_migration_refresh" parent="menu_data_migration" action="action_view_partner_migration_refresh"/>
             <menuitem name="Partner" id="menu_partner_migration" parent="menu_data_migration" action="action_partner_migration"/>
             <menuitem name="Create Supplier Warehouses" id="menu_create_supplier_warehouse" parent="menu_data_migration" action="action_create_supplier_warehouse"/>
             <menuitem name="Migrate Chart of Account" id="menu_migrate_chart_of_account" parent="menu_data_migration" action="action_migrate_chart_of_account"/>
             <menuitem name="Migrate Products" id="menu_migrate_product" parent="menu_data_migration" action="action_migrate_product"/>
+            <menuitem name="Migrate BoM" id="menu_migrate_bom" parent="menu_data_migration" action="action_migrate_bom"/>
     </data>
 </odoo>

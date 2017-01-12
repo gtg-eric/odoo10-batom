@@ -17,6 +17,7 @@
         'account',
         'mrp',
         'product',
+        'batom_mrp',
     ],
     'data': [
         'views/batom_data_migration.xml',

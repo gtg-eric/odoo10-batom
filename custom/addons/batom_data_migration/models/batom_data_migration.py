@@ -68,6 +68,68 @@ def _updateTranslation(self, name, res_id, src, value):
         translationModel.create(values)
     else:
         translations[0].write(values)
+        
+def _getSupplier(self, supplierCode):
+    supplier = None
+    suppliers = self.env['res.partner'].search([
+        ('supplier', '=', True),
+        ('x_supplier_code', '=', supplierCode)
+        ])
+    if len(suppliers) > 0:
+        supplier =  suppliers[0]
+    else:
+        supplierCompany = self.env['res.company']._company_default_get()
+        if supplierCompany:
+            supplier = supplierCompany.partner_id
+
+    return supplier
+        
+def _getProduct(self, productCode):
+    product = None
+    products = self.env['product.product'].search([
+        ('default_code', '=', productCode)
+        ])
+    if len(products) > 0:
+        product =  products[0]
+
+    return product
+        
+def _getProductTemplate(self, productCode):
+    product = None
+    products = self.env['product.template'].search([
+        ('default_code', '=', productCode)
+        ])
+    if len(products) > 0:
+        product =  products[0]
+
+    return product
+
+def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
+    workcenter = None
+    try:
+        process = self.env['product.template'].search([
+            ('x_is_process', '=', True),
+            ('default_code', '=', processCode)
+            ])[0]
+        supplier = _getSupplier(self, supplierCode)
+        workcenterModel = self.env['mrp.workcenter']
+        workcenters = workcenterModel.search([
+            ('x_supplier_id', '=', supplier.id),
+            ('x_process_id', '=', process.id)
+            ])
+        if len(workcenters) > 0:
+            workcenter =  workcenters[0]
+        elif createIfNotExist:
+            workcenterValues = ({
+                'name': process.name + ' <- ' + supplier.name,
+                'x_process_id': process.id,
+                'x_supplier_id': supplier.id,
+                })
+            workcenter = workcenterModel.create(workcenterValues);
+    except Exception:
+        _logger.warning('Exception in migrate_bom:', exc_info=True)
+
+    return workcenter
     
 class batom_partner_code(models.Model):
     #_name = 'batom.partner_code'
@@ -100,11 +162,30 @@ class BatomAccountAccount(models.Model):
     x_batom_type_id = fields.Many2one('batom.account.type', string='Batom Account Type')
     x_batom_parent_id = fields.Many2one('account.account', string='Batom Parent Account')
 
+
+class BatomProductProduct(models.Model):
+    #_name = 'batom.product.product'
+    _inherit = 'product.product'
+
+    seller_ids = fields.One2many('product.supplierinfo', 'product_id', 'Vendors')
+
 class BatomProductTemplate(models.Model):
     #_name = 'batom.product.template'
     _inherit = 'product.template'
 
     x_is_process = fields.Boolean('Manufacturing Process', default=False)
+    x_saved_code = fields.Char('Internal Reference with Variants')
+    default_code = fields.Char(
+        'Internal Reference', compute='_compute_default_code',
+        inverse='_set_default_code', store=True)
+
+    @api.depends('product_variant_ids', 'product_variant_ids.default_code')
+    def _compute_default_code(self):
+        unique_variants = self.filtered(lambda template: len(template.product_variant_ids) == 1)
+        for template in unique_variants:
+            template.default_code = template.product_variant_ids.default_code
+        for template in (self - unique_variants):
+            template.default_code = template.x_saved_code
 
 class _partner_migration:
     def __init__(self, id, shortName, fullName):
@@ -201,8 +282,8 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             self.ensure_one()
             dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
             dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
-            batomCustomers = dbBatom.execute('SELECT ID, ShortName, FullName FROM Customer ORDER BY ID')
-            chiCustomers = dbChi.execute('SELECT ID, ShortName, FullName FROM comCustomer WHERE Flag=1 ORDER BY ID')
+            batomCustomers = dbBatom.execute('SELECT Id, ShortName, FullName FROM Customer ORDER BY Id')
+            chiCustomers = dbChi.execute('SELECT Id, ShortName, FullName FROM comCustomer WHERE Flag=1 ORDER BY Id')
             odooCustomerIds = self.env['res.partner'].search([('is_company', '=', True), ('customer', '=', True)], order='x_customer_code').ids
             odooPartnerMigration = self.env['batom.partner_migration']
             odooPartnerMigration.search([]).unlink() # delete all migration records
@@ -215,10 +296,10 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                     ):
                 if batomCustomer == None and len(batomCustomers) > 0:
                     customer = batomCustomers.pop(0)
-                    batomCustomer = _partner_migration(customer.ID, customer.ShortName, customer.FullName)
+                    batomCustomer = _partner_migration(customer.Id, customer.ShortName, customer.FullName)
                 if chiCustomer == None and len(chiCustomers) > 0:
                     customer = chiCustomers.pop(0)
-                    chiCustomer = _partner_migration(customer.ID, customer.ShortName, customer.FullName)
+                    chiCustomer = _partner_migration(customer.Id, customer.ShortName, customer.FullName)
                 if odooCustomer == None and len(odooCustomerIds) > 0:
                     customer = self.env['res.partner'].browse(odooCustomerIds.pop(0))
                     odooCustomer = _partner_migration(customer.x_customer_code, customer.display_name, customer.name)
@@ -272,8 +353,8 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                     'odoo_full_name': odoo_full_name,
                     })
 
-            batomSuppliers = dbBatom.execute('SELECT ID, ShortName, FullName FROM Supplier ORDER BY ID')
-            chiSuppliers = dbChi.execute('SELECT ID, ShortName, FullName FROM comCustomer where Flag=2 ORDER BY ID')
+            batomSuppliers = dbBatom.execute('SELECT Id, ShortName, FullName FROM Supplier ORDER BY Id')
+            chiSuppliers = dbChi.execute('SELECT Id, ShortName, FullName FROM comCustomer where Flag=2 ORDER BY Id')
             odooSupplierIds = self.env['res.partner'].search([('is_company', '=', True), ('supplier', '=', True)], order='x_supplier_code').ids
             batomSupplier = None
             chiSupplier = None
@@ -284,10 +365,10 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                     ):
                 if batomSupplier == None and len(batomSuppliers) > 0:
                     supplier = batomSuppliers.pop(0)
-                    batomSupplier = _partner_migration(supplier.ID, supplier.ShortName, supplier.FullName)
+                    batomSupplier = _partner_migration(supplier.Id, supplier.ShortName, supplier.FullName)
                 if chiSupplier == None and len(chiSuppliers) > 0:
                     supplier = chiSuppliers.pop(0)
-                    chiSupplier = _partner_migration(supplier.ID, supplier.ShortName, supplier.FullName)
+                    chiSupplier = _partner_migration(supplier.Id, supplier.ShortName, supplier.FullName)
                 if odooSupplier == None and len(odooSupplierIds) > 0:
                     supplier = self.env['res.partner'].browse(odooSupplierIds.pop(0))
                     odooSupplier = _partner_migration(supplier.x_supplier_code, supplier.display_name, supplier.name)
@@ -374,11 +455,11 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                         supplierValue = 1
                     if migration.chi_id != None and migration.chi_id and migration.chi_id.strip():
                         sql = (
-                            "SELECT ID, ShortName, FullName, LinkMan, LinkManProf, "
-                            "AreaID, ClassID, CurrencyID, Email, FaxNo, InvoiceHead, TaxNo, "
+                            "SELECT Id, ShortName, FullName, LinkMan, LinkManProf, "
+                            "AreaId, ClassId, CurrencyId, Email, FaxNo, InvoiceHead, TaxNo, "
                             "MobileTel, Telephone1, Telephone2, Telephone3, WebAddress "
                             "FROM comCustomer "
-                            "WHERE Flag=" + str(migration.type) + " AND ID='" + migration.chi_id + "'"
+                            "WHERE Flag=" + str(migration.type) + " AND Id='" + migration.chi_id + "'"
                             )
                         chiPartner = dbChi.execute(sql).pop(0)
                         
@@ -388,10 +469,10 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                 "A2.ZipCode AS ZipCode2, A2.Address AS Address2, A2.LinkMan AS LinkMan2, A2.LinkManProf AS LinkManProf2, A2.Telephone AS Telephone2, A2.FaxNo AS FaxNo2, A2.Memo AS Memo2, "
                                 "A3.ZipCode AS ZipCode3, A3.Address AS Address3, A3.LinkMan AS LinkMan3, A3.LinkManProf AS LinkManProf3, A3.Telephone AS Telephone3, A3.FaxNo AS FaxNo3, A3.Memo AS Memo3 "
                                 "FROM comCustDesc AS C "
-                                "LEFT JOIN comCustAddress A1 ON (A1.Flag = C.Flag AND A1.ID = C.ID AND A1.AddrID = C.DeliverAddrID) "
-                                "LEFT JOIN comCustAddress A2 ON (A2.Flag = C.Flag AND A2.ID = C.ID AND A2.AddrID = C.AddrID) "
-                                "LEFT JOIN comCustAddress A3 ON (A3.Flag = C.Flag AND A3.ID = C.ID AND A3.AddrID = C.EngAddrID) "
-                                "WHERE C.Flag=" + str(migration.type) + " AND C.ID='" + migration.chi_id + "'"
+                                "LEFT JOIN comCustAddress A1 ON (A1.Flag = C.Flag AND A1.Id = C.Id AND A1.AddrId = C.DeliverAddrId) "
+                                "LEFT JOIN comCustAddress A2 ON (A2.Flag = C.Flag AND A2.Id = C.Id AND A2.AddrId = C.AddrId) "
+                                "LEFT JOIN comCustAddress A3 ON (A3.Flag = C.Flag AND A3.Id = C.Id AND A3.AddrId = C.EngAddrId) "
+                                "WHERE C.Flag=" + str(migration.type) + " AND C.Id='" + migration.chi_id + "'"
                                 )
                             addresses = dbChi.execute(sql).pop(0)
                             address = None
@@ -411,12 +492,12 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                     if address == None:
                                         address = addressOther
                             
-                            categoryId = self._partnerCategoryConversion(migration.type, chiPartner.ClassID)
+                            categoryId = self._partnerCategoryConversion(migration.type, chiPartner.ClassId)
                             newPartner = partnerModel.create({
-                                codeColumnName: chiPartner.ID,
-                                'country_id': self._countryIdConversion(chiPartner.AreaID),
+                                codeColumnName: chiPartner.Id,
+                                'country_id': self._countryIdConversion(chiPartner.AreaId),
                                 'category_id': [(4, categoryId, 0)] if (categoryId != None) else None,
-                                'property_purchase_currency_id': _currencyIdConversion(self, chiPartner.CurrencyID),
+                                'property_purchase_currency_id': _currencyIdConversion(self, chiPartner.CurrencyId),
                                 'email': chiPartner.Email,
                                 'fax': chiPartner.FaxNo if (chiPartner.FaxNo != None and chiPartner.FaxNo and chiPartner.FaxNo.strip()) else (
                                     address.fax if (address != None) else None),
@@ -452,7 +533,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                             linkMans = dbChi.execute(
                                 "SELECT PersonName, ProfTitle, Telephone, Mobile, Email, FaxNo, Memo "
                                 "FROM comLinkMan "
-                                "WHERE Flag=" + str(migration.type) + " AND CustomID='" + chiPartner.ID + "'"
+                                "WHERE Flag=" + str(migration.type) + " AND CustomId='" + chiPartner.Id + "'"
                                 )
                             if len(linkMans) > 0:
                                 for linkMan in linkMans:
@@ -461,17 +542,17 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                     elif migration.in_id != None and migration.in_id and migration.in_id.strip():
                         if migration.type == 1:
                             inPartner = dbBatom.execute(
-                                "select ID, ShortName, FullName "
-                                "from Customer where ID='" + migration.in_id + "'"
+                                "select Id, ShortName, FullName "
+                                "from Customer where Id='" + migration.in_id + "'"
                                 ).pop(0)
                         else:
                             inPartner = dbBatom.execute(
-                                "select ID, ShortName, FullName "
-                                "from Supplier where ID='" + migration.in_id + "'"
+                                "select Id, ShortName, FullName "
+                                "from Supplier where Id='" + migration.in_id + "'"
                                 ).pop(0)
                         if inPartner != None:
                             newPartner = partnerModel.create({
-                                codeColumnName: inPartner.ID,
+                                codeColumnName: inPartner.Id,
                                 'name': inPartner.FullName,
                                 'is_company': 1,
                                 'customer': customerValue,
@@ -498,7 +579,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
 class BatomCreatSupplierWarehouses(models.TransientModel):
     _name = "batom.create_supplier_warehouses"
     _description = "Create Supplier Warehouses"
-    root_location_id = fields.Integer(string='Root Location ID', required=True)
+    root_location_id = fields.Integer(string='Root Location Id', required=True)
 
     @api.multi
     def create_supplier_warehouses(self):
@@ -509,13 +590,13 @@ class BatomCreatSupplierWarehouses(models.TransientModel):
             locationModel = self.env['stock.location']
             supplierRootLocation = locationModel.browse(location_id)
             if supplierRootLocation != None:
-                partnerLocations = locationModel.search_read([
+                partnerLocations = locationModel.search([
                     '|', ('active', '=', True), ('active', '=', False),
                     ('partner_id', '!=', None)
                     ], ['partner_id'])
                 supplierIdsWithLocations = []
                 for partnerLocation in partnerLocations:
-                    supplierIdsWithLocations.append(partnerLocation['partner_id'][0])
+                    supplierIdsWithLocations.append(partnerLocation.partner_id)
                 suppliers = self.env['res.partner'].search([
                     ('supplier', '=', True),
                     ('x_supplier_code', '!=', None),
@@ -540,13 +621,13 @@ class BatomMigrateChartOfAccount(models.TransientModel):
     _name = "batom.migrate_chart_of_account"
     _description = "Migrate Chart of Account"
 
-    def _accountTypeIdConversion(self, chiSubClsID, chiSubjectID):
+    def _accountTypeIdConversion(self, chiSubClsId, chiSubjectId):
         returnedUserTypeId = None
-        if chiSubClsID and chiSubClsID.strip():
-            if chiSubClsID == '11':
-                if int(chiSubjectID) < 1130000:
+        if chiSubClsId and chiSubClsId.strip():
+            if chiSubClsId == '11':
+                if int(chiSubjectId) < 1130000:
                     returnedUserTypeId = 3
-                elif int(chiSubjectID) <= 1179000:
+                elif int(chiSubjectId) <= 1179000:
                     returnedUserTypeId = 1
             else:
                 userTypeIdMap = ({
@@ -585,7 +666,7 @@ class BatomMigrateChartOfAccount(models.TransientModel):
                     "92": 17,
                     })
                 try:
-                    returnedUserTypeId = userTypeIdMap[chiSubClsID]
+                    returnedUserTypeId = userTypeIdMap[chiSubClsId]
                 except Exception:
                     _logger.warning('Exception in migrate_chart_of_account:', exc_info=True)
                 
@@ -606,12 +687,12 @@ class BatomMigrateChartOfAccount(models.TransientModel):
             dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
             batomAccountTypes = self.env['batom.account.type'].search([])
             if len(batomAccountTypes) == 0:
-                chiAccountTypes = dbChi.execute('SELECT SubClsID, SubClsName FROM comSubjectCls ORDER BY SubClsID')
+                chiAccountTypes = dbChi.execute('SELECT SubClsId, SubClsName FROM comSubjectCls ORDER BY SubClsId')
                 while len(chiAccountTypes) > 0:
                     try:
                         chiAccountType = chiAccountTypes.pop(0)
                         self.env['batom.account.type'].create({
-                            'code': chiAccountType.SubClsID,
+                            'code': chiAccountType.SubClsId,
                             'name': chiAccountType.SubClsName
                             })
                     except Exception:
@@ -626,31 +707,31 @@ class BatomMigrateChartOfAccount(models.TransientModel):
             # base_external_dbsource seems to have size limit of the query result
             # query the values directly may not returns all qualified records
             # for some reason, '1441000' cannot be retrieved.  ignore it for now
-            chiAccountIDs = dbChi.execute('SELECT SubjectID FROM comSubject ORDER BY SubjectID')
+            chiAccountIds = dbChi.execute('SELECT SubjectId FROM comSubject ORDER BY SubjectId')
             accountModel = self.env['account.account']
-            for chiAccountID in chiAccountIDs:
+            for chiAccountId in chiAccountIds:
                 try:
-                    chiAccounts = dbChi.execute("SELECT SubClsID, SubjectID, SubjectName, ParentSubID, CurrID, Description FROM comSubject WHERE SubjectID = '" + chiAccountID.SubjectID + "'")
+                    chiAccounts = dbChi.execute("SELECT SubClsId, SubjectId, SubjectName, ParentSubId, CurrId, Description FROM comSubject WHERE SubjectId = '" + chiAccountId.SubjectId + "'")
                     if len(chiAccounts) > 0:
                         chiAccount = chiAccounts.pop(0)
-                        currency_id = _currencyIdConversion(self, chiAccount.CurrID)
-                        account_type_id = self._accountTypeIdConversion(chiAccount.SubClsID, chiAccount.SubjectID)
+                        currency_id = _currencyIdConversion(self, chiAccount.CurrId)
+                        account_type_id = self._accountTypeIdConversion(chiAccount.SubClsId, chiAccount.SubjectId)
                         reconcile = True if (account_type_id in (1, 2)) else False
-                        parent_id = self._odooAccountIdFromCode(chiAccount.ParentSubID)
+                        parent_id = self._odooAccountIdFromCode(chiAccount.ParentSubId)
                         if not parent_id:
                             parent_id = None
                         accountValues = ({
                             'name': chiAccount.SubjectName,
                             'currency_id': currency_id,
-                            'code': chiAccount.SubjectID,
+                            'code': chiAccount.SubjectId,
                             'user_type_id': account_type_id,
                             'note': chiAccount.Description,
                             'reconcile': reconcile,
-                            'x_batom_type_id': batomAccountTypeIds[chiAccount.SubClsID],
+                            'x_batom_type_id': batomAccountTypeIds[chiAccount.SubClsId],
                             'x_batom_parent_id': parent_id,
                             })
                         
-                        odooAccounts = accountModel.search([('code', '=', chiAccount.SubjectID)])
+                        odooAccounts = accountModel.search([('code', '=', chiAccount.SubjectId)])
                         if len(odooAccounts) == 0:
                             accountModel.create(accountValues)
                         else:
@@ -666,33 +747,33 @@ class BatomMigrateProduct(models.TransientModel):
     _name = "batom.migrate_product"
     _description = "Migrate Products"
         
-    def migrate_chiProduct(self, cursorChi):
+    def _migrate_chiProduct(self, cursorChi):
         # base_external_dbsource seems to have size limit of the query result
         # query the values directly may not returns all qualified records
-        chiProductIDs = cursorChi.execute('SELECT ProdID FROM comProduct ORDER BY ProdID').fetchall()
+        chiProductIds = cursorChi.execute('SELECT ProdId FROM comProduct ORDER BY ProdId').fetchall()
         productModel = self.env['product.product']
-        productIDs = []
-        for chiProductID in chiProductIDs:
-            productIDs.append(chiProductID.ProdID)
+        productIds = []
+        for chiProductId in chiProductIds:
+            productIds.append(chiProductId.ProdId)
             
-        for productID in productIDs:
+        for productId in productIds:
             try:
-                chiProduct = cursorChi.execute(u"SELECT ProdID, ClassID, ProdForm, Unit, ProdName, EngName, ProdDesc, "
-                    u"CurrID, CAvgCost, SuggestPrice, NWeight, NUnit "
+                chiProduct = cursorChi.execute(u"SELECT ProdId, ClassId, ProdForm, Unit, ProdName, EngName, ProdDesc, "
+                    u"CurrId, CAvgCost, SuggestPrice, NWeight, NUnit "
                     u"FROM comProduct "
-                    u"WHERE ProdID = '" + productID.decode('utf-8') + u"'"
+                    u"WHERE ProdId = '" + productId.decode('utf-8') + u"'"
                     ).fetchone()
                 if chiProduct != None:
                     if chiProduct.EngName and chiProduct.EngName.strip():
                         name = chiProduct.EngName
-                    elif chiProduct.ProdName and chiProduct.ProdName.strip():
+                    if chiProduct.ProdName and chiProduct.ProdName.strip():
                         name = chiProduct.ProdName
                     else:
-                        name = chiProduct.ProdID
-                    currency_id = _currencyIdConversion(self, chiProduct.CurrID)
+                        name = chiProduct.ProdId
+                    currency_id = _currencyIdConversion(self, chiProduct.CurrId)
                     uom_id = _uomIdConversion(self, chiProduct.Unit)
                     # ProdForm: 1-物料，2半成品，3-成品，4-採購件，5-組合品，6-非庫存品，7-非庫存品(管成本)，8-易耗品
-                    # ClassID ClassName
+                    # ClassId ClassName
                     # --------------
                     # *	特殊科目
                     # 1	運費
@@ -714,7 +795,7 @@ class BatomMigrateProduct(models.TransientModel):
                     sale_ok = False
                     purchase_ok = False
                     type = 'consu' # 'consu', 'service', 'product'
-                    if chiProduct.ProdForm == 3 or chiProduct.ClassID == 'C' or chiProduct.ClassID == 'I':
+                    if chiProduct.ProdForm == 3 or chiProduct.ClassId == 'C' or chiProduct.ClassId == 'I':
                         sale_ok = True
                     if chiProduct.ProdForm == 4:
                         purchase_ok = True
@@ -722,7 +803,8 @@ class BatomMigrateProduct(models.TransientModel):
                         type = 'product'
                     productValues = ({
                         'name': name,
-                        'default_code': chiProduct.ProdID,
+                        'default_code': chiProduct.ProdId,
+                        'x_saved_code': chiProduct.ProdId,
                         'type': type,
                         'description': chiProduct.ProdDesc,
                         'sale_ok': sale_ok,
@@ -736,7 +818,7 @@ class BatomMigrateProduct(models.TransientModel):
                         # warehouse_id, location_id, routes_id,
                         })
                     
-                    odooProducts = productModel.search([('default_code', '=', chiProductID.ProdID)])
+                    odooProducts = productModel.search([('default_code', '=', chiProduct.ProdId)])
                     if len(odooProducts) == 0:
                         odooProduct = productModel.create(productValues)
                     else:
@@ -748,26 +830,27 @@ class BatomMigrateProduct(models.TransientModel):
                 continue
         self.env.cr.commit()
         
-    def migrate_inProduct(self, cursorBatom):
-        inProducts = cursorBatom.execute('SELECT ProdID, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdID').fetchall()
+    def _migrate_inProduct(self, cursorBatom):
+        inProducts = cursorBatom.execute('SELECT ProdId, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdId').fetchall()
         productModel = self.env['product.product']
         for inProduct in inProducts:
             try:
-                odooProducts = productModel.search([('default_code', '=', inProduct.ProdID)])
+                odooProducts = productModel.search([('default_code', '=', inProduct.ProdId)])
                 if len(odooProducts) == 0:
                     if inProduct.EngName and inProduct.EngName.strip():
                         name = inProduct.EngName
                     elif inProduct.ProdName and inProduct.ProdName.strip():
                         name = inProduct.ProdName
                     else:
-                        name = inProduct.ProdID
+                        name = inProduct.ProdId
                     uom_id = _uomIdConversion(self, inProduct.Unit)
                     sale_ok = False
                     purchase_ok = False
                     type = 'product'
                     productValues = ({
                         'name': name,
-                        'default_code': inProduct.ProdID,
+                        'default_code': inProduct.ProdId,
+                        'x_saved_code': inProduct.ProdId,
                         'type': type,
                         'sale_ok': sale_ok,
                         'purchase_ok': purchase_ok,
@@ -783,65 +866,95 @@ class BatomMigrateProduct(models.TransientModel):
                 continue
         self.env.cr.commit()
         
-    def migrate_chiProcess(self, cursorChi):
-        processes = cursorChi.execute('SELECT ProgramID, ProgramName, Remark FROM prdMakeProgram ORDER BY ProgramID').fetchall()
+    def _migrate_chiProcess(self, cursorChi):
+        processes = cursorChi.execute('SELECT ProgramId, ProgramName, Remark FROM prdMakeProgram ORDER BY ProgramId').fetchall()
         productModel = self.env['product.product']
         for process in processes:
             try:
-                if process.Remark and process.Remark.strip():
-                    name = process.Remark
-                else:
-                    name = process.ProgramName
+                #if process.Remark and process.Remark.strip():
+                #    name = process.Remark
+                #else:
+                name = process.ProgramName
                 sale_ok = False
                 purchase_ok = True
                 type = 'service'
                 productValues = ({
                     'name': name,
-                    'default_code': process.ProgramID,
+                    'default_code': process.ProgramId,
+                    'x_saved_code': process.ProgramId,
                     'type': type,
                     'sale_ok': sale_ok,
                     'purchase_ok': purchase_ok,
                     'x_is_process': True,
                     })
                 
-                odooProducts = productModel.search([('default_code', '=', process.ProgramID)])
+                odooProducts = productModel.search([('default_code', '=', process.ProgramId)])
                 if len(odooProducts) == 0:
                     odooProduct = productModel.create(productValues)
                 else:
                     odooProduct = odooProducts[0]
                     odooProduct.write(productValues)
-                _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProgramName)
+                #_updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProgramName)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
         self.env.cr.commit()
         
-    def migrate_inProcess(self, cursorBatom):
-        processes = cursorBatom.execute('SELECT ProcessID, ProcessName, Remark FROM Process ORDER BY ProcessID').fetchall()
+    def _migrate_inProcess(self, cursorBatom):
+        processes = cursorBatom.execute('SELECT ProcessId, ProcessName, Remark FROM Process ORDER BY ProcessId').fetchall()
         productModel = self.env['product.product']
         for process in processes:
             try:
-                if process.ProcessID and process.ProcessID.strip():
-                    odooProducts = productModel.search([('default_code', '=', process.ProcessID)])
+                if process.ProcessId and process.ProcessId.strip():
+                    odooProducts = productModel.search([('default_code', '=', process.ProcessId)])
                     if len(odooProducts) == 0:
-                        if process.Remark and process.Remark.strip():
-                            name = process.Remark
-                        else:
-                            name = process.ProcessName
+                        #if process.Remark and process.Remark.strip():
+                        #    name = process.Remark
+                        #else:
+                        name = process.ProcessName
                         sale_ok = False
                         purchase_ok = True
                         type = 'service'
                         productValues = ({
                             'name': name,
-                            'default_code': process.ProcessID,
+                            'default_code': process.ProcessId,
                             'type': type,
                             'sale_ok': sale_ok,
                             'purchase_ok': purchase_ok,
+                            'description': process.Remark,
                             'x_is_process': True,
                             })
                         
                         odooProduct = productModel.create(productValues)
-                        _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProcessName)
+                        #_updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProcessName)
+            except Exception:
+                _logger.warning('Exception in migrate_product:', exc_info=True)
+                continue
+        self.env.cr.commit()
+        
+    def _migrate_inShopProcess(self, cursorBatom):
+        processes = cursorBatom.execute('SELECT ProcessId, ShopProcess, Type FROM ShopProcess ORDER BY ProcessId').fetchall()
+        productModel = self.env['product.product']
+        for process in processes:
+            try:
+                if process.ProcessId and process.ProcessId.strip():
+                    odooProducts = productModel.search([('default_code', '=', process.ProcessId)])
+                    if len(odooProducts) == 0:
+                        name = process.ShopProcess
+                        sale_ok = False
+                        purchase_ok = True
+                        type = 'service'
+                        productValues = ({
+                            'name': name,
+                            'default_code': process.ProcessId,
+                            'type': type,
+                            'sale_ok': sale_ok,
+                            'purchase_ok': purchase_ok,
+                            'description': process.Type,
+                            'x_is_process': True,
+                            })
+                        
+                        odooProduct = productModel.create(productValues)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
@@ -858,14 +971,229 @@ class BatomMigrateProduct(models.TransientModel):
             connBatom = dbBatom.conn_open()
             cursorBatom = connBatom.cursor()
 
-            self.migrate_chiProduct(cursorChi)
-            self.migrate_inProduct(cursorBatom)
-            self.migrate_chiProcess(cursorChi)
-            self.migrate_inProcess(cursorBatom)
+            self._migrate_chiProduct(cursorChi)
+            self._migrate_inProduct(cursorBatom)
+            self._migrate_chiProcess(cursorChi)
+            self._migrate_inProcess(cursorBatom)
+            self._migrate_inShopProcess(cursorBatom)
             connChi.close()
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_product:', exc_info=True)
+            if connChi:
+                connChi.close()
+            if connBatom:
+                connBatom.close()
+    
+class BatomMigrateBom(models.TransientModel):
+    _name = "batom.migrate_bom"
+    _description = "Migrate BoM"
+    
+    def _createRouting(self, chiBom, chiBomMaterials, chiBomProcesses):
+        odooRouting = None
+        try:
+            routingModel = self.env['mrp.routing']
+            productTemplate = _getProductTemplate(self, chiBom.ProductId)
+            if productTemplate == None:
+                _logger.warning('Product template ' + chiBom.ProductId + ' not found in migrate_bom:', exc_info=True)
+            else:
+                odooRoutings = routingModel.search([
+                    ('x_product_id', '=', productTemplate.id),
+                    ('x_batom_bom_no', '=', chiBom.ItemNo),
+                    ])
+                if len(odooRoutings) <= 0:
+                    routingValues = ({
+                        'code': u'~' + chiBom.ProductId.decode('utf8') + u"#" + str(chiBom.ItemNo),
+                        'name': u'RO/' + chiBom.ProductName.decode('utf8') + u" #" + str(chiBom.ItemNo),
+                        'x_product_id': productTemplate.id,
+                        'x_batom_bom_no': chiBom.ItemNo,
+                        'note': u'由正航 ' + chiBom.ProductId.decode('utf8') + u'(' + chiBom.ProductName.decode('utf8') + u') BoM自動產生的製程路徑',
+                        })
+                    odooRouting = routingModel.create(routingValues)
+                    routingWorkcenterModel = self.env['mrp.routing.workcenter']
+                    sequence = 0
+                    for chiBomProcess in chiBomProcesses:
+                        odooSupplier = _getSupplier(self, chiBomProcess.Producer)
+                        odooWorkcenter = _getWorkcenter(self, chiBomProcess.MkPgmId, chiBomProcess.Producer, True)
+                        sequence += 5
+                        routingWorkcenterValues = ({
+                            'sequence': sequence,
+                            'name': odooWorkcenter.x_process_id.name,
+                            'workcenter_id': odooWorkcenter.id,
+                            'routing_id': odooRouting.id,
+                            'note': u'由正航 ' + chiBom.ProductId.decode('utf8') + u'(' + chiBom.ProductName.decode('utf8') + u') BoM自動產生的製程作業',
+                            'time_mode': 'manual',
+                            'time_cycle_manual': chiBomProcess.WorkTimeOfBatch,
+                            })
+                        routingWorkcenter = routingWorkcenterModel.create(routingWorkcenterValues)
+        except Exception:
+            _logger.warning('Exception in migrate_bom:', exc_info=True)
+            
+        return odooRouting
+    
+    def _createBomLines(self, odooBom, odooRouting, chiBom, chiBomMaterials, chiBomProcesses):
+        bomLineModel = self.env['mrp.bom.line']
+        bomLineModel.search([('bom_id', '=', odooBom.id)]).unlink()
+        routingWorkcenterModel = self.env['mrp.routing.workcenter']
+        routingWorkcenters = routingWorkcenterModel.search([
+            ('routing_id', '=', odooRouting.id),],
+            order='sequence',
+            )
+        idxMaterials = 0
+        idxProcesses = 0
+        sequence = 0
+        while idxMaterials < len(chiBomMaterials) or idxProcesses < len(chiBomProcesses):
+            try:
+                bomLineValues = None
+                if (idxMaterials < len(chiBomMaterials) and
+                        (idxProcesses >= len(chiBomProcesses) or 
+                        chiBomMaterials[idxMaterials].SerNo <= chiBomProcesses[idxProcesses].SerNo
+                        )):
+                    product = _getProduct(self, chiBomMaterials[idxMaterials].SubProdId)
+                    if product == None:
+                        _logger.warning('Product template ' + chiBomMaterials[idxMaterials].SubProdId + ' not found in migrate_bom:', exc_info=True)
+                    else:
+                        routing_id = None
+                        operation_id = None
+                        # assuming routingWorkcenters got one to one correspondence with chiBomProcesses
+                        if idxProcesses < len(routingWorkcenters):
+                            routing_id = odooRouting.id
+                            operation_id = routingWorkcenters[idxProcesses].id
+                        sequence += 5
+                        bomLineValues = ({
+                            'bom_id': odooBom.id,
+                            'sequence': sequence,
+                            'product_id': product.id,
+                            'product_qty': chiBomMaterials[idxMaterials].QtyOfBatch,
+                            'product_uom_id': product.uom_id.id,
+                            'routing_id': routing_id,
+                            'operation_id': operation_id,
+                            })
+                    idxMaterials += 1
+                else:
+                    product = _getProduct(self, chiBomProcesses[idxProcesses].MkPgmId)
+                    if product == None:
+                        _logger.warning('Product template ' + chiBomProcesses[idxProcesses].MkPgmId + ' not found in migrate_bom:', exc_info=True)
+                    else:
+                        routing_id = None
+                        operation_id = None
+                        # assuming routingWorkcenters got one to one correspondence with chiBomProcesses
+                        if idxProcesses < len(routingWorkcenters):
+                            routing_id = odooRouting.id
+                            operation_id = routingWorkcenters[idxProcesses].id
+                        sequence += 5
+                        bomLineValues = ({
+                            'bom_id': odooBom.id,
+                            'sequence': sequence,
+                            'product_id': product.id,
+                            'product_qty': 1,
+                            'product_uom_id': product.uom_id.id,
+                            'routing_id': routing_id,
+                            'operation_id': operation_id,
+                            })
+                    idxProcesses += 1
+                if bomLineValues != None:
+                    bomLineModel.create(bomLineValues)
+            except Exception:
+                _logger.warning('Exception in migrate_bom:', exc_info=True)
+                continue
+                
+    def _migrate_chiBom(self, cursorChi):
+        chiBoms = cursorChi.execute('SELECT ProductId, ProductName, ItemNo, CurVersion, Flag, NorProdtMode, BatchAmount FROM prdBOMMain ORDER BY ProductId, ItemNo').fetchall()
+        bomModel = self.env['mrp.bom']
+        productTemplateModel = self.env['product.template']
+        
+        for chiBom in chiBoms:
+            try:
+                template = productTemplateModel.search([('default_code', '=', chiBom.ProductId)])[0]
+                chiBomMaterials = cursorChi.execute(
+                    u"SELECT SerNo, SubProdId, QtyOfBatch "
+                    u"FROM prdBOMMats "
+                    u"WHERE ProductId='" + chiBom.ProductId.decode('utf8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
+                    u"ORDER BY SerNo").fetchall()
+                chiBomProcesses = cursorChi.execute(
+                    u"SELECT SerNo, MkPgmId, ProdtClass, Producer, DailyProdtQty, PrepareDays, WorkTimeOfBatch, PriceOfProc "
+                    u"FROM prdBOMPgms "
+                    u"WHERE MainProdId='" + chiBom.ProductId.decode('utf8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
+                    u"ORDER BY SerNo").fetchall()
+                odooRouting = self._createRouting(chiBom, chiBomMaterials, chiBomProcesses)
+                bomValues = ({
+                    'code': u'~' + chiBom.ProductId.decode('utf8') + u"#" + str(chiBom.ItemNo),
+                    'product_tmpl_id': template.id,
+                    'x_batom_bom_no': chiBom.ItemNo,
+                    'x_version_description': chiBom.CurVersion,
+                    'product_qty': chiBom.BatchAmount,
+                    'type': 'normal',
+                    'routing_id': odooRouting.id,
+                    })
+                
+                odooBoms = bomModel.search([
+                    ('product_tmpl_id', '=', template.id),
+                    ('x_batom_bom_no', '=', chiBom.ItemNo),
+                    ])
+                if len(odooBoms) == 0:
+                    odooBom = bomModel.create(bomValues)
+                else:
+                    odooBom = odooBoms[0]
+                    odooBom.write(bomValues)
+                self._createBomLines(odooBom, odooRouting, chiBom, chiBomMaterials, chiBomProcesses)
+            except Exception:
+                _logger.warning('Exception in migrate_bom:', exc_info=True)
+                continue
+        self.env.cr.commit()
+        
+    def _migrate_inRouting(self, cursorBatom):
+        inProducts = cursorBatom.execute('SELECT ProdId, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdId').fetchall()
+        productModel = self.env['product.product']
+        for inProduct in inProducts:
+            try:
+                odooProducts = productModel.search([('default_code', '=', inProduct.ProdId)])
+                if len(odooProducts) == 0:
+                    #if inProduct.EngName and inProduct.EngName.strip():
+                    #    name = inProduct.EngName
+                    if inProduct.ProdName and inProduct.ProdName.strip():
+                        name = inProduct.ProdName
+                    else:
+                        name = inProduct.ProdId
+                    uom_id = _uomIdConversion(self, inProduct.Unit)
+                    sale_ok = False
+                    purchase_ok = False
+                    type = 'product'
+                    productValues = ({
+                        'name': #name,
+                        'default_code': inProduct.ProdId,
+                        'type': type,
+                        'sale_ok': sale_ok,
+                        'purchase_ok': purchase_ok,
+                        'description': inProduct.Remark,
+                        'uom_id': uom_id,
+                        'uom_po_id': uom_id,
+                        })
+                    
+                    odooProduct = productModel.create(productValues)
+                    #_updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, inProduct.ProdName)
+            except Exception:
+                _logger.warning('Exception in migrate_product:', exc_info=True)
+                continue
+        self.env.cr.commit()
+            
+    @api.multi
+    def migrate_bom(self):
+        try:
+            self.ensure_one()
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+
+            self._migrate_chiBom(cursorChi)
+            # self._migrate_inRouting(cursorBatom)
+            connChi.close()
+            connBatom.close()
+        except Exception:
+            _logger.warning('Exception in migrate_bom:', exc_info=True)
             if connChi:
                 connChi.close()
             if connBatom:
@@ -876,12 +1204,12 @@ class BatomPartnerMigration(models.Model):
     _description = 'Partner Data Migration'
     
     type = fields.Selection([(1, 'Customer'), (2, 'Sppplier')], string='Type', required=True)
-    in_id = fields.Char('入料 ID', required=False, size=20)
+    in_id = fields.Char('入料 Id', required=False, size=20)
     in_short_name = fields.Char('入料 Short Name', required=False, size=12)
     in_full_name = fields.Char('入料 Full Name', required=False, size=80)
-    chi_id = fields.Char('正航 ID', required=False, size=20)
+    chi_id = fields.Char('正航 Id', required=False, size=20)
     chi_short_name = fields.Char('正航 Short Name', required=False, size=12)
     chi_full_name = fields.Char('正航 Full Name', required=False, size=80)
-    odoo_id = fields.Char('Odoo ID', required=False, size=20)
+    odoo_id = fields.Char('Odoo Id', required=False, size=20)
     odoo_short_name = fields.Char('Odoo Short Name', required=False, size=12)
     odoo_full_name = fields.Char('Odoo Full Name', required=False, size=80)
