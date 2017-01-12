@@ -121,7 +121,7 @@ def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
             workcenter =  workcenters[0]
         elif createIfNotExist:
             workcenterValues = ({
-                'name': process.name + ' <- ' + supplier.name,
+                'name': process.name + ' <- ' + supplier.display_name,
                 'x_process_id': process.id,
                 'x_supplier_id': supplier.id,
                 })
@@ -1160,7 +1160,7 @@ class BatomMigrateBom(models.TransientModel):
                     purchase_ok = False
                     type = 'product'
                     productValues = ({
-                        'name': #name,
+                        'name': name,
                         'default_code': inProduct.ProdId,
                         'type': type,
                         'sale_ok': sale_ok,
