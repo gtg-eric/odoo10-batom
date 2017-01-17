@@ -24,9 +24,21 @@ def _currencyIdConversion(self, currencyId):
             returnedCurrencyId = currencyIds.pop(0)
     return returnedCurrencyId
 
+#BX
+#P C
+#SET
+#桶
+#EA
+#ＰＣ
+#英呎
+#M
+#PCS
+#Kg
+
 _uomMapping = ({
     'Kg': 'kg',
     'M': 'm',
+    'P C': 'PC',
     u'ＰＣ': 'PC',
     u'英呎': 'foot(ft)',
     u'桶': 'barrel',
@@ -69,7 +81,7 @@ def _updateTranslation(self, name, res_id, src, value):
     else:
         translations[0].write(values)
         
-def _getSupplier(self, supplierCode):
+def _getSupplier(self, supplierCode, defaultIfNotFound):
     supplier = None
     suppliers = self.env['res.partner'].search([
         ('supplier', '=', True),
@@ -77,7 +89,7 @@ def _getSupplier(self, supplierCode):
         ])
     if len(suppliers) > 0:
         supplier =  suppliers[0]
-    else:
+    elif defaultIfNotFound:
         supplierCompany = self.env['res.company']._company_default_get()
         if supplierCompany:
             supplier = supplierCompany.partner_id
@@ -111,7 +123,7 @@ def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
             ('x_is_process', '=', True),
             ('default_code', '=', processCode)
             ])[0]
-        supplier = _getSupplier(self, supplierCode)
+        supplier = _getSupplier(self, supplierCode, True)
         workcenterModel = self.env['mrp.workcenter']
         workcenters = workcenterModel.search([
             ('x_supplier_id', '=', supplier.id),
@@ -124,6 +136,7 @@ def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
                 'name': process.name + ' <- ' + supplier.display_name,
                 'x_process_id': process.id,
                 'x_supplier_id': supplier.id,
+                'resource_type': 'material',
                 })
             workcenter = workcenterModel.create(workcenterValues);
     except Exception:
@@ -496,7 +509,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                             newPartner = partnerModel.create({
                                 codeColumnName: chiPartner.Id,
                                 'country_id': self._countryIdConversion(chiPartner.AreaId),
-                                'category_id': [(4, categoryId, 0)] if (categoryId != None) else None,
+                                'category_id': [(4, categoryId)] if (categoryId != None) else None,
                                 'property_purchase_currency_id': _currencyIdConversion(self, chiPartner.CurrencyId),
                                 'email': chiPartner.Email,
                                 'fax': chiPartner.FaxNo if (chiPartner.FaxNo != None and chiPartner.FaxNo and chiPartner.FaxNo.strip()) else (
@@ -1013,7 +1026,7 @@ class BatomMigrateBom(models.TransientModel):
                     routingWorkcenterModel = self.env['mrp.routing.workcenter']
                     sequence = 0
                     for chiBomProcess in chiBomProcesses:
-                        odooSupplier = _getSupplier(self, chiBomProcess.Producer)
+                        odooSupplier = _getSupplier(self, chiBomProcess.Producer, True)
                         odooWorkcenter = _getWorkcenter(self, chiBomProcess.MkPgmId, chiBomProcess.Producer, True)
                         sequence += 5
                         routingWorkcenterValues = ({
@@ -1141,6 +1154,126 @@ class BatomMigrateBom(models.TransientModel):
                 _logger.warning('Exception in migrate_bom:', exc_info=True)
                 continue
         self.env.cr.commit()
+                
+    def _createProcessPrice(self, applicableProductAttribute, chiBom, chiBomProcesses):
+        productModel = self.env['product.product']
+        productTemplateModel = self.env['product.template']
+        productAttributeValueModel = self.env['product.attribute.value']
+        productAttributeLineModel = self.env['product.attribute.line']
+        productSupplierInfoModel = self.env['product.supplierinfo']
+        
+        dummyProductAttributeValues = productAttributeValueModel.search([('name', '=', '*')])
+        if len(dummyProductAttributeValues) > 0:
+            dummyProductAttributeValue = dummyProductAttributeValues[0]
+        else:
+            # dummy service product variant
+            dummyProductAttributeValue = productAttributeValueModel.create({
+                'attribute_id': applicableProductAttribute.id,
+                'name': '*',
+                })
+        productAttributeValues = productAttributeValueModel.search([('name', '=', chiBom.ProductId)])
+        if len(productAttributeValues) > 0:
+            productAttributeValue = productAttributeValues[0]
+        else:
+            productAttributeValue = productAttributeValueModel.create({
+                'attribute_id': applicableProductAttribute.id,
+                'name': chiBom.ProductId,
+                })
+        for chiBomProcess in chiBomProcesses:
+            try:
+                supplier = _getSupplier(self, chiBomProcess.Producer, True)
+                processProductTemplate = _getProductTemplate(self, chiBomProcess.MkPgmId)
+                if supplier != None and processProductTemplate != None:
+                    addedVariantValueIds = []
+                    productAttributeLines = productAttributeLineModel.search([
+                        ('product_tmpl_id', '=', processProductTemplate.id),
+                        ('attribute_id', '=', applicableProductAttribute.id),
+                        ])
+                    if len(productAttributeLines) > 0:
+                        productAttributeLine = productAttributeLines[0]
+                        if productAttributeValue not in productAttributeLine.value_ids:
+                            productAttributeLine.write({
+                                'value_ids': [(4, productAttributeValue.id)]
+                                })
+                            addedVariantValueIds = [productAttributeValue.id]
+                    else:
+                        productAttributeLine = productAttributeLineModel.create({
+                            'product_tmpl_id': processProductTemplate.id,
+                            'attribute_id': applicableProductAttribute.id,
+                            # it needs 2 or more attribute values for creating product variants
+                            'value_ids': [(6, 0, [dummyProductAttributeValue.id, productAttributeValue.id])],
+                            })
+                        addedVariantValueIds = [dummyProductAttributeValue.id, productAttributeValue.id]
+                    addedVariantProduct = None
+                    if len(addedVariantValueIds) > 0: 
+                        # create the per product process product variant
+                        processProductTemplate.create_variant_ids()
+                        for addedVariantValueId in addedVariantValueIds:
+                            addedVariantValue = productAttributeValueModel.browse(addedVariantValueId)
+                            perProductProcessCode = processProductTemplate.default_code + u'->' + addedVariantValue.name
+                            perProductProcessName = processProductTemplate.name + u'->' + chiBom.ProductName.decode('utf8')
+                            for product in addedVariantValue.product_ids:
+                                product.write({
+                                    'default_code': perProductProcessCode,
+                                    'name': None if (addedVariantValue.name == '*') else perProductProcessName
+                                    })
+                                if addedVariantValue.name != '*':
+                                    addedVariantProduct = product
+                    if addedVariantProduct != None:
+                        productSupplierInfos = productSupplierInfoModel.search([
+                            ('name', '=', supplier.id),
+                            ('product_code', '=', addedVariantProduct.default_code),
+                            ('price', '=', chiBomProcess.PriceOfProc),
+                            '|', ('date_start', '=', chiBom.EffectDate), ('price', '=', 0),
+                            ('product_id', '=', addedVariantProduct.id),
+                            ])
+                        if len(productSupplierInfos) <= 0:
+                            productSupplierInfoValues = ({
+                                'name': supplier.id,
+                                'product_name': supplier.display_name + ' -> ' + addedVariantProduct.name,
+                                'product_code': addedVariantProduct.default_code,
+                                'price': chiBomProcess.PriceOfProc,
+                                'date_start': chiBom.EffectDate,
+                                'product_id': addedVariantProduct.id,
+                                'product_tmpl_id': addedVariantProduct.product_tmpl_id.id,
+                                })
+                            productSupplierInfoModel.create(productSupplierInfoValues)
+            except Exception:
+                _logger.warning('Exception in migrate_bom:', exc_info=True)
+                import pdb; pdb.set_trace()
+                continue
+        
+    def _migrate_chiProcessPrice(self, cursorChi):
+        chiBoms = cursorChi.execute('SELECT ProductId, ProductName, ItemNo, CurVersion, Flag, NorProdtMode, BatchAmount, EffectDate FROM prdBOMMain ORDER BY ProductId, ItemNo').fetchall()
+        productAttributeModel = self.env['product.attribute']
+        
+        # applicable products for a specific process
+        applicableProductAttributes = productAttributeModel.search([('name', '=', u'適用產品')])
+        if len(applicableProductAttributes) > 0:
+            applicableProductAttribute = applicableProductAttributes[0]
+        else:
+            applicableProductAttribute = productAttributeModel.create({
+                'name': u'適用產品',
+                })
+        
+        nCount = len(chiBoms)
+        nDone = 0
+        for chiBom in chiBoms:
+            try:
+                chiBomProcesses = cursorChi.execute(
+                    u"SELECT SerNo, MkPgmId, ProdtClass, Producer, DailyProdtQty, PrepareDays, WorkTimeOfBatch, PriceOfProc "
+                    u"FROM prdBOMPgms "
+                    u"WHERE MainProdId='" + chiBom.ProductId.decode('utf8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
+                    u"ORDER BY SerNo").fetchall()
+                self._createProcessPrice(applicableProductAttribute, chiBom, chiBomProcesses)
+            except Exception:
+                _logger.warning('Exception in migrate_bom:', exc_info=True)
+                continue
+            nDone += 1
+            if nDone % 10 == 0:
+                print str(nDone) + '/' + str(nCount)
+                self.env.cr.commit()
+        self.env.cr.commit()
         
     def _migrate_inRouting(self, cursorBatom):
         inProducts = cursorBatom.execute('SELECT ProdId, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdId').fetchall()
@@ -1189,6 +1322,7 @@ class BatomMigrateBom(models.TransientModel):
             cursorBatom = connBatom.cursor()
 
             self._migrate_chiBom(cursorChi)
+            #self._migrate_chiProcessPrice(cursorChi)
             # self._migrate_inRouting(cursorBatom)
             connChi.close()
             connBatom.close()
