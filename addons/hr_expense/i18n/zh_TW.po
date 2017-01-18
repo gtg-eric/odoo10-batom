@@ -1084,7 +1084,7 @@ msgstr "標明產品是否能夠被在人資費用中選擇"
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.view_hr_expense_sheet_filter
 msgid "State"
-msgstr "省/ 州"
+msgstr 狀態
 
 #. module: hr_expense
 #: model:ir.model.fields,field_description:hr_expense.field_hr_expense_sheet_state

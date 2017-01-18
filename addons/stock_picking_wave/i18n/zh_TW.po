@@ -272,7 +272,7 @@ msgstr "階段已改變"
 #: model:ir.model.fields,field_description:stock_picking_wave.field_stock_picking_wave_state
 #: model:ir.ui.view,arch_db:stock_picking_wave.view_picking_wave_filter
 msgid "State"
-msgstr "省/ 州"
+msgstr 狀態
 
 #. module: stock_picking_wave
 #: model:ir.ui.view,arch_db:stock_picking_wave.view_picking_wave_form

@@ -8238,7 +8238,7 @@ msgstr "開始錢箱"
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_payment_search
 msgid "State"
-msgstr "省/ 州"
+msgstr 狀態
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line_statement_id
