@@ -62,7 +62,7 @@ msgstr "# 工單"
 #. module: mrp
 #: model:product.product,description:mrp.product_product_computer_desk_leg
 #: model:product.template,description:mrp.product_product_computer_desk_leg_product_template
-msgid "18〞 x 2½〞 Square Leg"
+msgid "18〞 x 2?〞 Square Leg"
 msgstr ""
 
 #. module: mrp
@@ -570,7 +570,7 @@ msgstr "變更產品數量"
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.action_change_production_qty
 msgid "Change Quantity To Produce"
-msgstr ""
+msgstr "更改待生產數量"
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_change_production_qty
@@ -833,12 +833,12 @@ msgstr "日期"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_date_planned_finished
 msgid "Deadline End"
-msgstr ""
+msgstr "結束期限"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_date_planned_start
 msgid "Deadline Start"
-msgstr ""
+msgstr "開始期限"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_routing_workcenter_form_view
@@ -2203,7 +2203,7 @@ msgstr "已製造數量"
 #: model:ir.model.fields,field_description:mrp.field_change_production_qty_product_qty
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_product_qty
 msgid "Quantity To Produce"
-msgstr ""
+msgstr "待生產數量"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_routing_workcenter_batch_size
