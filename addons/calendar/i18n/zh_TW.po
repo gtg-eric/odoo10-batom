@@ -566,7 +566,7 @@ msgstr "你真的要從你的喜好中刪除這個過濾器嗎？"
 #: model:ir.model.fields,field_description:calendar.field_calendar_event_duration
 #: model:ir.ui.view,arch_db:calendar.view_calendar_event_form
 msgid "Duration"
-msgstr "有效期"
+msgstr "期間"
 
 #. module: calendar
 #: model:ir.model.fields,field_description:calendar.field_calendar_alarm_duration_minutes

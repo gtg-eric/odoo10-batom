@@ -37,7 +37,7 @@ msgstr "計算方式：花費時間 / 總時間"
 #. module: project_issue_sheet
 #: model:ir.ui.view,arch_db:project_issue_sheet.project_issue_form_view
 msgid "Duration"
-msgstr "有效期"
+msgstr "期間"
 
 #. module: project_issue_sheet
 #: model:ir.model.fields,field_description:project_issue_sheet.field_account_analytic_line_issue_id

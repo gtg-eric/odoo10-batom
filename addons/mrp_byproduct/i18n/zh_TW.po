@@ -113,7 +113,7 @@ msgstr "副產品"
 #. module: mrp_byproduct
 #: model:ir.model.fields,help:mrp_byproduct.field_stock_move_subproduct_id
 msgid "Subproduct line that generated the move in a manufacturing order"
-msgstr "副產品行，在製造訂單生成移動"
+msgstr "副產品行，在製令單生成移動"
 
 #. module: mrp_byproduct
 #: code:addons/mrp_byproduct/models/mrp_subproduct.py:32

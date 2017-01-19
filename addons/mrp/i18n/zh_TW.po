@@ -45,7 +45,7 @@ msgstr "# 完成的工單"
 #: model:ir.model.fields,field_description:mrp.field_product_product_mo_count
 #: model:ir.model.fields,field_description:mrp.field_product_template_mo_count
 msgid "# Manufacturing Orders"
-msgstr "# 製造訂單"
+msgstr "# 製令單"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_workorder_ready_count
@@ -448,7 +448,7 @@ msgid ""
 "Bills of Materials allow you to define the list of required raw\n"
 "                materials used to make a finished product; through a manufacturing\n"
 "                order or a pack of products."
-msgstr "BOM用來定義成品所需的原材料的列表；通過製造訂單或者一包產品"
+msgstr "BOM用來定義成品所需的原材料的列表；通過製令單或者一包產品"
 
 #. module: mrp
 #: selection:mrp.config.settings,module_mrp_byproduct:0
@@ -608,7 +608,7 @@ msgstr "點擊創建一個物料清單."
 #. module: mrp
 #: model:ir.actions.act_window,help:mrp.mrp_production_action
 msgid "Click to create a manufacturing order."
-msgstr "單擊創建一個製造訂單."
+msgstr "單擊創建一個製令單."
 
 #. module: mrp
 #: model:ir.actions.act_window,help:mrp.mrp_message_action_main
@@ -629,7 +629,7 @@ msgstr "點擊開始一個新的拆解單。"
 #: model:ir.actions.act_window,help:mrp.mrp_production_action_planning
 #: model:ir.actions.act_window,help:mrp.mrp_production_action_waiting
 msgid "Click to start a new manufacturing order."
-msgstr "單擊去創建一個新製造訂單."
+msgstr "單擊去創建一個新製令單."
 
 #. module: mrp
 #: model:ir.actions.act_window,help:mrp.action_mrp_workorder_production
@@ -936,12 +936,12 @@ msgstr "草稿"
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_productivity_duration
 #: model:ir.ui.view,arch_db:mrp.oee_tree_view
 msgid "Duration"
-msgstr "有效期"
+msgstr "期間"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.oee_tree_view
 msgid "Duration (minutes)"
-msgstr ""
+msgstr "期間 (分鐘)"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_routing_workcenter_time_mode
@@ -1414,7 +1414,7 @@ msgstr "管理工程變更，版本以及文檔"
 #. module: mrp
 #: selection:mrp.config.settings,group_mrp_routings:0
 msgid "Manage production by manufacturing orders"
-msgstr "通過製造訂單管理生產"
+msgstr "通過製令單管理生產"
 
 #. module: mrp
 #: selection:mrp.config.settings,group_mrp_routings:0
@@ -1490,13 +1490,13 @@ msgstr "生產交貨時間* "
 #: model:ir.ui.view,arch_db:mrp.mrp_unbuild_search_view
 #: model:ir.ui.view,arch_db:mrp.view_mrp_config
 msgid "Manufacturing Order"
-msgstr "製造訂單"
+msgstr "製令單"
 
 #. module: mrp
 #: code:addons/mrp/models/procurement.py:87
 #, python-format
 msgid "Manufacturing Order <em>%s</em> created."
-msgstr "製造訂單 <em>%s</em>  創建。"
+msgstr "製令單 <em>%s</em>  創建。"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.act_product_mrp_production
@@ -1514,12 +1514,12 @@ msgstr "製造訂單 <em>%s</em>  創建。"
 #: model:ir.ui.view,arch_db:mrp.view_production_graph
 #: model:ir.ui.view,arch_db:mrp.view_production_pivot
 msgid "Manufacturing Orders"
-msgstr "製造訂單"
+msgstr "製令單"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Manufacturing Orders which are currently in production."
-msgstr "正在生產過中的製造訂單"
+msgstr "正在生產過中的製令單"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
@@ -3361,7 +3361,7 @@ msgstr "不能變更已完成的工單."
 msgid ""
 "You can not delete a Bill of Material with running manufacturing orders.\n"
 "Please close or cancel it first."
-msgstr "正在生產中的物料清單不可刪除,請先關閉或取消製造訂單."
+msgstr "正在生產中的物料清單不可刪除,請先關閉或取消製令單."
 
 #. module: mrp
 #: code:addons/mrp/models/stock_move.py:123

@@ -149,7 +149,7 @@ msgstr "顯示名稱"
 #. module: hr_contract
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 msgid "Duration"
-msgstr "有效期"
+msgstr "期間"
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_employee

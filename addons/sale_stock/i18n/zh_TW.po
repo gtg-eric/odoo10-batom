@@ -47,7 +47,7 @@ msgstr "允許追加送貨費用"
 #. module: sale_stock
 #: selection:sale.config.settings,group_mrp_properties:0
 msgid "Allow setting manufacturing order properties per order line (advanced)"
-msgstr "允許逐行設置製造訂單屬性（高級）"
+msgstr "允許逐行設置製令單屬性（高級）"
 
 #. module: sale_stock
 #: selection:sale.config.settings,module_sale_order_dates:0

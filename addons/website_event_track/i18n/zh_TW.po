@@ -270,7 +270,7 @@ msgstr "文檔"
 #. module: website_event_track
 #: model:ir.model.fields,field_description:website_event_track.field_event_track_duration
 msgid "Duration"
-msgstr "有效期"
+msgstr "期間"
 
 #. module: website_event_track
 #: model:ir.ui.view,arch_db:website_event_track.view_event_track_kanban

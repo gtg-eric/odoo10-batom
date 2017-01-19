@@ -97,7 +97,7 @@ msgstr "顯示名稱"
 #. module: resource
 #: model:ir.ui.view,arch_db:resource.resource_calendar_leave_form
 msgid "Duration"
-msgstr "有效期"
+msgstr "期間"
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_resource_time_efficiency

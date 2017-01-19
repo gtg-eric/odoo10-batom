@@ -57,7 +57,7 @@ msgstr "# 銷售開票"
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_mo_count
 msgid "# Manufacturing Orders"
-msgstr "# 製造訂單"
+msgstr "# 製令單"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_product_variant_count

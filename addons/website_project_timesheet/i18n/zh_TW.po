@@ -32,7 +32,7 @@ msgstr "說明"
 #. module: website_project_timesheet
 #: model:ir.ui.view,arch_db:website_project_timesheet.my_task
 msgid "Duration"
-msgstr "有效期"
+msgstr "期間"
 
 #. module: website_project_timesheet
 #: model:ir.ui.view,arch_db:website_project_timesheet.my_task
