@@ -831,7 +831,7 @@ class BatomMigrateProduct(models.TransientModel):
                     sale_ok = False
                     purchase_ok = False
                     type = 'consu' # 'consu', 'service', 'product'
-                    tracking = None
+                    tracking = 'none'
                     if chiProduct.ProdForm == 3 or chiProduct.ClassId == 'C' or chiProduct.ClassId == 'I':
                         sale_ok = True
                     if chiProduct.ProdForm in [1, 2, 4]:
