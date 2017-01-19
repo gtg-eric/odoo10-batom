@@ -1543,7 +1543,7 @@ msgstr "更換啟動器"
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_state_id_2915
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_state_view_tree
 msgid "State"
-msgstr 狀態
+msgstr "狀態"
 
 #. module: fleet
 #: sql_constraint:fleet.vehicle.state:0
