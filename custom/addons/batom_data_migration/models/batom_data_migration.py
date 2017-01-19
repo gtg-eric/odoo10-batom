@@ -834,7 +834,7 @@ class BatomMigrateProduct(models.TransientModel):
                     tracking = None
                     if chiProduct.ProdForm == 3 or chiProduct.ClassId == 'C' or chiProduct.ClassId == 'I':
                         sale_ok = True
-                    if chiProduct.ProdForm == 4:
+                    if chiProduct.ProdForm in [1, 2, 4]:
                         purchase_ok = True
                     if chiProduct.ProdForm <= 5:
                         type = 'product'
@@ -866,6 +866,7 @@ class BatomMigrateProduct(models.TransientModel):
                     _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, chiProduct.ProdName)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
+                import pdb; pdb.set_trace()
                 continue
             nDone += 1
             if nDone % 10 == 0:
@@ -1034,7 +1035,7 @@ class BatomMigrateProduct(models.TransientModel):
             connBatom = dbBatom.conn_open()
             cursorBatom = connBatom.cursor()
 
-            #self._migrate_chiProduct(cursorChi)
+            self._migrate_chiProduct(cursorChi)
             self._migrate_inProduct(cursorBatom)
             self._migrate_chiProcess(cursorChi)
             self._migrate_inProcess(cursorBatom)
