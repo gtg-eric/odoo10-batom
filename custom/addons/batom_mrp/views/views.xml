@@ -11,5 +11,52 @@
                 </xpath>
             </field>
         </record>
+        <record id="batom_mrp_production_workcenter_form_view_inherit" model="ir.ui.view">
+            <field name="name">batom.mrp.production.work.order.form.inherit</field>
+            <field name="model">mrp.workorder</field>
+            <field name="inherit_id" ref="mrp.mrp_production_workcenter_form_view_inherit"/>
+            <field name="arch" type="xml">
+                <header position="replace">
+                    <header>
+                        <button name="button_finish" type="object" string="Finish Order" attrs="{'invisible': ['|', ('state', '!=', 'progress'), ('is_produced', '=', False)]}" class="btn-info"/>
+                        <button name="button_start" type="object" string="Start Working" attrs="{'invisible': ['|', ('working_state', '=', 'blocked'), ('state', '!=', 'pending')]}"/>
+                        <button name="button_start" type="object" string="Start Working" attrs="{'invisible': ['|', ('working_state', '=', 'blocked'), ('state', '!=', 'ready')]}" class="btn-success"/>
+                        <button name="record_production" type="object" string="Progress" class="btn-success" attrs="{'invisible': ['|', '|', '|', ('is_produced', '=', True), ('working_state', '=', 'blocked'), ('state', '!=', 'progress'), ('is_user_working', '=', False)]}"/>
+                        <button name="button_pending" type="object" string="Pause" class="btn-warning" attrs="{'invisible': ['|', '|', ('working_state', '=', 'blocked'), ('state', 'in', ('done', 'pending', 'ready', 'cancel')), ('is_user_working', '=', False)]}"/>
+                        <button name="button_start" type="object" string="Continue Production" class="btn-warning" attrs="{'invisible': ['|', '|', ('working_state', '=', 'blocked'), ('is_user_working', '=', True), ('state', 'in', ('done', 'pending', 'ready', 'cancel'))]}"></button>
+                        <field name="state" widget="statusbar" statusbar_visible="pending,ready,progress,done"/>
+                        <field name="is_user_working" invisible="1"/>
+                        <field name="working_state" invisible="1"/>
+                        <field name="production_state" invisible="1"/>
+                    </header>
+                </header>
+                <xpath expr="//label[@for='qty_produced']" position="replace">
+                    <label for="qty_produced" string="Quantity Produced (Wasted)"/>
+                </xpath>
+                <xpath expr="//div[@class='o_row']" position="replace">
+                    <div class="o_row" name="div_qty_produced">
+                        <field name="qty_produced"/>
+                        <span name="span_qty_wasted" attrs="{'invisible': [('qty_wasted', '=', 0)]}">
+                            (<field name="qty_wasted"/>)
+                        </span>
+                        /
+                        <field name="qty_production"/>
+                        <field name="product_uom_id"/>
+                        <field name="production_availability" nolabel="1" widget="bullet_state" options="{'classes': {'assigned': 'success', 'waiting': 'danger'}}" attrs="{'invisible': [('state', '=', 'done')]}"/>
+                    </div>
+                </xpath>
+                <xpath expr="//label[@for='qty_produced']" position="before">
+                    <label for="qty_in_out" string="Quantity In/Out"/>
+                    <div class="o_row" name="div_qty_in_out">
+                        <field name="qty_in"/> /
+                        <field name="qty_out"/>
+                        <field name="product_uom_id"/>
+                    </div>
+                </xpath>
+                <field name="qty_producing" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </field>
+            </field>
+        </record>
     </data>
 </odoo>

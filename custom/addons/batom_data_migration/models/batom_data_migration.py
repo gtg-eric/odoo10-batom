@@ -44,13 +44,34 @@ _uomMapping = ({
     u'桶': 'barrel',
     })
 def _uomIdConversion(self, uom):
+    uomModel = self.env['product.uom']
+    uomCategoryModel = self.env['product.uom.categ']
     uomId = 1 # uom cannot be null
     if uom and uom.strip():
         if uom in _uomMapping:
             uom = _uomMapping[uom]
-        uomIds = self.env['product.uom'].search([('name', '=', uom)]).ids
+        uomIds = uomModel.search([('name', '=', uom)]).ids
         if len(uomIds) > 0:
             uomId = uomIds.pop(0)
+        else:
+            factor = 1
+            rounding = 0.01
+            uom_type = 'bigger'
+            if uom == 'barrel':
+                category_id = uomCategoryModel.search([('name', '=', 'Volume')])[0].id
+            else:
+                category_id = uomCategoryModel.search([('name', '=', 'Unit')])[0].id
+            uomValues = ({
+                'name': uom,
+                'category_id': category_id,
+                'factor': factor,
+                'rounding': rounding,
+                'uom_type': uom_type,
+                })
+            odooUom = uomModel.create(uomValues)
+            if uom == 'barrel':
+                _updateTranslation(self, 'product.uom,name', odooUom.id, uom, u'桶')
+            
     return uomId
     
 def _updateTranslation(self, name, res_id, src, value):
@@ -769,6 +790,8 @@ class BatomMigrateProduct(models.TransientModel):
         for chiProductId in chiProductIds:
             productIds.append(chiProductId.ProdId)
             
+        nCount = len(productIds)
+        nDone = 0
         for productId in productIds:
             try:
                 chiProduct = cursorChi.execute(u"SELECT ProdId, ClassId, ProdForm, Unit, ProdName, EngName, ProdDesc, "
@@ -808,17 +831,20 @@ class BatomMigrateProduct(models.TransientModel):
                     sale_ok = False
                     purchase_ok = False
                     type = 'consu' # 'consu', 'service', 'product'
+                    tracking = None
                     if chiProduct.ProdForm == 3 or chiProduct.ClassId == 'C' or chiProduct.ClassId == 'I':
                         sale_ok = True
                     if chiProduct.ProdForm == 4:
                         purchase_ok = True
                     if chiProduct.ProdForm <= 5:
                         type = 'product'
+                        tracking = 'lot'
                     productValues = ({
                         'name': name,
                         'default_code': chiProduct.ProdId,
                         'x_saved_code': chiProduct.ProdId,
                         'type': type,
+                        'tracking': tracking,
                         'description': chiProduct.ProdDesc,
                         'sale_ok': sale_ok,
                         'purchase_ok': purchase_ok,
@@ -841,11 +867,17 @@ class BatomMigrateProduct(models.TransientModel):
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
+            nDone += 1
+            if nDone % 10 == 0:
+                print str(nDone) + '/' + str(nCount)
+                self.env.cr.commit()
         self.env.cr.commit()
         
     def _migrate_inProduct(self, cursorBatom):
         inProducts = cursorBatom.execute('SELECT ProdId, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdId').fetchall()
         productModel = self.env['product.product']
+        nCount = len(inProducts)
+        nDone = 0
         for inProduct in inProducts:
             try:
                 odooProducts = productModel.search([('default_code', '=', inProduct.ProdId)])
@@ -860,11 +892,13 @@ class BatomMigrateProduct(models.TransientModel):
                     sale_ok = False
                     purchase_ok = False
                     type = 'product'
+                    tracking = 'lot'
                     productValues = ({
                         'name': name,
                         'default_code': inProduct.ProdId,
                         'x_saved_code': inProduct.ProdId,
                         'type': type,
+                        'tracking': tracking,
                         'sale_ok': sale_ok,
                         'purchase_ok': purchase_ok,
                         'description': inProduct.Remark,
@@ -877,11 +911,17 @@ class BatomMigrateProduct(models.TransientModel):
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
+            nDone += 1
+            if nDone % 10 == 0:
+                print str(nDone) + '/' + str(nCount)
+                self.env.cr.commit()
         self.env.cr.commit()
         
     def _migrate_chiProcess(self, cursorChi):
         processes = cursorChi.execute('SELECT ProgramId, ProgramName, Remark FROM prdMakeProgram ORDER BY ProgramId').fetchall()
         productModel = self.env['product.product']
+        nCount = len(processes)
+        nDone = 0
         for process in processes:
             try:
                 #if process.Remark and process.Remark.strip():
@@ -911,11 +951,17 @@ class BatomMigrateProduct(models.TransientModel):
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
+            nDone += 1
+            if nDone % 10 == 0:
+                print str(nDone) + '/' + str(nCount)
+                self.env.cr.commit()
         self.env.cr.commit()
         
     def _migrate_inProcess(self, cursorBatom):
         processes = cursorBatom.execute('SELECT ProcessId, ProcessName, Remark FROM Process ORDER BY ProcessId').fetchall()
         productModel = self.env['product.product']
+        nCount = len(processes)
+        nDone = 0
         for process in processes:
             try:
                 if process.ProcessId and process.ProcessId.strip():
@@ -943,6 +989,10 @@ class BatomMigrateProduct(models.TransientModel):
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
+            nDone += 1
+            if nDone % 10 == 0:
+                print str(nDone) + '/' + str(nCount)
+                self.env.cr.commit()
         self.env.cr.commit()
         
     def _migrate_inShopProcess(self, cursorBatom):
@@ -984,7 +1034,7 @@ class BatomMigrateProduct(models.TransientModel):
             connBatom = dbBatom.conn_open()
             cursorBatom = connBatom.cursor()
 
-            self._migrate_chiProduct(cursorChi)
+            #self._migrate_chiProduct(cursorChi)
             self._migrate_inProduct(cursorBatom)
             self._migrate_chiProcess(cursorChi)
             self._migrate_inProcess(cursorBatom)
@@ -1116,6 +1166,8 @@ class BatomMigrateBom(models.TransientModel):
         bomModel = self.env['mrp.bom']
         productTemplateModel = self.env['product.template']
         
+        nCount = len(chiBoms)
+        nDone = 0
         for chiBom in chiBoms:
             try:
                 template = productTemplateModel.search([('default_code', '=', chiBom.ProductId)])[0]
@@ -1152,7 +1204,12 @@ class BatomMigrateBom(models.TransientModel):
                 self._createBomLines(odooBom, odooRouting, chiBom, chiBomMaterials, chiBomProcesses)
             except Exception:
                 _logger.warning('Exception in migrate_bom:', exc_info=True)
+                import pdb; pdb.set_trace()
                 continue
+            nDone += 1
+            if nDone % 10 == 0:
+                print str(nDone) + '/' + str(nCount)
+                self.env.cr.commit()
         self.env.cr.commit()
                 
     def _createProcessPrice(self, applicableProductAttribute, chiBom, chiBomProcesses):
@@ -1240,7 +1297,6 @@ class BatomMigrateBom(models.TransientModel):
                             productSupplierInfoModel.create(productSupplierInfoValues)
             except Exception:
                 _logger.warning('Exception in migrate_bom:', exc_info=True)
-                import pdb; pdb.set_trace()
                 continue
         
     def _migrate_chiProcessPrice(self, cursorChi):
