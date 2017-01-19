@@ -1,24 +1,22 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * board
-# 
+#
 # Translators:
-# Jeffery Chenn <jeffery9@gmail.com>, 2016
-# mrshelly <mrshelly@hotmail.com>, 2016
-# Martin Trigaux <mat@odoo.com>, 2016
-# fausthuang <faust_huang@hotmail.com>, 2016
+# Enfong Tsao <nelson22768384@gmail.com>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.0c\n"
+"Project-Id-Version: Odoo 9.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-09-07 08:56+0000\n"
-"PO-Revision-Date: 2016-09-07 08:56+0000\n"
-"Last-Translator: fausthuang <faust_huang@hotmail.com>, 2016\n"
-"Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
+"PO-Revision-Date: 2016-03-28 14:04+0000\n"
+"Last-Translator: Enfong Tsao <nelson22768384@gmail.com>\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.com/odoo/odoo-9/"
+"language/zh_TW/)\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: board
@@ -33,66 +31,66 @@ msgstr "&nbsp;"
 #: code:addons/board/static/src/js/dashboard.js:409
 #, python-format
 msgid "'%s' added to dashboard"
-msgstr "'%s' 添加到儀表板"
+msgstr "'%s'新增至儀表板"
 
 #. module: board
 #: model:ir.actions.act_window,help:board.open_board_my_dash_action
 msgid "<b>Your personal dashboard is empty.</b>"
-msgstr "<b>您的個人儀表板是空的.</b>"
+msgstr "你的個人儀表板是空的"
 
 #. module: board
 #. openerp-web
 #: code:addons/board/static/src/xml/board.xml:70
 #, python-format
 msgid "Add"
-msgstr "添加"
+msgstr "新增"
 
 #. module: board
 #. openerp-web
 #: code:addons/board/static/src/xml/board.xml:64
 #, python-format
 msgid "Add to my Dashboard"
-msgstr "添加到我的儀表板"
+msgstr "新增至我的儀表板"
 
 #. module: board
 #. openerp-web
 #: code:addons/board/static/src/js/dashboard.js:141
 #, python-format
 msgid "Are you sure you want to remove this item ?"
-msgstr "您確定要移除此分錄嗎？"
+msgstr "確定要移除此項目？"
 
 #. module: board
 #: model:ir.model,name:board.model_board_board
 msgid "Board"
-msgstr "儀表板"
+msgstr "告示板"
 
 #. module: board
 #. openerp-web
 #: code:addons/board/static/src/xml/board.xml:7
 #, python-format
 msgid "Change Layout"
-msgstr "更改佈局"
+msgstr "變更佈置方式"
 
 #. module: board
 #. openerp-web
 #: code:addons/board/static/src/xml/board.xml:5
 #, python-format
 msgid "Change Layout.."
-msgstr "更改佈局..."
+msgstr "變更佈置方式.."
 
 #. module: board
 #. openerp-web
 #: code:addons/board/static/src/xml/board.xml:37
 #, python-format
 msgid "Choose dashboard layout"
-msgstr "選擇儀表板佈局"
+msgstr "選擇儀表板佈置方式"
 
 #. module: board
 #. openerp-web
 #: code:addons/board/static/src/js/dashboard.js:411
 #, python-format
 msgid "Could not add filter to dashboard"
-msgstr "無法增加篩選到儀表板"
+msgstr "無法新增過濾條件到儀表板上"
 
 #. module: board
 #: model:ir.model.fields,field_description:board.field_board_board_display_name
@@ -104,17 +102,17 @@ msgstr "顯示名稱"
 #: code:addons/board/static/src/js/dashboard.js:96
 #, python-format
 msgid "Edit Layout"
-msgstr "編輯佈局"
+msgstr "編輯佈置方式"
 
 #. module: board
 #: model:ir.model.fields,field_description:board.field_board_board_id
 msgid "ID"
-msgstr "ID"
+msgstr "編號"
 
 #. module: board
 #: model:ir.model.fields,field_description:board.field_board_board___last_update
 msgid "Last Modified on"
-msgstr "最後修改日"
+msgstr "最後修改:"
 
 #. module: board
 #. openerp-web
@@ -130,18 +128,16 @@ msgstr "我的儀表板"
 #: model:ir.actions.act_window,help:board.open_board_my_dash_action
 msgid ""
 "To add your first report into this dashboard, go to any\n"
-"                    menu, switch to list or graph view, and click <i>'Add to\n"
+"                    menu, switch to list or graph view, and click <i>'Add "
+"to\n"
 "                    Dashboard'</i> in the extended search options."
 msgstr ""
-"要添加第一個報表到這個儀表板，去任意\n"
-"選單，切換到列表或圖表檢視，然後單擊<I>「添加到\n"
-"儀表板「</I>在擴展的搜索選項。"
+"欲新增您第一個報表到此儀表板，請至任何一個選單， 切換到列表或圖示檢視，然後在"
+"延伸的搜尋選項中點擊 <i>'新增至儀表板 '</i>。 "
 
 #. module: board
 #: model:ir.actions.act_window,help:board.open_board_my_dash_action
 msgid ""
 "You can filter and group data before inserting into the\n"
 "                    dashboard using the search options."
-msgstr ""
-"您可以使用搜索選項過濾或分組數據在添加到\n"
-"儀表板之前。"
+msgstr "在插入儀表板之前，您可以使用搜尋選項來篩選以及群化資料。"

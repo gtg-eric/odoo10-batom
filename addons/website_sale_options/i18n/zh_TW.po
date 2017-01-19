@@ -1,112 +1,27 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * website_sale_options
-# 
+#
 # Translators:
-# Jeffery Chenn <jeffery9@gmail.com>, 2016
-# Talway <9010446@qq.com>, 2016
-# Gary Wei <Gary.wei@elico-corp.com>, 2016
-# Martin Trigaux <mat@odoo.com>, 2016
-# Siyuan Gu <siyuancn@hotmail.com>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.0c\n"
+"Project-Id-Version: Odoo 9.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-09-29 14:01+0000\n"
-"PO-Revision-Date: 2016-09-29 14:01+0000\n"
-"Last-Translator: Siyuan Gu <siyuancn@hotmail.com>, 2016\n"
-"Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
+"PO-Revision-Date: 2015-09-08 10:56+0000\n"
+"Last-Translator: Martin Trigaux\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.com/odoo/odoo-9/"
+"language/zh_TW/)\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-
-#. module: website_sale_options
-#: model:product.attribute.value,name:website_sale_options.product_attribute_value_1
-msgid "1 year"
-msgstr "1 年"
-
-#. module: website_sale_options
-#: model:product.attribute.value,name:website_sale_options.product_attribute_value_2
-msgid "2 year"
-msgstr "2 年"
-
-#. module: website_sale_options
-#: model:ir.ui.view,arch_db:website_sale_options.modal
-msgid ""
-"<i class=\"fa fa-chevron-left\"/> <span class=\"hidden-xs\">Continue "
-"Shopping</span><span class=\"visible-xs-inline\">Continue</span>"
-msgstr ""
-"<i class=\"fa fa-chevron-left\"/> <span class=\"hidden-xs\">繼續購物</span><span"
-" class=\"visible-xs-inline\">繼續</span>"
-
-#. module: website_sale_options
-#: model:ir.ui.view,arch_db:website_sale_options.modal
-msgid ""
-"<i class=\"fa fa-shopping-cart fa-fw\"/> <span class=\"hidden-xs\">Proceed "
-"to checkout</span><span class=\"visible-xs-inline\">Checkout</span>"
-msgstr ""
-"<i class=\"fa fa-shopping-cart fa-fw\"/> <span class=\"hidden-"
-"xs\">去結帳</span><span class=\"visible-xs-inline\">結帳</span>"
-
-#. module: website_sale_options
-#: model:ir.ui.view,arch_db:website_sale_options.modal
-msgid "<small>Remove from cart</small>"
-msgstr "<small>從購物車移除</small>"
-
-#. module: website_sale_options
-#: model:ir.ui.view,arch_db:website_sale_options.modal
-msgid ""
-"<span class=\"js_item\">1 Item</span><span class=\"js_items hidden\">5 "
-"Items</span><br/>"
-msgstr ""
-"<span class=\"js_item\">1 條</span><span class=\"js_items hidden\">5 "
-"條</span><br/>"
-
-#. module: website_sale_options
-#: model:ir.ui.view,arch_db:website_sale_options.modal
-msgid "<strong>Add to Cart</strong>"
-msgstr "<strong>加入購物車</strong>"
 
 #. module: website_sale_options
 #: model:product.attribute,name:website_sale_options.product_attribute_1
 msgid "Duration"
-msgstr "期間"
-
-#. module: website_sale_options
-#: model:ir.model.fields,field_description:website_sale_options.field_sale_order_line_linked_line_id
-msgid "Linked Order Line"
-msgstr "鏈接的訂單明細"
-
-#. module: website_sale_options
-#: code:addons/website_sale_options/models/sale_order.py:46
-#, python-format
-msgid "Option for:"
-msgstr ""
-
-#. module: website_sale_options
-#: code:addons/website_sale_options/models/sale_order.py:48
-#, python-format
-msgid "Option:"
-msgstr ""
-
-#. module: website_sale_options
-#: model:ir.model.fields,field_description:website_sale_options.field_product_template_optional_product_ids
-msgid "Optional Products"
-msgstr "可選產品"
-
-#. module: website_sale_options
-#: model:ir.model.fields,help:website_sale_options.field_product_template_optional_product_ids
-msgid ""
-"Optional Products are suggested whenever the customer hits *Add to Cart* "
-"(cross-sell strategy, e.g. for computers: warranty, software, etc.)."
-msgstr ""
-
-#. module: website_sale_options
-#: model:ir.model.fields,field_description:website_sale_options.field_sale_order_line_option_line_ids
-msgid "Options Linked"
-msgstr "鏈接選項"
+msgstr "持續時間"
 
 #. module: website_sale_options
 #: model:ir.ui.view,arch_db:website_sale_options.modal
@@ -121,17 +36,7 @@ msgstr "產品"
 #. module: website_sale_options
 #: model:ir.model,name:website_sale_options.model_product_template
 msgid "Product Template"
-msgstr "產品模板"
-
-#. module: website_sale_options
-#: model:ir.ui.view,arch_db:website_sale_options.modal
-msgid "Product not available"
-msgstr "產品不可用"
-
-#. module: website_sale_options
-#: model:ir.ui.view,arch_db:website_sale_options.modal
-msgid "Product to add in your shopping cart"
-msgstr "添加產品到你的購物車"
+msgstr "產品範本"
 
 #. module: website_sale_options
 #: model:ir.ui.view,arch_db:website_sale_options.modal
@@ -141,17 +46,12 @@ msgstr "數量"
 #. module: website_sale_options
 #: model:ir.model,name:website_sale_options.model_sale_order
 msgid "Sales Order"
-msgstr "銷售訂單"
+msgstr "銷貨單"
 
 #. module: website_sale_options
 #: model:ir.model,name:website_sale_options.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "銷售訂單行"
-
-#. module: website_sale_options
-#: model:ir.ui.view,arch_db:website_sale_options.modal
-msgid "Select Your Options:"
-msgstr "設置你的選項:"
+msgstr "銷售訂單細項"
 
 #. module: website_sale_options
 #: model:product.product,name:website_sale_options.product_product_1
@@ -159,15 +59,4 @@ msgstr "設置你的選項:"
 #: model:product.template,name:website_sale_options.product_product_1_product_template
 #: model:product.template,name:website_sale_options.service_cost_01_product_template
 msgid "Warranty"
-msgstr "質保"
-
-#. module: website_sale_options
-#: model:product.product,description_sale:website_sale_options.product_product_1
-#: model:product.product,description_sale:website_sale_options.service_cost_01
-#: model:product.template,description_sale:website_sale_options.product_product_1_product_template
-#: model:product.template,description_sale:website_sale_options.service_cost_01_product_template
-msgid ""
-"Warranty, issued to the purchaser of an article by its manufacturer, "
-"promising to repair or replace it if necessary within a specified period of "
-"time."
-msgstr "質保，商品發給生產廠家，廠家承諾在指定時間內對商品進行維修或更換."
+msgstr "保證"

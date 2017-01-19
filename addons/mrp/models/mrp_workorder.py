@@ -301,9 +301,12 @@ class MrpWorkorder(models.Model):
         if self.next_work_order_id and self.final_lot_id and not self.next_work_order_id.final_lot_id:
             self.next_work_order_id.final_lot_id = self.final_lot_id.id
 
-        # TODO: add filter for those that have not been done yet --> need to check as it can have different filters
-        self.move_lot_ids.filtered(lambda x: not x.done_move and not x.lot_produced_id).write({'lot_produced_id': self.final_lot_id.id,
-                                          'lot_produced_qty': self.qty_producing,})
+        self.move_lot_ids.filtered(
+            lambda move_lot: not move_lot.done_move and not move_lot.lot_produced_id and move_lot.quantity_done > 0
+        ).write({
+            'lot_produced_id': self.final_lot_id.id,
+            'lot_produced_qty': self.qty_producing
+        })
 
         # If last work order, then post lots used
         # TODO: should be same as checking if for every workorder something has been done?
@@ -353,7 +356,10 @@ class MrpWorkorder(models.Model):
                 raise UserError(_("You need to define at least one productivity loss in the category 'Performance'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
         for workorder in self:
             if workorder.production_id.state != 'progress':
-                workorder.production_id.state = 'progress'
+                workorder.production_id.write({
+                    'state': 'progress',
+                    'date_start': datetime.now(),
+                })
             timeline.create({
                 'workorder_id': workorder.id,
                 'workcenter_id': workorder.workcenter_id.id,
@@ -371,8 +377,6 @@ class MrpWorkorder(models.Model):
         self.ensure_one()
         self.end_all()
         self.write({'state': 'done', 'date_finished': fields.Datetime.now()})
-        if not self.production_id.workorder_ids.filtered(lambda x: x.state not in ('done','cancel')):
-            self.production_id.post_inventory() # User should put it to done manually
 
     @api.multi
     def end_previous(self, doall=False):

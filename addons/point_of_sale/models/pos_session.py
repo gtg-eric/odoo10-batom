@@ -19,7 +19,7 @@ class PosSession(models.Model):
             company_id = session.config_id.journal_id.company_id.id
             orders = session.order_ids.filtered(lambda order: order.state == 'paid')
             journal_id = self.env['ir.config_parameter'].sudo().get_param(
-                'pos.closing.journal_id', default=session.config_id.journal_id.id)
+                'pos.closing.journal_id_%s' % company_id, default=session.config_id.journal_id.id)
             move = self.env['pos.order'].with_context(force_company=company_id)._create_account_move(session.start_at, session.name, int(journal_id), company_id)
             orders.with_context(force_company=company_id)._create_account_move_line(session, move)
             for order in session.order_ids.filtered(lambda o: o.state != 'done'):
@@ -165,6 +165,8 @@ class PosSession(models.Model):
             pos_config.sudo().write({'journal_ids': [(6, 0, journals.ids)]})
 
         pos_name = self.env['ir.sequence'].with_context(ctx).next_by_code('pos.session')
+        if values.get('name'):
+            pos_name += ' ' + values['name']
 
         statements = []
         ABS = self.env['account.bank.statement']
@@ -223,6 +225,10 @@ class PosSession(models.Model):
     @api.multi
     def action_pos_session_closing_control(self):
         for session in self:
+            #DO NOT FORWARD-PORT
+            if session.state == 'closing_control':
+                session.action_pos_session_close()
+                continue
             for statement in session.statement_ids:
                 if (statement != session.cash_register_id) and (statement.balance_end != statement.balance_end_real):
                     statement.write({'balance_end_real': statement.balance_end})
@@ -265,3 +271,33 @@ class PosSession(models.Model):
             'target': 'self',
             'url':   '/pos/web/',
         }
+
+    @api.multi
+    def open_cashbox(self):
+        self.ensure_one()
+        context = dict(self._context)
+        balance_type = context.get('balance') or 'start'
+        context['bank_statement_id'] = self.cash_register_id.id
+        context['balance'] = balance_type
+        context['default_pos_id'] = self.config_id.id
+
+        action = {
+            'name': _('Cash Control'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'account.bank.statement.cashbox',
+            'view_id': self.env.ref('account.view_account_bnk_stmt_cashbox').id,
+            'type': 'ir.actions.act_window',
+            'context': context,
+            'target': 'new'
+        }
+
+        cashbox_id = None
+        if balance_type == 'start':
+            cashbox_id = self.cash_register_id.cashbox_start_id.id
+        else:
+            cashbox_id = self.cash_register_id.cashbox_end_id.id
+        if cashbox_id:
+            action['res_id'] = cashbox_id
+
+        return action

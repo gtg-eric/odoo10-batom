@@ -53,36 +53,29 @@ class PosOrder(models.Model):
         }
 
     # This deals with orders that belong to a closed session. In order
-    # to recover from this we:
-    # - assign the order to another compatible open session
-    # - if that doesn't exist, create a new one
+    # to recover from this situation we create a new rescue session,
+    # making it obvious that something went wrong.
+    # A new, separate, rescue session is preferred for every such recovery,
+    # to avoid adding unrelated orders to live sessions.
     def _get_valid_session(self, order):
         PosSession = self.env['pos.session']
         closed_session = PosSession.browse(order['pos_session_id'])
-        open_session = PosSession.search(
-            [('state', '=', 'opened'),
-             ('config_id', '=', closed_session.config_id.id),
-             ('user_id', '=', closed_session.user_id.id)],
-            limit=1, order="start_at DESC")
 
         _logger.warning('session %s (ID: %s) was closed but received order %s (total: %s) belonging to it',
                         closed_session.name,
                         closed_session.id,
                         order['name'],
                         order['amount_total'])
+        _logger.warning('attempting to create recovery session for saving order %s', order['name'])
+        new_session = PosSession.create({
+            'config_id': closed_session.config_id.id,
+            'name': _('(RESCUE FOR %(session)s)') % {'session': closed_session.name},
+            'rescue': True,    # avoid conflict with live sessions
+        })
+        # bypass opening_control (necessary when using cash control)
+        new_session.action_pos_session_open()
 
-        if open_session:
-            _logger.warning('using session %s (ID: %s) for order %s instead',
-                            open_session.name,
-                            open_session.id,
-                            order['name'])
-            return open_session
-        else:
-            _logger.warning('attempting to create new session for order %s', order['name'])
-            new_session = PosSession.create({'config_id': closed_session.config_id.id})
-            # bypass opening_control (necessary when using cash control)
-            new_session.action_pos_session_open()
-            return new_session
+        return new_session
 
     def _match_payment_to_invoice(self, order):
         account_precision = self.env['decimal.precision'].precision_get('Account')
@@ -215,7 +208,7 @@ class PosOrder(models.Model):
             if move is None:
                 # Create an entry for the sale
                 journal_id = self.env['ir.config_parameter'].sudo().get_param(
-                    'pos.closing.journal_id', default=order.sale_journal.id)
+                    'pos.closing.journal_id_%s' % current_company.id, default=order.sale_journal.id)
                 move = self._create_account_move(
                     order.session_id.start_at, order.name, int(journal_id), order.company_id.id)
 
@@ -408,7 +401,7 @@ class PosOrder(models.Model):
             # set name based on the sequence specified on the config
             session = self.env['pos.session'].browse(values['session_id'])
             values['name'] = session.config_id.sequence_id._next()
-            values.setdefault('session_id', session.config_id.pricelist_id.id)
+            values.setdefault('pricelist_id', session.config_id.pricelist_id.id)
         else:
             # fallback on any pos.order sequence
             values['name'] = self.env['ir.sequence'].next_by_code('pos.order')
@@ -609,7 +602,7 @@ class PosOrder(models.Model):
             if moves and not return_picking and not order_picking:
                 moves.action_confirm()
                 moves.force_assign()
-                moves.action_done()
+                moves.filtered(lambda m: m.product_id.tracking == 'none').action_done()
 
         return True
 
@@ -619,7 +612,8 @@ class PosOrder(models.Model):
         picking.action_confirm()
         picking.force_assign()
         self.set_pack_operation_lot(picking)
-        picking.action_done()
+        if not any([(x.product_id.tracking != 'none') for x in picking.pack_operation_ids]):
+            picking.action_done()
 
     def set_pack_operation_lot(self, picking=None):
         """Set Serial/Lot number in pack operations to mark the pack operation done."""
@@ -912,9 +906,7 @@ class ReportSaleDetails(models.AbstractModel):
 
     @api.multi
     def render_html(self, docids, data=None):
-        company = request.env.user.company_id
-        date_start = self.env.context.get('date_start', False)
-        date_stop = self.env.context.get('date_stop', False)
-        data = dict(data or {}, date_start=date_start, date_stop=date_stop)
-        data.update(self.get_sale_details(date_start, date_stop, company))
+        data = dict(data or {})
+        configs = self.env['pos.config'].browse(data['config_ids'])
+        data.update(self.get_sale_details(data['date_start'], data['date_stop'], configs))
         return self.env['report'].render('point_of_sale.report_saledetails', data)

@@ -229,12 +229,12 @@
                         <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}"/>
                     </div>
                     <t t-raw="0"/>
-                    <!-- div class="text-center" t-if="not disable_footer">
+                    <div class="text-center" t-if="not disable_footer">
                         <t t-if="not disable_database_manager">
                             <a class="" href="/web/database/manager">Manage Databases</a> |
                         </t>
                         <a href="https://www.odoo.com" target="_blank">Powered by <span>Odoo</span></a>
-                    </div-->
+                    </div>
                 </div>
             </div>
         </t>
@@ -256,13 +256,13 @@
                 </div>
 
                 <div class="form-group field-login">
-                    <label for="login" class="control-label">帳號 (Account)</label>
+                    <label for="login" class="control-label">Email</label>
                     <input type="text" name="login" t-att-value="login" id="login" class="form-control" required="required" autofocus="autofocus" autocapitalize="off"/>
                 </div>
 
                 <div class="form-group field-password">
-                    <label for="password" class="control-label">密碼 (Password)</label>
-                    <input type="password" name="password" id="password" class="form-control" required="required" t-att-autofocus="'autofocus' if login else None"/>
+                    <label for="password" class="control-label">Password</label>
+                    <input type="password" name="password" id="password" class="form-control" required="required" t-att-autofocus="'autofocus' if login else None" maxlength="4096"/>
                 </div>
 
                 <p class="alert alert-danger" t-if="error">
@@ -274,7 +274,7 @@
 
                 <input type="hidden" name="redirect" t-att-value="redirect"/>
                 <div class="clearfix oe_login_buttons">
-                    <button type="submit" class="btn btn-primary">登入 (Log in)</button>
+                    <button type="submit" class="btn btn-primary">Log in</button>
                 </div>
             </form>
         </t>
@@ -312,9 +312,9 @@
                 </div>
             </t>
         </div>
-        <!-- div class="o_sub_menu_footer">
+        <div class="o_sub_menu_footer">
             Powered by <a href="http://www.odoo.com" target="_blank"><span>Odoo</span></a>
-        </div -->
+        </div>
     </template>
     <template id="web.menu_secondary_submenu">
         <ul t-if="menu['children']" class="oe_secondary_submenu nav nav-pills nav-stacked">
