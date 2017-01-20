@@ -117,7 +117,7 @@ msgstr "取消激活開發者模式"
 #: code:addons/web_settings_dashboard/static/src/xml/dashboard.xml:66
 #, python-format
 msgid "Enter e-mail addresses (one per line)"
-msgstr "輸入郵件地址(每行一個)"
+msgstr "輸入郵件地址(各明細一個)"
 
 #. module: web_settings_dashboard
 #. openerp-web

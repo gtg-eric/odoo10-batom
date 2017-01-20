@@ -80,7 +80,7 @@ msgstr "允許"
 #. module: pos_mercury
 #: model:ir.model,name:pos_mercury.model_account_bank_statement_line
 msgid "Bank Statement Line"
-msgstr "銀行對帳單行"
+msgstr "銀行對帳單明細"
 
 #. module: pos_mercury
 #. openerp-web
@@ -223,7 +223,7 @@ msgid ""
 "For quickly handling orders: just swiping a credit card when on the payment screen\n"
 "                                (without having pressed anything else) will charge the full amount of the order to\n"
 "                                the card."
-msgstr "快速處理訂單：在支付屏幕只刷信用卡（不做其他任何操作）就會用卡支付訂單的總額"
+msgstr "快速處理訂單：在支付屏幕只刷信用卡（不做其他任何作業）就會用卡支付訂單的總額"
 
 #. module: pos_mercury
 #. openerp-web
@@ -452,7 +452,7 @@ msgstr "無效的商家ID"
 #: code:addons/pos_mercury/static/src/js/pos_mercury.js:204
 #, python-format
 msgid "Invalid Operator ID"
-msgstr "無效的操作符"
+msgstr "無效的作業符"
 
 #. module: pos_mercury
 #. openerp-web
@@ -907,8 +907,8 @@ msgid ""
 "                                can be swiped through the card reader device."
 msgstr ""
 "在銷售點使用Mercury集成比較容易：只要按下相關的付款方式。\n"
-"之後金額會像其他在其他付款行一樣能被調整。\n"
-"不管任何時候只要付款行建立起來，就可以通過讀卡設備刷卡"
+"之後金額會像其他在其他付款明細一樣能被調整。\n"
+"不管任何時候只要付款明細建立起來，就可以通過讀卡設備刷卡"
 
 #. module: pos_mercury
 #. openerp-web

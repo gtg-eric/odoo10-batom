@@ -21,4 +21,4 @@ msgstr ""
 #. module: purchase_mrp
 #: model:ir.model,name:purchase_mrp.model_purchase_order_line
 msgid "Purchase Order Line"
-msgstr "採購訂單行"
+msgstr "採購訂單明細"

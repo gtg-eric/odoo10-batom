@@ -921,7 +921,7 @@ msgid ""
 "Adapt these three columns to fit you design need.\n"
 "                        To duplicate, delete or move columns, select the\n"
 "                        column and use the top icons to perform your action."
-msgstr "適應這三個字段，以適應你的設計需求。複製，刪除或移動列，選擇列，並使用頂部的圖標來執行操作。"
+msgstr "適應這三個字段，以適應你的設計需求。複製，刪除或移動列，選擇列，並使用頂部的圖標來執行作業。"
 
 #. module: website
 #. openerp-web

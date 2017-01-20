@@ -29,7 +29,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_in_hr_payroll.field_payment_advice_report_nbr
 #: model:ir.ui.view,arch_db:l10n_in_hr_payroll.view_payment_advice_tree
 msgid "# Payment Lines"
-msgstr "＃付款行"
+msgstr "＃付款明細"
 
 #. module: l10n_in_hr_payroll
 #: model:ir.ui.view,arch_db:l10n_in_hr_payroll.view_payslip_tree
