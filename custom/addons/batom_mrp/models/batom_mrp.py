@@ -56,7 +56,10 @@ class BatomMrpWorkorder(models.Model):
             production = self.env["mrp.production"].browse(values['production_id']);
             if (production.product_id.tracking == 'lot' and
                     (not values.get('final_lot_id', False) or values['final_lot_id'] == None)):
-                lots = self.env["stock.production.lot"].search([('name', '=', production.name)])
+                lots = self.env["stock.production.lot"].search([
+                    ('product_id', '=', production.product_id.id),
+                    ('name', '=', production.name)
+                    ])
                 if len(lots) > 0:
                     values['final_lot_id'] = lots[0].id
                 else:
