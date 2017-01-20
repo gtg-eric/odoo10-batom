@@ -431,12 +431,12 @@ msgstr "合約"
 #. module: hr_recruitment
 #: model:hr.recruitment.stage,name:hr_recruitment.stage_job4
 msgid "Contract Proposal"
-msgstr "合同建議"
+msgstr "合約建議"
 
 #. module: hr_recruitment
 #: model:hr.recruitment.stage,name:hr_recruitment.stage_job5
 msgid "Contract Signed"
-msgstr "合同已簽署"
+msgstr "合約已簽署"
 
 #. module: hr_recruitment
 #: model:ir.ui.view,arch_db:hr_recruitment.hr_job_simple_form

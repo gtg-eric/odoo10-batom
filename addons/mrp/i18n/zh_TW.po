@@ -745,7 +745,7 @@ msgstr "成本結構"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_picking_type_count_mo_late
 msgid "Count mo late"
-msgstr "遲到mo計數"
+msgstr "延遲mo計數"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_picking_type_count_mo_todo
@@ -1341,7 +1341,7 @@ msgstr "最後更新時間"
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_work_order_search
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_workcenter_form_view_filter
 msgid "Late"
-msgstr "遲到"
+msgstr "延遲"
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:368

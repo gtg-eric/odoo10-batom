@@ -902,7 +902,7 @@ msgid ""
 "Create a task and track hours: Create a task on the sale order validation and track the work hours."
 msgstr ""
 "手動設置訂單數量：基於手動輸入的數量發票，而無需創建一個帳戶分析。\n"
-"合同時間表：基於跟蹤小時的相關時間表發票。\n"
+"合約時間表：基於跟蹤小時的相關時間表發票。\n"
 "創建任務和跟蹤時間：創建對銷售訂單驗證任務，並跟蹤工作時間。"
 
 #. module: delivery

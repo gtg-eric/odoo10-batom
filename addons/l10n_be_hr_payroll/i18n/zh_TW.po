@@ -46,7 +46,7 @@ msgstr "公司汽車的僱主"
 #. module: l10n_be_hr_payroll
 #: model:ir.model,name:l10n_be_hr_payroll.model_hr_contract
 msgid "Contract"
-msgstr "合同"
+msgstr "合約"
 
 #. module: l10n_be_hr_payroll
 #: model:ir.model.fields,field_description:l10n_be_hr_payroll.field_hr_employee_disabled_children_bool

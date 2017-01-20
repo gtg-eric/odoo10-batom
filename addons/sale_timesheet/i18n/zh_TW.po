@@ -219,7 +219,7 @@ msgid ""
 "You can use only one product on timesheet within the same sale order. You "
 "should split your order to include only one contract based on time and "
 "material."
-msgstr "在同一銷售訂單中你只能在工時表用一個產品。你應該把訂單分成只包含一份基於時間和材料的合同"
+msgstr "在同一銷售訂單中你只能在工時表用一個產品。你應該把訂單分成只包含一份基於時間和材料的合約"
 
 #. module: sale_timesheet
 #: code:addons/sale_timesheet/models/project.py:17

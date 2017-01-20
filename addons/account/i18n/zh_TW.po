@@ -623,7 +623,7 @@ msgstr "<strong>公司：</strong>"
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid "<strong>Contracts &amp; Subscriptions</strong>"
-msgstr "<strong>合同 &amp; 訂閱</strong>"
+msgstr "<strong>合約 &amp; 訂閱</strong>"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
@@ -5920,7 +5920,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid ""
 "Manage time &amp; material contracts or fixed-price recurring subscriptions."
-msgstr "管理工/料計價合同或者固定價格的經常性訂閱。"
+msgstr "管理工/料計價合約或者固定價格的經常性訂閱。"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
@@ -9636,7 +9636,7 @@ msgstr "使用批量存款"
 msgid ""
 "Use in conjunction with contracts to calculate your monthly revenue for "
 "multi-month contracts."
-msgstr "使用合同關聯，這樣可以針對連續多月的合同計算單月的營收"
+msgstr "使用合約關聯，這樣可以針對連續多月的合約計算單月的營收"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_invoice_refund

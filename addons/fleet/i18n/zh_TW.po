@@ -244,12 +244,12 @@ msgstr "車架號"
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_state
 msgid "Choose wheter the contract is still valid or not"
-msgstr "選擇合同是否依舊有效"
+msgstr "選擇合約是否依舊有效"
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_service_type_category
 msgid "Choose wheter the service refer to contracts, vehicle services or both"
-msgstr "選擇是服務合同還是車輛服務，或兩者的"
+msgstr "選擇是服務合約還是車輛服務，或兩者的"
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_tag_action
@@ -344,22 +344,22 @@ msgstr "合約"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_graph
 msgid "Contract Costs Per Month"
-msgstr "每月合同費用"
+msgstr "每月合約費用"
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_expiration_date
 msgid "Contract Expiration Date"
-msgstr "合同到期日期"
+msgstr "合約到期日期"
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_ins_ref
 msgid "Contract Reference"
-msgstr "合同參考"
+msgstr "合約參考"
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_start_date
 msgid "Contract Start Date"
-msgstr "合同開始日期"
+msgstr "合約開始日期"
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_cost_contract_id
@@ -367,12 +367,12 @@ msgstr "合同開始日期"
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_fuel_contract_id
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_services_contract_id
 msgid "Contract attached to this cost"
-msgstr "費用附加的合同"
+msgstr "費用附加的合約"
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
 msgid "Contract details"
-msgstr "合同細節"
+msgstr "合約細節"
 
 #. module: fleet
 #: model:ir.model,name:fleet.model_fleet_vehicle_log_contract
@@ -383,7 +383,7 @@ msgstr "車輛的合約信息"
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_tree
 msgid "Contract logs"
-msgstr "合同日誌"
+msgstr "合約日誌"
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_purchaser_id
@@ -427,7 +427,7 @@ msgstr "車輛相關的費用"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
 msgid "Cost that is paid only once at the creation of the contract"
-msgstr "合同創建時付的一次性費用"
+msgstr "合約創建時付的一次性費用"
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_cost_cost_subtype_id
@@ -466,7 +466,7 @@ msgstr ""
 msgid ""
 "Create a new contract automatically with all the same informations except "
 "for the date that will start at the end of current contract"
-msgstr "在年底開始的日期，自動創建一個新的與目前的合同相同的信息的合同"
+msgstr "在年底開始的日期，自動創建一個新的與目前的合約相同的信息的合約"
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_service_type_create_uid
@@ -528,14 +528,14 @@ msgstr "費用已形成的日期"
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_start_date
 msgid "Date when the coverage of the contract begins"
-msgstr "有效期內的合同的起始日期"
+msgstr "有效期內的合約的起始日期"
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_expiration_date
 msgid ""
 "Date when the coverage of the contract expirates (by default, one year after"
 " begin date)"
-msgstr "合同的覆蓋範圍的有效日期（默認情況下，開始日期一年之後）"
+msgstr "合約的覆蓋範圍的有效日期（默認情況下，開始日期一年之後）"
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_acquisition_date
@@ -599,13 +599,13 @@ msgid ""
 "Each contract (e.g.: leasing) may include several services\n"
 "                (reparation, insurances, periodic maintenance)."
 msgstr ""
-"每個合同(e.g.: 租用) 可能包含多個服務\n"
+"每個合約(e.g.: 租用) 可能包含多個服務\n"
 " (修理,保險,定期保養)."
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_service_types_action
 msgid "Each service can used in contracts, as a standalone service or both."
-msgstr "每種服務都可以以單個或同時在合同中使用."
+msgstr "每種服務都可以以單個或同時在合約中使用."
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_costs_view_search
@@ -763,7 +763,7 @@ msgstr "有逾期合約"
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_contract_renewal_due_soon
 msgid "Has Contracts to renew"
-msgstr "有合同待續簽"
+msgstr "有合約待續簽"
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_24
@@ -1028,7 +1028,7 @@ msgid ""
 "Manage all your contracts (leasing, insurances, etc.) with\n"
 "                their related services, costs. Odoo will automatically warn\n"
 "                you when some contracts have to be renewed."
-msgstr "管理你所有的合同(租賃，保險，等等)使用與他們相關的服務,費用.Odoo 會自動提醒你當合同需要更新時."
+msgstr "管理你所有的合約(租賃，保險，等等)使用與他們相關的服務,費用.Odoo 會自動提醒你當合約需要更新時."
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_11
@@ -1136,7 +1136,7 @@ msgstr "名字"
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_contract_renewal_name
 msgid "Name of contract to renew soon"
-msgstr "需馬上續簽合同的名稱"
+msgstr "需馬上續簽合約的名稱"
 
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,cost_frequency:0
@@ -1245,7 +1245,7 @@ msgid ""
 "Odoo helps you managing the costs for your different\n"
 "                vehicles. Costs are created automatically from services,\n"
 "                contracts (fixed or recurring) and fuel logs."
-msgstr "Odoo幫你管理不同汽車的成本費用.。成本費用被自動從服務，合同(固定或者定期的)和燃油記錄中創建."
+msgstr "Odoo幫你管理不同汽車的成本費用.。成本費用被自動從服務，合約(固定或者定期的)和燃油記錄中創建."
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_costs_reporting_action
@@ -1253,7 +1253,7 @@ msgstr "Odoo幫你管理不同汽車的成本費用.。成本費用被自動從�
 msgid ""
 "Odoo helps you managing the costs for your different vehicles\n"
 "          Costs are generally created from services and contract and appears here."
-msgstr "Odoo能幫你管理不同車輛的費用.費用從服務，合同中產生並顯示在這裡。"
+msgstr "Odoo能幫你管理不同車輛的費用.費用從服務，合約中產生並顯示在這裡。"
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_action
@@ -1389,7 +1389,7 @@ msgstr "加油明細"
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
 #, python-format
 msgid "Renew Contract"
-msgstr "續簽合同"
+msgstr "續簽合約"
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_12
@@ -1507,7 +1507,7 @@ msgstr "車輛服務"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
 msgid "Set Contract In Progress"
-msgstr "設置合同為履行中"
+msgstr "設置合約為履行中"
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_model_brand_image_small
@@ -1586,7 +1586,7 @@ msgstr "稅單"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
 msgid "Terminate Contract"
-msgstr "終結合同"
+msgstr "終結合約"
 
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,state:0
@@ -1822,7 +1822,7 @@ msgstr "車輛"
 #: model:ir.ui.menu,name:fleet.fleet_vehicle_log_contract_menu
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_search
 msgid "Vehicles Contracts"
-msgstr "車輛合同"
+msgstr "車輛合約"
 
 #. module: fleet
 #: model:ir.actions.act_window,name:fleet.fleet_vehicle_log_fuel_action
@@ -1949,7 +1949,7 @@ msgid ""
 "You will be able to manage your fleet by keeping track of the\n"
 "                contracts, services, fixed and recurring costs, odometers and\n"
 "                fuel logs associated to each vehicle."
-msgstr "您保留每輛車的相關的合同，服務，固定和定期的費用,里程數和加油記錄的軌跡來管理您的車隊."
+msgstr "您保留每輛車的相關的合約，服務，固定和定期的費用,里程數和加油記錄的軌跡來管理您的車隊."
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -2000,7 +2000,7 @@ msgstr "顯示這輛車的所有費用"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_form
 msgid "show the contract for this vehicle"
-msgstr "顯示該車輛的合同"
+msgstr "顯示該車輛的合約"
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_form

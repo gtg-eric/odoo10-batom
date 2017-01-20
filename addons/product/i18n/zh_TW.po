@@ -2394,7 +2394,7 @@ msgstr "可庫存產品"
 #: model:product.product,name:product.product_product_2
 #: model:product.template,name:product.product_product_2_product_template
 msgid "Support Contract (on timesheet)"
-msgstr "維護合同 ( 基於時間表 )"
+msgstr "維護合約 ( 基於時間表 )"
 
 #. module: product
 #: model:product.product,name:product.product_delivery_01

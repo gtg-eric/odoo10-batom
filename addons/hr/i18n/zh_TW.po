@@ -110,7 +110,7 @@ msgid ""
 "training. If you are passionate, motivate and flexible apply for this job, "
 "you will certainly join the best company ever."
 msgstr ""
-"一份全職工作，會與聰明的人在一個團隊中和一份有吸引力的薪酬。你會從一份完整的技術和功能培訓合同開始。如果你有足夠激情、激勵和靈活來申請這份工作，你肯定是加入了最好的公司。"
+"一份全職工作，會與聰明的人在一個團隊中和一份有吸引力的薪酬。你會從一份完整的技術和功能培訓合約開始。如果你有足夠激情、激勵和靈活來申請這份工作，你肯定是加入了最好的公司。"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -287,7 +287,7 @@ msgstr "顧問"
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Contact Information"
-msgstr "合同信息"
+msgstr "合約信息"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto

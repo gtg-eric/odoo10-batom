@@ -1376,7 +1376,7 @@ msgstr "草稿分揀計數"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_type_count_picking_late
 msgid "Count picking late"
-msgstr "遲到分揀計數"
+msgstr "延遲分揀計數"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_type_count_picking_ready
@@ -3131,12 +3131,12 @@ msgstr "最後更新時間"
 #: model:ir.ui.view,arch_db:stock.view_picking_internal_search
 #, python-format
 msgid "Late"
-msgstr "遲到"
+msgstr "延遲"
 
 #. module: stock
 #: model:ir.actions.act_window,name:stock.action_picking_tree_late
 msgid "Late Transfers"
-msgstr "遲到的調撥"
+msgstr "延遲的調撥"
 
 #. module: stock
 #: model:ir.actions.act_window,name:stock.action_stock_line_date

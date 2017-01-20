@@ -253,7 +253,7 @@ msgstr "最後更新時間"
 #. module: procurement
 #: model:ir.ui.view,arch_db:procurement.view_procurement_filter
 msgid "Late"
-msgstr "遲到"
+msgstr "延遲"
 
 #. module: procurement
 #: selection:procurement.rule,group_propagation_option:0

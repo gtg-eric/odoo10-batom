@@ -1351,7 +1351,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_case_form_view_oppor
 msgid "Contact Information"
-msgstr "合同信息"
+msgstr "合約信息"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_contact_name
@@ -2175,7 +2175,7 @@ msgstr ""
 msgid ""
 "If you have less than 200 contacts, we recommend you\n"
 "                                        to create them manually."
-msgstr "如果你的合同少於200個,我們推薦你自動創建它們."
+msgstr "如果你的合約少於200個,我們推薦你自動創建它們."
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -2642,7 +2642,7 @@ msgstr "自動合併所有處理"
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.base_partner_merge_automatic_wizard_form
 msgid "Merge Contacts"
-msgstr "合併合同"
+msgstr "合併合約"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.merge_opportunity_form
@@ -2652,7 +2652,7 @@ msgstr "合併線索/商機"
 #. module: crm
 #: model:ir.actions.act_window,name:crm.action_partner_merge
 msgid "Merge Selected Contacts"
-msgstr "合併選中的合同"
+msgstr "合併選中的合約"
 
 #. module: crm
 #: model:ir.actions.act_window,name:crm.action_merge_opportunities
@@ -2861,7 +2861,7 @@ msgstr "下一個活動已計劃"
 #. module: crm
 #: selection:crm.lead,kanban_state:0
 msgid "Next activity late"
-msgstr "下一個活動遲到"
+msgstr "下一個活動延遲"
 
 #. module: crm
 #: code:addons/crm/models/crm_lead.py:1095
@@ -2976,7 +2976,7 @@ msgid ""
 "                        Tell us how you sell and we will tell you what\n"
 "                        configuration will best fit your quotation process."
 msgstr ""
-"Odoo將在幾分鐘內幫助您創建,精良的,專業的報價和合同\n"
+"Odoo將在幾分鐘內幫助您創建,精良的,專業的報價和合約\n"
 "告訴我們你是怎麼賣的，我們將告訴你什麼\n"
 "配置將最適合您的報價過程。"
 
@@ -4167,7 +4167,7 @@ msgid ""
 "                                            subscription to a service, etc."
 msgstr ""
 "對於經常性帳單可以使用訂閱功能\n"
-"例如：年度服務合同，按月訂閱的服務等等"
+"例如：年度服務合約，按月訂閱的服務等等"
 
 #. module: crm
 #. openerp-web

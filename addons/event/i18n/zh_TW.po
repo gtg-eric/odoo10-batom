@@ -1589,7 +1589,7 @@ msgstr "銷售點（POS），報告定制介紹"
 #. module: event
 #: model:event.event,description:event.event_2
 msgid "Project management, Human resources, Contract management."
-msgstr "項目管理，人力資源，合同管理"
+msgstr "項目管理，人力資源，合約管理"
 
 #. module: event
 #: model:event.event,description:event.event_2

@@ -76,7 +76,7 @@ msgstr ""
 #: code:addons/hr_timesheet_sheet/static/src/xml/timesheet.xml:51
 #, python-format
 msgid "Click to add projects, contracts or analytic accounts."
-msgstr "點擊創建一個項目，合同或分析帳戶。"
+msgstr "點擊創建一個項目，合約或分析帳戶。"
 
 #. module: hr_timesheet_sheet
 #: model:ir.model,name:hr_timesheet_sheet.model_res_company
@@ -410,7 +410,7 @@ msgstr "工時單週期"
 msgid ""
 "Timesheets can also be invoiced to customers, depending on the\n"
 "                configuration of each project's related contract."
-msgstr "工單也可以開票給客戶，根據每個項目的合同配置"
+msgstr "工單也可以開票給客戶，根據每個項目的合約配置"
 
 #. module: hr_timesheet_sheet
 #: model:ir.actions.act_window,name:hr_timesheet_sheet.act_hr_timesheet_sheet_form

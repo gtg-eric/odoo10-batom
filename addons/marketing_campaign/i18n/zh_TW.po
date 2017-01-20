@@ -79,7 +79,7 @@ msgid ""
 "            contact, if a lead is not closed yet, etc."
 msgstr ""
 "一個活動可以有許多小的活動，例如發送郵件，打印信件，分配給一個團隊等等\n"
-"這些曉得活動在一些特定情景中被觸發；在第一個合同完成10天後，如果線索還沒有被關閉的話合同生成,等等。"
+"這些曉得活動在一些特定情景中被觸發；在第一個合約完成10天後，如果線索還沒有被關閉的話合約生成,等等。"
 
 #. module: marketing_campaign
 #: model:ir.model.fields,field_description:marketing_campaign.field_marketing_campaign_activity_server_action_id

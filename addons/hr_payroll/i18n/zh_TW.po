@@ -445,7 +445,7 @@ msgid ""
 "mandatory anymore and thus the rules applied will be all the rules set on "
 "the structure of all contracts of the employee valid for the chosen period"
 msgstr ""
-"設置依據所選合同在這個工資單上適用的規則。如果合同字段為空，這個字段也不是必輸的，這樣所有在所選期間內的所有設置在員工合同結構上的規則都生效。"
+"設置依據所選合約在這個工資單上適用的規則。如果合約字段為空，這個字段也不是必輸的，這樣所有在所選期間內的所有設置在員工合約結構上的規則都生效。"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contribution_register_note
@@ -1288,7 +1288,7 @@ msgstr "規則金額的計算方法"
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_input_contract_id
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_worked_days_contract_id
 msgid "The contract for which applied this input"
-msgstr "符合這些輸入的合同"
+msgstr "符合這些輸入的合約"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_line_condition_range_max
