@@ -730,7 +730,7 @@ msgstr "消耗在作業"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_quant_consumed_quant_ids
 msgid "Consumed quant ids"
-msgstr "消耗的份 ids"
+msgstr "消耗量 ids"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_production_workcenter_form_view_inherit
@@ -1991,7 +1991,7 @@ msgstr "生產"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_quant_produced_quant_ids
 msgid "Produced quant ids"
-msgstr "生產的份 ids"
+msgstr "生產量 ids"
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_product_product
@@ -2213,7 +2213,7 @@ msgstr "待處理的數量"
 #. module: mrp
 #: model:ir.model,name:mrp.model_stock_quant
 msgid "Quants"
-msgstr "份"
+msgstr "量"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter

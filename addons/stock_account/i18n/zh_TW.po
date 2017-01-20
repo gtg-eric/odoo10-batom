@@ -386,7 +386,7 @@ msgstr "產品模板"
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_stock_quant
 msgid "Quants"
-msgstr "份"
+msgstr "量"
 
 #. module: stock_account
 #: selection:product.category,property_cost_method:0

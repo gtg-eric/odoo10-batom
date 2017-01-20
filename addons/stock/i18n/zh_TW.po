@@ -2336,7 +2336,7 @@ msgstr "有報廢移動"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_quant_reserved_exist
 msgid "Has quants already reserved"
-msgstr "有早已保留的份"
+msgstr "有早已保留量"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_location_posz
@@ -2541,7 +2541,7 @@ msgstr "路線是否是全局的"
 msgid ""
 "If this is a negative quant, this will be the move that caused this negative"
 " quant."
-msgstr "如果這是一個負的份。將會因這個負的份被移動。"
+msgstr "如果這是一個負量。將會因這個負量被移動。"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_picking_type_use_create_lots
@@ -3195,7 +3195,7 @@ msgstr "鏈接的作業"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_quant_propagated_from_id
 msgid "Linked Quant"
-msgstr "鏈接的份"
+msgstr "鏈接量"
 
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_location_form
@@ -3658,7 +3658,7 @@ msgstr "補貨引起(創建)的庫存移動"
 #: model:ir.ui.view,arch_db:stock.view_move_form
 #: model:ir.ui.view,arch_db:stock.view_move_picking_form
 msgid "Moved Quants"
-msgstr "已移動的份"
+msgstr "已移動量"
 
 #. module: stock
 #: model:ir.actions.act_window,name:stock.act_product_stock_move_open
@@ -4934,7 +4934,7 @@ msgstr "已為這次移動保留的數量"
 #: model:ir.model.fields,field_description:stock.field_stock_production_lot_quant_ids
 #: model:ir.ui.view,arch_db:stock.view_quant_package_form
 msgid "Quants"
-msgstr "份"
+msgstr "量"
 
 #. module: stock
 #: model:stock.inventory.line,product_name:stock.stock_inventory_line_12
@@ -5169,12 +5169,12 @@ msgstr "已保留"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move_operation_link_reserved_quant_id
 msgid "Reserved Quant"
-msgstr "保留的份"
+msgstr "保留量"
 
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_move_form
 msgid "Reserved Quants"
-msgstr "保留的份"
+msgstr "保留量"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_quant_reservation_id
@@ -5184,7 +5184,7 @@ msgstr "保留給移動"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move_reserved_quant_ids
 msgid "Reserved quants"
-msgstr "保留的份"
+msgstr "保留量"
 
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_picking_form
@@ -5826,7 +5826,7 @@ msgid ""
 "operation and a stock move. Used at the stock_move_obj.action_done() time to"
 " avoid seeking a matching quant again"
 msgstr ""
-"本技術字段包含創建此鏈接的作業和移庫之間的份。被用於stock_move_obj.action_done() time來避免再次尋求一個匹配的份。"
+"本技術字段包含創建此鏈接的作業和移庫之間量。被用於stock_move_obj.action_done() time來避免再次尋求一個匹配量。"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_move_warehouse_id
@@ -5854,7 +5854,7 @@ msgstr ""
 msgid ""
 "Technical field used to depict a restriction on the ownership of quants to "
 "consider when marking this move as 'done'"
-msgstr "該技術字段用來描述當所有者的份移動標記為』完成『時的限制"
+msgstr "該技術字段用來描述當所有者量移動標記為』完成『時的限制"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_quant_negative_dest_location_id
@@ -6464,7 +6464,7 @@ msgstr "中轉位置"
 msgid ""
 "True if reserved quants changed, which mean we might need to recompute the "
 "package operations"
-msgstr "如果保留的份變化了，則為True，這意味著我們需要重新計算包裹作業"
+msgstr "如果保留量變化了，則為True，這意味著我們需要重新計算包裹作業"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_picking_type_code
