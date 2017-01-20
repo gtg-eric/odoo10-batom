@@ -730,7 +730,7 @@ msgstr "消耗在作業"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_quant_consumed_quant_ids
 msgid "Consumed quant ids"
-msgstr "消耗量 ids"
+msgstr "消耗定量 ids"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_production_workcenter_form_view_inherit
@@ -1991,7 +1991,7 @@ msgstr "生產"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_quant_produced_quant_ids
 msgid "Produced quant ids"
-msgstr "生產量 ids"
+msgstr "生產定量 ids"
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_product_product
@@ -2125,7 +2125,7 @@ msgstr "生產性時間"
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_mrp_workcenter_productive_time
 msgid "Productive hour(s) over the last month"
-msgstr ""
+msgstr "最近一個月的高生產力時數"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.mrp_workcenter_productivity_loss_action
