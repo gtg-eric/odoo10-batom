@@ -2615,7 +2615,7 @@ msgid ""
 "                                    And it remembers the most recent six devices you've used,\n"
 "                                    so reconnecting is even simpler."
 msgstr ""
-"演講者有30英尺的距離，這樣你就可以享受了沒有電線的聲音。它對你的智能手機，ipadR或其他藍牙設備。它還記得你最近使用的六個設備，所以連接就更簡單了。"
+"演講者有30英呎的距離，這樣你就可以享受了沒有電線的聲音。它對你的智能手機，ipadR或其他藍牙設備。它還記得你最近使用的六個設備，所以連接就更簡單了。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_packaging_qty
@@ -3143,7 +3143,7 @@ msgstr "fl oz"
 #. module: product
 #: model:product.uom,name:product.product_uom_foot
 msgid "foot(ft)"
-msgstr "英尺"
+msgstr "英呎"
 
 #. module: product
 #: model:product.uom,name:product.product_uom_gal
