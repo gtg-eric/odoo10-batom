@@ -39,15 +39,17 @@ _uomMapping = ({
     'Kg': 'kg',
     'M': 'm',
     'P C': 'PC',
+    'pc': 'PC',
+    'pcs': 'PCS',
     u'ＰＣ': 'PC',
-    u'英呎': 'foot(ft)',
-    u'桶': 'barrel',
+    'set': 'SET',
     })
 def _uomIdConversion(self, uom):
     uomModel = self.env['product.uom']
     uomCategoryModel = self.env['product.uom.categ']
     uomId = 1 # uom cannot be null
     if uom and uom.strip():
+        uom = uom.strip()
         if uom in _uomMapping:
             uom = _uomMapping[uom]
         uomIds = uomModel.search([('name', '=', uom)]).ids
@@ -57,10 +59,10 @@ def _uomIdConversion(self, uom):
             factor = 1
             rounding = 0.01
             uom_type = 'bigger'
-            if uom == 'barrel':
-                category_id = uomCategoryModel.search([('name', '=', 'Volume')])[0].id
+            if uom == u'桶':
+                category_id = uomCategoryModel.with_context(lang='en_US').search([('name', '=', 'Volume')])[0].id
             else:
-                category_id = uomCategoryModel.search([('name', '=', 'Unit')])[0].id
+                category_id = uomCategoryModel.with_context(lang='en_US').search([('name', '=', 'Unit')])[0].id
             uomValues = ({
                 'name': uom,
                 'category_id': category_id,
@@ -69,8 +71,8 @@ def _uomIdConversion(self, uom):
                 'uom_type': uom_type,
                 })
             odooUom = uomModel.create(uomValues)
-            if uom == 'barrel':
-                _updateTranslation(self, 'product.uom,name', odooUom.id, uom, u'桶')
+            if uom == u'桶':
+                _updateTranslation(self, 'product.uom,name', odooUom.id, 'barrel', uom)
             
     return uomId
     
@@ -95,7 +97,7 @@ def _updateTranslation(self, name, res_id, src, value):
         ('type', '=', type),
         ('name', '=', name),
         ('res_id', '=', res_id),
-        ('src', '=', src),
+        ('src', '=', value),
         ])
     if len(translations) == 0:
         translationModel.create(values)
@@ -104,10 +106,14 @@ def _updateTranslation(self, name, res_id, src, value):
         
 def _getSupplier(self, supplierCode, defaultIfNotFound):
     supplier = None
-    suppliers = self.env['res.partner'].search([
-        ('supplier', '=', True),
-        ('x_supplier_code', '=', supplierCode)
-        ])
+    if supplierCode != None:
+        suppliers = self.env['res.partner'].search([
+            ('supplier', '=', True),
+            ('x_supplier_code', '=', supplierCode)
+            ])
+    else:
+        suppliers = []
+    
     if len(suppliers) > 0:
         supplier =  suppliers[0]
     elif defaultIfNotFound:
@@ -268,7 +274,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
     def _contactDisplayName(self, type, companyName, contactName):
         try:
             if contactName != None and contactName and contactName.strip():
-                name = companyName + u', ' + contactName.decode('utf8')
+                name = companyName + u', ' + contactName.decode('utf-8')
             else:
                 types = ['contact', 'invoice', 'delivery', 'other']
                 names = [u'聯絡人', u'發票地址', u'送貨地址', u'其他地址']
@@ -800,14 +806,12 @@ class BatomMigrateProduct(models.TransientModel):
                     u"WHERE ProdId = '" + productId.decode('utf-8') + u"'"
                     ).fetchone()
                 if chiProduct != None:
-                    if chiProduct.EngName and chiProduct.EngName.strip():
-                        name = chiProduct.EngName
                     if chiProduct.ProdName and chiProduct.ProdName.strip():
                         name = chiProduct.ProdName
                     else:
                         name = chiProduct.ProdId
                     currency_id = _currencyIdConversion(self, chiProduct.CurrId)
-                    uom_id = _uomIdConversion(self, chiProduct.Unit)
+                    uom_id = _uomIdConversion(self, chiProduct.Unit.decode('utf-8'))
                     # ProdForm: 1-物料，2半成品，3-成品，4-採購件，5-組合品，6-非庫存品，7-非庫存品(管成本)，8-易耗品
                     # ClassId ClassName
                     # --------------
@@ -863,7 +867,9 @@ class BatomMigrateProduct(models.TransientModel):
                     else:
                         odooProduct = odooProducts[0]
                         odooProduct.write(productValues)
-                    _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, chiProduct.ProdName)
+                    if chiProduct.EngName and chiProduct.EngName.strip():
+                        engName = chiProduct.EngName
+                        _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 import pdb; pdb.set_trace()
@@ -883,13 +889,11 @@ class BatomMigrateProduct(models.TransientModel):
             try:
                 odooProducts = productModel.search([('default_code', '=', inProduct.ProdId)])
                 if len(odooProducts) == 0:
-                    if inProduct.EngName and inProduct.EngName.strip():
-                        name = inProduct.EngName
-                    elif inProduct.ProdName and inProduct.ProdName.strip():
+                    if inProduct.ProdName and inProduct.ProdName.strip():
                         name = inProduct.ProdName
                     else:
                         name = inProduct.ProdId
-                    uom_id = _uomIdConversion(self, inProduct.Unit)
+                    uom_id = _uomIdConversion(self, inProduct.Unit.decode('utf-8'))
                     sale_ok = False
                     purchase_ok = False
                     type = 'product'
@@ -908,7 +912,9 @@ class BatomMigrateProduct(models.TransientModel):
                         })
                     
                     odooProduct = productModel.create(productValues)
-                    _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, inProduct.ProdName)
+                    if inProduct.EngName and inProduct.EngName.strip():
+                        engName = inProduct.EngName
+                        _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
@@ -925,9 +931,6 @@ class BatomMigrateProduct(models.TransientModel):
         nDone = 0
         for process in processes:
             try:
-                #if process.Remark and process.Remark.strip():
-                #    name = process.Remark
-                #else:
                 name = process.ProgramName
                 sale_ok = False
                 purchase_ok = True
@@ -948,7 +951,9 @@ class BatomMigrateProduct(models.TransientModel):
                 else:
                     odooProduct = odooProducts[0]
                     odooProduct.write(productValues)
-                #_updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProgramName)
+                if process.Remark and process.Remark.strip():
+                    engName = process.Remark
+                    _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
@@ -968,9 +973,6 @@ class BatomMigrateProduct(models.TransientModel):
                 if process.ProcessId and process.ProcessId.strip():
                     odooProducts = productModel.search([('default_code', '=', process.ProcessId)])
                     if len(odooProducts) == 0:
-                        #if process.Remark and process.Remark.strip():
-                        #    name = process.Remark
-                        #else:
                         name = process.ProcessName
                         sale_ok = False
                         purchase_ok = True
@@ -986,7 +988,9 @@ class BatomMigrateProduct(models.TransientModel):
                             })
                         
                         odooProduct = productModel.create(productValues)
-                        #_updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, process.ProcessName)
+                        if process.Remark and process.Remark.strip():
+                            engName = process.Remark
+                            _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue
@@ -1052,6 +1056,43 @@ class BatomMigrateProduct(models.TransientModel):
 class BatomMigrateBom(models.TransientModel):
     _name = "batom.migrate_bom"
     _description = "Migrate BoM"
+    _defaultMaterialAcquisitionProcess = None
+    _defaultMaterialAcquisitionWorkcenter = None
+    
+    def _getDefaultMaterialAcquisitionProcess(self):
+        process = None
+        code = 'MTAC'
+        name = '領料'
+        try:
+            processes = self.env['product.template'].search([
+                ('x_is_process', '=', True),
+                ('default_code', '=', code)
+                ])
+            if len(processes) > 0:
+                process = processes[0]
+            else:
+                sale_ok = False
+                purchase_ok = True
+                type = 'service'
+                process = self.env['product.product'].create({
+                    'name': name,
+                    'default_code': code,
+                    'x_saved_code': code,
+                    'type': type,
+                    'sale_ok': sale_ok,
+                    'purchase_ok': purchase_ok,
+                    'x_is_process': True,
+                    })
+                _updateTranslation(self, 'product.template,name', process.product_tmpl_id.id, 'material acquisition', name)
+        except Exception:
+            _logger.warning('Exception in migrate_bom:', exc_info=True)
+            
+        return process
+    
+    def _getDefaultMaterialAcquisitionWorkcenter(self):
+        if self._defaultMaterialAcquisitionProcess == None:
+            self._defaultMaterialAcquisitionProcess = self._getDefaultMaterialAcquisitionProcess()
+        return _getWorkcenter(self, self._defaultMaterialAcquisitionProcess.default_code, None, True)
     
     def _createRouting(self, chiBom, chiBomMaterials, chiBomProcesses):
         odooRouting = None
@@ -1067,27 +1108,47 @@ class BatomMigrateBom(models.TransientModel):
                     ])
                 if len(odooRoutings) <= 0:
                     routingValues = ({
-                        'code': u'~' + chiBom.ProductId.decode('utf8') + u"#" + str(chiBom.ItemNo),
-                        'name': u'RO/' + chiBom.ProductName.decode('utf8') + u" #" + str(chiBom.ItemNo),
+                        'code': u'~' + chiBom.ProductId.decode('utf-8') + u"#" + str(chiBom.ItemNo),
+                        'name': u'RO/' + chiBom.ProductName.decode('utf-8') + u" #" + str(chiBom.ItemNo),
                         'x_product_id': productTemplate.id,
                         'x_batom_bom_no': chiBom.ItemNo,
-                        'note': u'由正航 ' + chiBom.ProductId.decode('utf8') + u'(' + chiBom.ProductName.decode('utf8') + u') BoM自動產生的製程路徑',
+                        'note': u'由正航 ' + chiBom.ProductId.decode('utf-8') + u'(' + chiBom.ProductName.decode('utf-8') + u') BoM自動產生的製程路徑',
                         })
                     odooRouting = routingModel.create(routingValues)
                     routingWorkcenterModel = self.env['mrp.routing.workcenter']
                     sequence = 0
-                    for chiBomProcess in chiBomProcesses:
-                        odooSupplier = _getSupplier(self, chiBomProcess.Producer, True)
-                        odooWorkcenter = _getWorkcenter(self, chiBomProcess.MkPgmId, chiBomProcess.Producer, True)
+                    if len(chiBomMaterials) > 0:
+                        if self._defaultMaterialAcquisitionWorkcenter == None:
+                            self._defaultMaterialAcquisitionWorkcenter = self._getDefaultMaterialAcquisitionWorkcenter()
+                        odooWorkcenter = self._defaultMaterialAcquisitionWorkcenter
+                        time_cycle_manual = 1
                         sequence += 5
                         routingWorkcenterValues = ({
                             'sequence': sequence,
                             'name': odooWorkcenter.x_process_id.name,
                             'workcenter_id': odooWorkcenter.id,
                             'routing_id': odooRouting.id,
-                            'note': u'由正航 ' + chiBom.ProductId.decode('utf8') + u'(' + chiBom.ProductName.decode('utf8') + u') BoM自動產生的製程作業',
+                            'note': u'由正航 ' + chiBom.ProductId.decode('utf-8') + u'(' + chiBom.ProductName.decode('utf-8') + u') BoM自動產生的' + odooWorkcenter.x_process_id.name + u'作業',
                             'time_mode': 'manual',
-                            'time_cycle_manual': chiBomProcess.WorkTimeOfBatch,
+                            'time_cycle_manual': time_cycle_manual,
+                            })
+                        routingWorkcenter = routingWorkcenterModel.create(routingWorkcenterValues)
+                    for chiBomProcess in chiBomProcesses:
+                        odooWorkcenter = _getWorkcenter(self, chiBomProcess.MkPgmId, chiBomProcess.Producer, True)
+                        import pdb; pdb.set_trace()
+                        time_cycle_manual = (
+                            1 if (chiBomProcess.WorkTimeOfBatch == None or chiBomProcess.WorkTimeOfBatch <= 0)
+                            else chiBomProcess.WorkTimeOfBatch
+                            )
+                        sequence += 5
+                        routingWorkcenterValues = ({
+                            'sequence': sequence,
+                            'name': odooWorkcenter.x_process_id.name,
+                            'workcenter_id': odooWorkcenter.id,
+                            'routing_id': odooRouting.id,
+                            'note': u'由正航 ' + chiBom.ProductId.decode('utf-8') + u'(' + chiBom.ProductName.decode('utf-8') + u') BoM自動產生的' + odooWorkcenter.x_process_id.name + u'作業',
+                            'time_mode': 'manual',
+                            'time_cycle_manual': time_cycle_manual,
                             })
                         routingWorkcenter = routingWorkcenterModel.create(routingWorkcenterValues)
         except Exception:
@@ -1100,16 +1161,40 @@ class BatomMigrateBom(models.TransientModel):
         bomLineModel.search([('bom_id', '=', odooBom.id)]).unlink()
         routingWorkcenterModel = self.env['mrp.routing.workcenter']
         routingWorkcenters = routingWorkcenterModel.search([
-            ('routing_id', '=', odooRouting.id),],
+            ('routing_id', '=', odooRouting.id)],
             order='sequence',
             )
+        if self._defaultMaterialAcquisitionProcess == None:
+            self._defaultMaterialAcquisitionProcess = self._getDefaultMaterialAcquisitionProcess()
         idxMaterials = 0
         idxProcesses = 0
         sequence = 0
         while idxMaterials < len(chiBomMaterials) or idxProcesses < len(chiBomProcesses):
             try:
                 bomLineValues = None
-                if (idxMaterials < len(chiBomMaterials) and
+                if sequence == 0 and len(chiBomMaterials) > 0:
+                    # add the material acquisition process as the first process
+                    product = self._defaultMaterialAcquisitionProcess
+                    if product == None:
+                        _logger.warning('_defaultMaterialAcquisitionProcess not found in migrate_bom:', exc_info=True)
+                    else:
+                        routing_id = None
+                        operation_id = None
+                        # first routingWorkcenter is the added material acquisition workcenter
+                        if len(routingWorkcenters) > 0:
+                            routing_id = odooRouting.id
+                            operation_id = routingWorkcenters[0].id
+                        sequence += 5
+                        bomLineValues = ({
+                            'bom_id': odooBom.id,
+                            'sequence': sequence,
+                            'product_id': product.id,
+                            'product_qty': 1,
+                            'product_uom_id': product.uom_id.id,
+                            'routing_id': routing_id,
+                            'operation_id': operation_id,
+                            })
+                elif (idxMaterials < len(chiBomMaterials) and
                         (idxProcesses >= len(chiBomProcesses) or 
                         chiBomMaterials[idxMaterials].SerNo <= chiBomProcesses[idxProcesses].SerNo
                         )):
@@ -1119,10 +1204,10 @@ class BatomMigrateBom(models.TransientModel):
                     else:
                         routing_id = None
                         operation_id = None
-                        # assuming routingWorkcenters got one to one correspondence with chiBomProcesses
-                        if idxProcesses < len(routingWorkcenters):
+                        # first routingWorkcenter is the added material acquisition workcenter
+                        if len(routingWorkcenters) > 0:
                             routing_id = odooRouting.id
-                            operation_id = routingWorkcenters[idxProcesses].id
+                            operation_id = routingWorkcenters[0].id
                         sequence += 5
                         bomLineValues = ({
                             'bom_id': odooBom.id,
@@ -1142,9 +1227,10 @@ class BatomMigrateBom(models.TransientModel):
                         routing_id = None
                         operation_id = None
                         # assuming routingWorkcenters got one to one correspondence with chiBomProcesses
-                        if idxProcesses < len(routingWorkcenters):
+                        # skipping the first routingWorkcenter as it is the added material acquisition workcenter
+                        if idxProcesses + 1 < len(routingWorkcenters):
                             routing_id = odooRouting.id
-                            operation_id = routingWorkcenters[idxProcesses].id
+                            operation_id = routingWorkcenters[idxProcesses + 1].id
                         sequence += 5
                         bomLineValues = ({
                             'bom_id': odooBom.id,
@@ -1175,16 +1261,16 @@ class BatomMigrateBom(models.TransientModel):
                 chiBomMaterials = cursorChi.execute(
                     u"SELECT SerNo, SubProdId, QtyOfBatch "
                     u"FROM prdBOMMats "
-                    u"WHERE ProductId='" + chiBom.ProductId.decode('utf8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
+                    u"WHERE ProductId='" + chiBom.ProductId.decode('utf-8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
                     u"ORDER BY SerNo").fetchall()
                 chiBomProcesses = cursorChi.execute(
                     u"SELECT SerNo, MkPgmId, ProdtClass, Producer, DailyProdtQty, PrepareDays, WorkTimeOfBatch, PriceOfProc "
                     u"FROM prdBOMPgms "
-                    u"WHERE MainProdId='" + chiBom.ProductId.decode('utf8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
+                    u"WHERE MainProdId='" + chiBom.ProductId.decode('utf-8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
                     u"ORDER BY SerNo").fetchall()
                 odooRouting = self._createRouting(chiBom, chiBomMaterials, chiBomProcesses)
                 bomValues = ({
-                    'code': u'~' + chiBom.ProductId.decode('utf8') + u"#" + str(chiBom.ItemNo),
+                    'code': u'~' + chiBom.ProductId.decode('utf-8') + u"#" + str(chiBom.ItemNo),
                     'product_tmpl_id': template.id,
                     'x_batom_bom_no': chiBom.ItemNo,
                     'x_version_description': chiBom.CurVersion,
@@ -1269,7 +1355,7 @@ class BatomMigrateBom(models.TransientModel):
                         for addedVariantValueId in addedVariantValueIds:
                             addedVariantValue = productAttributeValueModel.browse(addedVariantValueId)
                             perProductProcessCode = processProductTemplate.default_code + u'->' + addedVariantValue.name
-                            perProductProcessName = processProductTemplate.name + u'->' + chiBom.ProductName.decode('utf8')
+                            perProductProcessName = processProductTemplate.name + u'->' + chiBom.ProductName.decode('utf-8')
                             for product in addedVariantValue.product_ids:
                                 product.write({
                                     'default_code': perProductProcessCode,
@@ -1320,7 +1406,7 @@ class BatomMigrateBom(models.TransientModel):
                 chiBomProcesses = cursorChi.execute(
                     u"SELECT SerNo, MkPgmId, ProdtClass, Producer, DailyProdtQty, PrepareDays, WorkTimeOfBatch, PriceOfProc "
                     u"FROM prdBOMPgms "
-                    u"WHERE MainProdId='" + chiBom.ProductId.decode('utf8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
+                    u"WHERE MainProdId='" + chiBom.ProductId.decode('utf-8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
                     u"ORDER BY SerNo").fetchall()
                 self._createProcessPrice(applicableProductAttribute, chiBom, chiBomProcesses)
             except Exception:
@@ -1339,13 +1425,11 @@ class BatomMigrateBom(models.TransientModel):
             try:
                 odooProducts = productModel.search([('default_code', '=', inProduct.ProdId)])
                 if len(odooProducts) == 0:
-                    #if inProduct.EngName and inProduct.EngName.strip():
-                    #    name = inProduct.EngName
                     if inProduct.ProdName and inProduct.ProdName.strip():
                         name = inProduct.ProdName
                     else:
                         name = inProduct.ProdId
-                    uom_id = _uomIdConversion(self, inProduct.Unit)
+                    uom_id = _uomIdConversion(self, inProduct.Unit.decode('utf-8'))
                     sale_ok = False
                     purchase_ok = False
                     type = 'product'
@@ -1361,7 +1445,9 @@ class BatomMigrateBom(models.TransientModel):
                         })
                     
                     odooProduct = productModel.create(productValues)
-                    #_updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, name, inProduct.ProdName)
+                    if inProduct.EngName and inProduct.EngName.strip():
+                        engName = inProduct.EngName
+                        _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 continue

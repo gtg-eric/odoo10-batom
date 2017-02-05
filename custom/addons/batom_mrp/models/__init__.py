@@ -2,4 +2,4 @@
 # Copyright <2016> <Batom Co., Ltd.>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from . import batom_mrp
+from . import batom_mrp, batom_inprocess_move

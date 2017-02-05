@@ -13,7 +13,8 @@ This application supports complete integration and production scheduling for sto
         </record>
         
         <record id="sequence_mrp_prod" model="ir.sequence">
-            <field name="name">Production order</field>
+            <!--field name="name">Production order</field-->
+            <field name="name">製令單</field>
             <field name="code">mrp.production</field>
             <field name="prefix">MO/</field>
             <field name="padding">5</field>
@@ -22,7 +23,8 @@ This application supports complete integration and production scheduling for sto
         </record>
 
         <record id="sequence_mrp_route" model="ir.sequence">
-            <field name="name">Routing</field>
+            <!--field name="name">Routing</field-->
+            <field name="name">製程路徑</field>
             <field name="code">mrp.routing</field>
             <field name="prefix">RO/</field>
             <field name="padding">5</field>
@@ -60,17 +62,20 @@ This application supports complete integration and production scheduling for sto
             <field name="sequence">1</field>
         </record>
         <record id="block_reason1" model="mrp.workcenter.productivity.loss">
-            <field name="name">Equipment Failure</field>
+            <!--field name="name">Equipment Failure</field-->
+            <field name="name">設備異常</field>
             <field name="loss_type">availability</field>
             <field name="sequence">2</field>
         </record>
         <record id="block_reason2" model="mrp.workcenter.productivity.loss">
-            <field name="name">Setup and Adjustments</field>
+            <!--field name="name">Setup and Adjustments</field-->
+            <field name="name">設定、調整</field>
             <field name="loss_type">availability</field>
             <field name="sequence">3</field>
         </record>
         <record id="block_reason4" model="mrp.workcenter.productivity.loss">
-            <field name="name">Reduced Speed</field>
+            <!--field name="name">Reduced Speed</field-->
+            <field name="name">低於預設效率生產時間</field>
             <field name="loss_type">performance</field>
             <field name="manual" eval="False"/>
             <field name="sequence">5</field>
@@ -86,7 +91,8 @@ This application supports complete integration and production scheduling for sto
             <field name="sequence">7</field>
         </record>
         <record id="block_reason7" model="mrp.workcenter.productivity.loss">
-            <field name="name">Fully Productive Time</field>
+            <!--field name="name">Fully Productive Time</field-->
+            <field name="name">全效率生產時間</field>
             <field name="loss_type">productive</field>
             <field name="manual" eval="False"/>
             <field name="sequence">0</field>
