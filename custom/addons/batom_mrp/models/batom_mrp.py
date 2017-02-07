@@ -133,7 +133,7 @@ class BatomMrpWorkorder(models.Model):
             ('source_workorder_id', '=', self.id),
             ('state', 'in', ['processed', 'qc', 'qcok', 'transport', 'done']),
             ])
-        self.qty_qc = sum(moves.mapped('product_qty'))
+        self.qty_processed = sum(moves.mapped('product_qty'))
 
     @api.one
     @api.depends('inprocess_move_trigger')

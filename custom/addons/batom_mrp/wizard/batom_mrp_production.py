@@ -207,23 +207,11 @@ class BatomRecordProduction(models.Model):
         if self.qty_to_inspect <= 0:
             error_message = _("Please enter a quantity higher than 0 for the quantity to receieve.")
         else:
-            max_qty = self.workorder_id.qty_processed - self._in_process_move_qty_by_state(self.workorder_id, False, ['qc', 'qcok', 'transport', 'done'])
+            max_qty = self._in_process_move_qty_by_state(self.workorder_id, False, ['processed'])
             if self.qty_to_inspect > max_qty:
                 error_message = _("The quantity to inspect, %d, is greater than available %d.")%(self.qty_to_inspect, max_qty)
             else:
-                self.env['batom.mrp.inprocess_move'].create({
-                    'name': self.production_id.name + u'/' + self.workorder_id.name,
-                    'product_id': self.product_id.id,
-                    'product_qty': self.qty_to_inspect,
-                    'production_id': self.production_id.id,
-                    'source_workorder_id': self.workorder_id.id,
-                    'dest_workorder_id': self.workorder_id.next_work_order_id.id,
-                    'source_operation_id': self.workorder_id.operation_id.id,
-                    'dest_operation_id': self.workorder_id.next_work_order_id.operation_id.id,
-                    'source_partner_id': self.workorder_id.operation_id.workcenter_id.x_supplier_id.id,
-                    'dest_partner_id': self.workorder_id.next_work_order_id.operation_id.workcenter_id.x_supplier_id.id,
-                    'state': 'qc',
-                    })
+                self._change_in_process_move_state(self.qty_to_inspect, self.workorder_id, False, ['processed'], 'qc')
                 self._trigger_field_recomputing(self.workorder_id, False, False)
             
         if error_message:
@@ -240,7 +228,7 @@ class BatomRecordProduction(models.Model):
                 error_message = _("The quantity for QC passed, %d, is greater than available %d.")%(self.qty_to_qcok, max_qty)
             else:
                 self._change_in_process_move_state(self.qty_to_qcok, self.workorder_id, False, ['qc'], 'qcok')
-                self._trigger_field_recomputing(self.workorder_id, False, True)
+                self._trigger_field_recomputing(self.workorder_id, False, False)
             
         if error_message:
             raise UserError(error_message)
@@ -255,8 +243,8 @@ class BatomRecordProduction(models.Model):
             if self.qty_to_return > max_qty:
                 error_message = _("The quantity to return, %d, is greater than available %d.")%(self.qty_to_return, max_qty)
             else:
-                self._change_in_process_move_state(self.qty_to_return, self.workorder_id, False, ['qc'], 'cancel')
-                self._trigger_field_recomputing(self.workorder_id, False, True)
+                self._change_in_process_move_state(self.qty_to_return, self.workorder_id, False, ['qc'], 'processed')
+                self._trigger_field_recomputing(self.workorder_id, False, False)
             
         if error_message:
             raise UserError(error_message)
@@ -268,12 +256,12 @@ class BatomRecordProduction(models.Model):
         if self.qty_to_rework <= 0:
             error_message = _("Please enter a quantity higher than 0 for the quantity to receieve.")
         else:
-            max_qty = self.workorder_id.qty_processed - self._in_process_move_qty_by_state(self.workorder_id, False, ['qc', 'qcok', 'transport', 'done'])
+            max_qty = self._in_process_move_qty_by_state(self.workorder_id, False, ['processed'])
             if self.qty_to_rework > max_qty:
                 error_message = _("The quantity to rework, %d, is greater than available %d.")%(self.qty_to_rework, max_qty)
             else:
-                self.workorder_id.qty_processed = self.workorder_id.qty_processed - self.qty_to_rework
-                self._trigger_field_recomputing(self.workorder_id, False, True)
+                self._change_in_process_move_state(self.qty_to_rework, self.workorder_id, False, ['processed'], 'cancel')
+                self._trigger_field_recomputing(self.workorder_id, False, False)
             
         if error_message:
             raise UserError(error_message)
@@ -355,6 +343,7 @@ class BatomRecordProduction(models.Model):
                             'dest_partner_id': quant.dest_partner_id.id,
                             'state': to_state,
                             })
+                        qty_to_change = 0
 
     def _trigger_field_recomputing(self, workorder, trigger_prev, trigger_next):
         workorder.inprocess_move_trigger = workorder.inprocess_move_trigger + 1
