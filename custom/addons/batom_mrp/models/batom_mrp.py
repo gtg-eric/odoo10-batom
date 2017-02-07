@@ -79,7 +79,7 @@ class BatomMrpWorkorder(models.Model):
     inprocess_move_trigger = fields.Integer('field recomputing trigger', default=0)
     qty_processed = fields.Float(
         'Quantity', compute='_compute_qty_processed',
-        readonly=True,
+        readonly=True, store=True,
         digits=dp.get_precision('Product Unit of Measure'),
         help="The number of products already processed by this work order")
     qty_in = fields.Float(

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!--  Change Product Quantity -->
+        <record id="view_record_production_wizard" model="ir.ui.view">
+            <field name="name">Record Production Progress</field>
+            <field name="model">batom.record.production</field>
+            <field name="arch" type="xml">
+                <form string="Record Production Progress">
+                    <group>
+                        <field name="material_id" invisible="1"/>
+                        <field name="qty_to_receive" attrs="{'invisible': [('qty_to_receive', '=', 0)]}"/>
+                        <field name="qty_to_reject" attrs="{'invisible': [('qty_to_reject', '=', 0)]}"/>
+                        <field name="qty_processed_addition" attrs="{'invisible': [('qty_processed_addition', '=', 0)]}"/>
+                        <field name="consumed_lot_id" context="{'default_product_id': material_id}"
+                            options="{'no_quick_create':True,'no_create_edit':True}"
+                            attrs="{'invisible': [('material_id', '=', False)]}"/>
+                        <field name="qty_to_inspect" attrs="{'invisible': [('qty_to_inspect', '=', 0)]}"/>
+                        <field name="qty_to_qcok" attrs="{'invisible': [('qty_to_qcok', '=', 0)]}"/>
+                        <field name="qty_to_return" attrs="{'invisible': [('qty_to_return', '=', 0)]}"/>
+                        <field name="qty_to_rework" attrs="{'invisible': [('qty_to_rework', '=', 0)]}"/>
+                        <field name="qty_to_next_process" attrs="{'invisible': [('qty_to_next_process', '=', 0)]}"/>
+                        <field name="qty_processed_to_new_routing" attrs="{'invisible': [('qty_processed_to_new_routing', '=', 0)]}"/>
+                        <field name="qty_unprocessed_to_new_routing" attrs="{'invisible': [('qty_unprocessed_to_new_routing', '=', 0)]}"/>
+                        <field name="workorder_id" invisible="1"/>
+                        <field name="production_id" invisible="1"/>
+                        <field name="product_id" invisible="1"/>
+                    </group>
+                    <footer>
+                        <button name="receive_product" string="Confirm Received"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_to_receive', '=', 0)]}"/>
+                        <button name="reject_product" string="Reject Receiving"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_to_reject', '=', 0)]}"/>
+                        <button name="add_processed_qty" string="Add Processed"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_processed_addition', '=', 0)]}"/>
+                        <button name="send_inspection" string="Send for Inspection"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_to_inspect', '=', 0)]}"/>
+                        <button name="inspection_ok" string="Inspected OK"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_to_qcok', '=', 0)]}"/>
+                        <button name="inspection_return" string="Inspection Return"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_to_return', '=', 0)]}"/>
+                        <button name="rework" string="Rework"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_to_rework', '=', 0)]}"/>
+                        <button name="to_next" string="To Next Process"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_to_next_process', '=', 0)]}"/>
+                        <button name="processed_to_new_routing" string="Processed to New MO"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_processed_to_new_routing', '=', 0)]}"/>
+                        <button name="unprocessed_to_new_routing" string="Unprocessed to New MO"
+                            colspan="1" type="object" class="btn-primary"
+                            attrs="{'invisible': [('qty_unprocessed_to_new_routing', '=', 0)]}"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="act_record_production" model="ir.actions.act_window">
+            <field name="name">Record Production Progress</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.record.production</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+       
+    </data>
+</odoo>    
