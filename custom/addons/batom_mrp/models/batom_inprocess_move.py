@@ -43,9 +43,6 @@ class BatomMrpInProcessMove(models.Model):
         'mrp.workorder', 'Source Workorder',
         auto_join=True, index=True, required=False, states={'done': [('readonly', True)]},
         )
-    dest_production_id = fields.Many2one('mrp.production', 'Destination Production Order',
-        auto_join=True, index=True, required=False, states={'done': [('readonly', True)]},
-        )
     dest_workorder_id = fields.Many2one(
         'mrp.workorder', 'Destination Workorder',
         auto_join=True, index=True, required=False, states={'done': [('readonly', True)]},
@@ -68,7 +65,8 @@ class BatomMrpInProcessMove(models.Model):
         )
     note = fields.Text('Notes')
     state = fields.Selection([
-        ('draft', 'New'), ('cancel', 'Cancelled'), ('qc', 'Under Inspection'),
+        ('draft', 'New'), ('cancel', 'Cancelled'),
+        ('processed', 'Ready for QC'), ('qc', 'Under QC'), ('qcok', 'QC OK'),
         ('transport', 'In Transport'), ('done', 'Done')], string='Status',
         copy=False, default='draft', index=True, readonly=True,
         )

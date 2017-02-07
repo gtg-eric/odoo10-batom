@@ -49,10 +49,14 @@ class BatomMrpProduction(models.Model):
     @api.multi
     def _generate_workorders(self, exploded_boms):
         workorders = super(BatomMrpProduction, self)._generate_workorders(exploded_boms)
-        prev_workorder = None
+        prev_workorder = False
         for workorder in workorders:
-            if prev_workorder != None:
-                workorder.prev_work_order_id = prev_workorder.id
+            if prev_workorder:
+                workorder.write({
+                    'prev_work_order_id': prev_workorder.id,
+                    'inprocess_move_trigger': workorder.inprocess_move_trigger + 1,
+                })
+            prev_workorder = workorder
         return workorders
 
 class BatomChangeProductionQty(models.TransientModel):
@@ -72,21 +76,27 @@ class BatomMrpWorkorder(models.Model):
     _inherit = 'mrp.workorder'
 
     prev_work_order_id = fields.Many2one('mrp.workorder', "Previous Work Order")
+    inprocess_move_trigger = fields.Integer('field recomputing trigger', default=0)
+    qty_processed = fields.Float(
+        'Quantity', compute='_compute_qty_processed',
+        readonly=True,
+        digits=dp.get_precision('Product Unit of Measure'),
+        help="The number of products already processed by this work order")
     qty_in = fields.Float(
         'Quantity received', compute='_compute_qty_in',
-        readonly=True,
+        readonly=True, store=True,
         digits=dp.get_precision('Product Unit of Measure'),
-        help="The number of products received and to be handled by this work order")
+        help="The number of products received and to be processed by this work order")
     qty_qc = fields.Float(
         'Quantity under QC', compute='_compute_qty_qc',
-        readonly=True,
+        readonly=True, store=True,
         digits=dp.get_precision('Product Unit of Measure'),
-        help="The number of products already handled and hanaded out by this work order")
-    qty_out = fields.Float(
-        'Quantity handed out', compute='_compute_qty_out',
-        readonly=True,
+        help="The number of products already processed and under inspection by this work order")
+    qty_produced = fields.Float(
+        'Quantity handed out', compute='_compute_qty_produced',
+        readonly=True, store=True,
         digits=dp.get_precision('Product Unit of Measure'),
-        help="The number of products already handled and hanaded out by this work order")
+        help="The number of products already processed and hanaded out by this work order")
     qty_wasted = fields.Float(
         'Quantity wasted', compute='_compute_qty_wasted',
         readonly=True,
@@ -98,7 +108,7 @@ class BatomMrpWorkorder(models.Model):
         if values.get('production_id', False):
             production = self.env["mrp.production"].browse(values['production_id']);
             if (production.product_id.tracking == 'lot' and
-                    (not values.get('final_lot_id', False) or values['final_lot_id'] == None)):
+                    (not values.get('final_lot_id', False) or not values['final_lot_id'])):
                 lots = self.env["stock.production.lot"].search([
                     ('product_id', '=', production.product_id.id),
                     ('name', '=', production.name)
@@ -116,7 +126,17 @@ class BatomMrpWorkorder(models.Model):
         return workorder
 
     @api.one
-    @api.depends('production_id')
+    @api.depends('inprocess_move_trigger')
+    def _compute_qty_processed(self):
+        moves = self.env['batom.mrp.inprocess_move'].search([
+            ('production_id', '=', self.production_id.id),
+            ('source_workorder_id', '=', self.id),
+            ('state', 'in', ['processed', 'qc', 'qcok', 'transport', 'done']),
+            ])
+        self.qty_qc = sum(moves.mapped('product_qty'))
+
+    @api.one
+    @api.depends('inprocess_move_trigger')
     def _compute_qty_in(self):
         if self.prev_work_order_id:
             moves = self.env['batom.mrp.inprocess_move'].search([
@@ -129,7 +149,7 @@ class BatomMrpWorkorder(models.Model):
             self.qty_in = self.production_id.x_product_qty_origin
 
     @api.one
-    @api.depends('production_id')
+    @api.depends('inprocess_move_trigger')
     def _compute_qty_qc(self):
         moves = self.env['batom.mrp.inprocess_move'].search([
             ('production_id', '=', self.production_id.id),
@@ -139,14 +159,14 @@ class BatomMrpWorkorder(models.Model):
         self.qty_qc = sum(moves.mapped('product_qty'))
 
     @api.one
-    @api.depends('production_id')
-    def _compute_qty_out(self):
+    @api.depends('inprocess_move_trigger')
+    def _compute_qty_produced(self):
         moves = self.env['batom.mrp.inprocess_move'].search([
             ('production_id', '=', self.production_id.id),
             ('source_workorder_id', '=', self.id),
-            ('state', 'in', ['transport', 'done']),
+            ('state', 'in', ['done']),
             ])
-        self.qty_out = sum(moves.mapped('product_qty'))
+        self.qty_produced = sum(moves.mapped('product_qty'))
 
     @api.one
     @api.depends('production_id')

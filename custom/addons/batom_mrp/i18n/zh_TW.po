@@ -6,14 +6,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-05 14:21+0000\n"
-"PO-Revision-Date: 2017-02-05 14:21+0000\n"
+"POT-Creation-Date: 2017-02-07 02:54+0000\n"
+"PO-Revision-Date: 2017-02-07 02:54+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Add Processed"
+msgstr "完工"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_batom_mrp_inprocess_move
@@ -41,9 +46,14 @@ msgid "CHI BoM # for Generated Routing"
 msgstr "CHI BoM # for Generated Routing"
 
 #. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Cancel"
+msgstr "取消"
+
+#. module: batom_mrp
 #: selection:batom.mrp.inprocess_move,state:0
 msgid "Cancelled"
-msgstr "Cancelled"
+msgstr "註銷"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_change_production_qty
@@ -56,14 +66,30 @@ msgid "Company"
 msgstr "公司"
 
 #. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Confirm Received"
+msgstr "驗收"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_consumed_lot_id
+msgid "Consumed Lot"
+msgstr "原料批號"
+
+#. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
 msgid "Continue Production"
 msgstr "繼續生產"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_create_uid
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_create_uid
 msgid "Created by"
 msgstr "創建人"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_create_date
+msgid "Created on"
+msgstr "創建時間"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_create_date
@@ -83,32 +109,28 @@ msgstr "說明"
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_dest_operation_id
 msgid "Destination Operation"
-msgstr "Destination Operation"
+msgstr "目的製程"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_dest_partner_id
 msgid "Destination Operation Partner"
-msgstr "Destination Operation Partner"
-
-#. module: batom_mrp
-#: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_dest_production_id
-msgid "Destination Production Order"
-msgstr "Destination Production Order"
+msgstr "目的製程供應商"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_dest_workorder_id
 msgid "Destination Workorder"
-msgstr "Destination Workorder"
+msgstr "目的工單"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_display_name
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_display_name
 msgid "Display Name"
 msgstr "顯示名稱"
 
 #. module: batom_mrp
 #: selection:batom.mrp.inprocess_move,state:0
 msgid "Done"
-msgstr "Done"
+msgstr "完成"
 
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
@@ -116,14 +138,30 @@ msgid "Finish Order"
 msgstr "完成工單"
 
 #. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.search_online_stock_filter
+msgid "Group By"
+msgstr "分組"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_id
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_id
 msgid "ID"
 msgstr "ID"
 
 #. module: batom_mrp
 #: selection:batom.mrp.inprocess_move,state:0
 msgid "In Transport"
-msgstr "In Transport"
+msgstr "運送中"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Inspected OK"
+msgstr "檢驗通過"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Inspection Return"
+msgstr "檢驗退回"
 
 #. module: batom_mrp
 #: model:res.groups,name:batom_mrp.make_invisible
@@ -132,23 +170,33 @@ msgstr "Invisible"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move___last_update
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production___last_update
 msgid "Last Modified on"
 msgstr "最後修改日"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_write_uid
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_write_uid
 msgid "Last Updated by"
 msgstr "最後更新人"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_write_date
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_write_date
 msgid "Last Updated on"
 msgstr "最後更新時間"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_mrp_production
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_production_id
+#: model:ir.ui.view,arch_db:batom_mrp.search_online_stock_filter
 msgid "Manufacturing Order"
-msgstr "Manufacturing Order"
+msgstr "製令單"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_material_id
+msgid "Material"
+msgstr "原料"
 
 #. module: batom_mrp
 #: model:ir.model.fields,help:batom_mrp.field_batom_mrp_inprocess_move_date
@@ -166,6 +214,13 @@ msgid "Notes"
 msgstr "備註"
 
 #. module: batom_mrp
+#: model:ir.actions.act_window,name:batom_mrp.action_mrp_online_stock
+#: model:ir.ui.menu,name:batom_mrp.menu_mrp_online_stock
+#: model:ir.ui.view,arch_db:batom_mrp.view_online_stock_tree
+msgid "Online Inventory"
+msgstr "線上庫存"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_production_x_product_qty_origin
 msgid "Original Quantity To Produce"
 msgstr "Original Quantity To Produce"
@@ -176,9 +231,38 @@ msgid "Pause"
 msgstr "暫停"
 
 #. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:139
+#, python-format
+msgid "Please enter a quantity higher than 0 for the processed quantity to be added."
+msgstr "Please enter a quantity higher than 0 for the processed quantity to be added."
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:105
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:122
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:208
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:236
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:252
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:269
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:286
+#, python-format
+msgid "Please enter a quantity higher than 0 for the quantity to receieve."
+msgstr "Please enter a quantity higher than 0 for the quantity to receieve."
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:146
+#, python-format
+msgid "Please provide a lot for the consumed material."
+msgstr "請選擇原料批號。"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_prev_work_order_id
 msgid "Previous Work Order"
 msgstr "Previous Work Order"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.search_online_stock_filter
+msgid "Process Name"
+msgstr "製程名稱"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_workcenter_x_process_id
@@ -186,9 +270,26 @@ msgid "Process for Generated Work Center"
 msgstr "自動生成的工作中心的製程"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_processed_addition
+msgid "Processed Quantity Addition"
+msgstr "新增已完工數量"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Processed to New MO"
+msgstr "已完工轉子製令"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_product_id
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_product_id
+#: model:ir.ui.view,arch_db:batom_mrp.search_online_stock_filter
 msgid "Product"
 msgstr "產品"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.search_online_stock_filter
+msgid "Product Lots Filter"
+msgstr "產品批次篩選"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_routing_x_product_id
@@ -208,22 +309,33 @@ msgstr "Production quantity to descrease"
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
 msgid "Progress"
-msgstr "進度"
+msgstr "報工"
+
+#. module: batom_mrp
+#: selection:batom.mrp.inprocess_move,state:0
+msgid "QC OK"
+msgstr "合格"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_product_qty
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_processed
 msgid "Quantity"
 msgstr "數量"
 
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
 msgid "Quantity In (Wasted) / Inspecting / Out"
-msgstr "已出/品檢中/已入數量"
+msgstr "已入(報廢)/檢驗中/出量"
 
 #. module: batom_mrp
-#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_out
-msgid "Quantity handed out"
-msgstr "已出數量"
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_processed_to_new_routing
+msgid "Quantity Processed to New Routing"
+msgstr "已完工轉子製令數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_unprocessed_to_new_routing
+msgid "Quantity Unprocessed to New Routing"
+msgstr "未完工轉子製令數量"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_in
@@ -231,14 +343,75 @@ msgid "Quantity received"
 msgstr "已入數量"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_to_receive
+msgid "Quantity to Receive"
+msgstr "驗收數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_to_reject
+msgid "Quantity to Reject Receiving"
+msgstr "拒收數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_to_inspect
+msgid "Quantity to Send for Inspection"
+msgstr "送驗數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_to_qcok
+msgid "Quantity to be QC passed"
+msgstr "檢驗通過數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_to_return
+msgid "Quantity to be returned"
+msgstr "檢驗退回數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_to_rework
+msgid "Quantity to be reworked"
+msgstr "重工數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_to_inspect
+msgid "Quantity to be sent for inspection"
+msgstr "Quantity to be sent for inspection"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_to_next_process
+msgid "Quantity to be sent to next process"
+msgstr "送下製程數量"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_qc
 msgid "Quantity under QC"
-msgstr "Quantity under QC"
+msgstr "檢驗中數量"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_wasted
 msgid "Quantity wasted"
 msgstr "耗損數量"
+
+#. module: batom_mrp
+#: selection:batom.mrp.inprocess_move,state:0
+msgid "Ready for QC"
+msgstr "準備送驗"
+
+#. module: batom_mrp
+#: model:ir.actions.act_window,name:batom_mrp.act_record_production
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Record Production Progress"
+msgstr "生產進度通報"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Reject Receiving"
+msgstr "拒收"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Rework"
+msgstr "重工"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_mrp_routing
@@ -249,6 +422,11 @@ msgstr "製程路徑"
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
 msgid "Scrap"
 msgstr "報廢"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Send for Inspection"
+msgstr "送驗"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_sequence
@@ -263,12 +441,12 @@ msgstr "Source Operation"
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_source_partner_id
 msgid "Source Operation Partner"
-msgstr "Source Operation Partner"
+msgstr "源製程供應商"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_source_workorder_id
 msgid "Source Workorder"
-msgstr "Source Workorder"
+msgstr "源工單"
 
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
@@ -281,6 +459,11 @@ msgid "Status"
 msgstr "狀態"
 
 #. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.search_online_stock_filter
+msgid "Supplier"
+msgstr "供應商"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_workcenter_x_supplier_id
 msgid "Supplier for Generated Work Center"
 msgstr "自動生成的製程路徑的供應商"
@@ -291,20 +474,125 @@ msgid "TPM Big Losses"
 msgstr "TPM 大損失"
 
 #. module: batom_mrp
-#: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_out
 #: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_qc
-msgid "The number of products already handled and hanaded out by this work order"
-msgstr "本工單已跑完製程且移出的數量"
+msgid "The number of products already processed and under inspection by this work order"
+msgstr "The number of products already processed and under inspection by this work order"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_processed
+msgid "The number of products already processed by this work order"
+msgstr "The number of products already processed by this work order"
 
 #. module: batom_mrp
 #: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_in
-msgid "The number of products received and to be handled by this work order"
-msgstr "本工單已收到可跑製程的數量"
+msgid "The number of products received and to be processed by this work order"
+msgstr "The number of products received and to be processed by this work order"
 
 #. module: batom_mrp
 #: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_wasted
 msgid "The number of products wasted in the process by this work order"
 msgstr "本供單製程中耗損的數量"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:240
+#, python-format
+msgid "The quantity for QC passed, %d, is greater than available %d."
+msgstr "檢驗通過數量 %d 大於可用數量 %d。"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:156
+#, python-format
+msgid "The quantity of the lot you selected is %d that is leass than %d."
+msgstr "您所選擇的批號庫存量是 %d，少於需求量 %d。"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:143
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:183
+#, python-format
+msgid "The quantity to be added, %d, is greater than available %d."
+msgstr "新增數量 %d 大於可用數量 %d。"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:109
+#, python-format
+msgid "The quantity to be received, %d, is greater than available %d."
+msgstr "驗收數量 %d 大於可用數量 %d。"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:126
+#, python-format
+msgid "The quantity to be rejected, %d, is greater than available %d."
+msgstr "拒收數量 %d 大於可用數量 %d。"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:212
+#, python-format
+msgid "The quantity to inspect, %d, is greater than available %d."
+msgstr "送驗數量 %d 大於可用數量 %d。"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:256
+#, python-format
+msgid "The quantity to return, %d, is greater than available %d."
+msgstr "退回數量 %d 大於可用數量 %d。"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:273
+#, python-format
+msgid "The quantity to rework, %d, is greater than available %d."
+msgstr "重工數量 %d 大於可用數量 %d。"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:290
+#, python-format
+msgid "The quantity to send to next process, %d, is greater than available %d."
+msgstr "送下製程數量 %d 大於可用數量 %d。"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_to_qcok
+msgid "The quantity will be added for sending to the next process"
+msgstr "The quantity will be added for sending to the next process"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_processed_addition
+msgid "The quantity will be added to the quanity processed"
+msgstr "The quantity will be added to the quanity processed"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_to_receive
+msgid "The quantity will be added to the quanity received"
+msgstr "The quantity will be added to the quanity received"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_to_next_process
+msgid "The quantity will be added to the quantity out"
+msgstr "The quantity will be added to the quantity out"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_to_rework
+msgid "The quantity will be descreased from the quantity processed"
+msgstr "The quantity will be descreased from the quantity processed"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_to_return
+msgid "The quantity will be descreased from the quantity to be inspected"
+msgstr "The quantity will be descreased from the quantity to be inspected"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_processed_to_new_routing
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_unprocessed_to_new_routing
+msgid "The quantity will be removed from current production order and a new sub-production order will be created accordingly"
+msgstr "The quantity will be removed from current production order and a new sub-production order will be created accordingly"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_batom_record_production_qty_to_reject
+msgid "The quantity will be returned to the previous process"
+msgstr "The quantity will be returned to the previous process"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "To Next Process"
+msgstr "送下製程"
 
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
@@ -313,8 +601,13 @@ msgstr "解除阻塞"
 
 #. module: batom_mrp
 #: selection:batom.mrp.inprocess_move,state:0
-msgid "Under Inspection"
-msgstr "Under Inspection"
+msgid "Under QC"
+msgstr "檢驗中"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
+msgid "Unprocessed to New MO"
+msgstr "未完工轉子製令"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_stock_scrap_x_update_production_qty
@@ -333,8 +626,19 @@ msgstr "工作中心"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_mrp_workorder
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_workorder_id
 msgid "Work Order"
 msgstr "工單"
+
+#. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_batom_record_production
+msgid "batom.record.production"
+msgstr "batom.record.production"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_inprocess_move_trigger
+msgid "field recomputing trigger"
+msgstr "field recomputing trigger"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_stock_scrap

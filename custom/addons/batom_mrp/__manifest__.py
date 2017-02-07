@@ -14,6 +14,7 @@
         'mrp',
     ],
     'data': [
+        'wizard/batom_mrp_production.xml',
         'views/views.xml',
     ],
     'demo': [
