@@ -1135,7 +1135,6 @@ class BatomMigrateBom(models.TransientModel):
                         routingWorkcenter = routingWorkcenterModel.create(routingWorkcenterValues)
                     for chiBomProcess in chiBomProcesses:
                         odooWorkcenter = _getWorkcenter(self, chiBomProcess.MkPgmId, chiBomProcess.Producer, True)
-                        import pdb; pdb.set_trace()
                         time_cycle_manual = (
                             1 if (chiBomProcess.WorkTimeOfBatch == None or chiBomProcess.WorkTimeOfBatch <= 0)
                             else chiBomProcess.WorkTimeOfBatch
