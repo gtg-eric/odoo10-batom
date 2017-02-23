@@ -62,14 +62,44 @@ class BatomMrpProduction(models.Model):
 class BatomChangeProductionQty(models.TransientModel):
     #_name = 'batom.change.production.qty'
     _inherit = 'change.production.qty'
+    triggered_by_scrapping = fields.Boolean(default=False)
 
     @api.multi
-    def change_prod_qty(self):
+    def change_prod_qty(self, triggered_by_scrapping = False):
         super(BatomChangeProductionQty, self).change_prod_qty()
         for wizard in self:
             production = wizard.mo_id
             if production.exists():
-                production.x_product_qty_origin = production.product_qty
+                if not self.triggered_by_scrapping:
+                    # manual update from manufacture order 
+                    scrap_qty = 0
+                    crap_product_quants_data = self.env['stock.scrap'].read_group(
+                        [('production_id', '=', production.id)],
+                        ['product_id', 'scrap_qty'],
+                        ['product_id']
+                        )
+                    for product_scrap_qty in crap_product_quants_data:
+                        bom_product_quants = self.env['mrp.bom.line'].search([
+                            ('bom_id', '=', production.bom_id.id), ('product_id', '=', product_scrap_qty['product_id'][0])
+                            ])
+                        bom_product_quant_total = sum(bom_product_quants.mapped('product_qty'))
+                        if bom_product_quant_total > 0:
+                            new_scrap_qty = math.ceil(product_scrap_qty['scrap_qty'] / bom_product_quant_total)
+                            if scrap_qty < new_scrap_qty:
+                                scrap_qty = new_scrap_qty
+                    production.x_product_qty_origin = production.product_qty + scrap_qty
+                for wo in production.workorder_ids:
+                    operation = wo.operation_id
+                    if production.product_id.tracking == 'serial':
+                        quantity = 1.0
+                    else:
+                        quantity = wo.qty_production - wo.qty_processed
+                        quantity = quantity if (quantity > 0) else 0
+                    wo.qty_producing = quantity
+                    if wo.qty_produced < wo.qty_production and wo.state == 'done':
+                        wo.state = 'progress'
+                    
+                    wo.inprocess_move_trigger = wo.inprocess_move_trigger + 1
 
 class BatomMrpWorkorder(models.Model):
     #_name = 'batom.mrp.workorder'
@@ -82,26 +112,51 @@ class BatomMrpWorkorder(models.Model):
         readonly=True, store=True,
         digits=dp.get_precision('Product Unit of Measure'),
         help="The number of products already processed by this work order")
+    qty_arrived = fields.Float(
+        'Quantity Arrived', compute='_compute_qty_arrived',
+        readonly=True, store=True,
+        digits=dp.get_precision('Product Unit of Measure'),
+        help="The number of products to be received by this work order")
     qty_in = fields.Float(
-        'Quantity received', compute='_compute_qty_in',
+        'Quantity Received', compute='_compute_qty_in',
         readonly=True, store=True,
         digits=dp.get_precision('Product Unit of Measure'),
         help="The number of products received and to be processed by this work order")
+    qty_to_qc = fields.Float(
+        'Quantity to QC', compute='_compute_qty_to_qc',
+        readonly=True, store=True,
+        digits=dp.get_precision('Product Unit of Measure'),
+        help="The number of products already processed and ready for inspection by this work order")
     qty_qc = fields.Float(
         'Quantity under QC', compute='_compute_qty_qc',
         readonly=True, store=True,
         digits=dp.get_precision('Product Unit of Measure'),
         help="The number of products already processed and under inspection by this work order")
-    qty_produced = fields.Float(
-        'Quantity handed out', compute='_compute_qty_produced',
+    qty_qcok = fields.Float(
+        'Quantity Passed QC', compute='_compute_qty_qcok',
         readonly=True, store=True,
         digits=dp.get_precision('Product Unit of Measure'),
-        help="The number of products already processed and hanaded out by this work order")
+        help="The number of products already processed and inspected by this work order")
+    qty_out = fields.Float(
+        'Quantity Out', compute='_compute_qty_out',
+        readonly=True, store=True,
+        digits=dp.get_precision('Product Unit of Measure'),
+        help="The number of products already processed and sent to the next process")
+    qty_produced = fields.Float(
+        'Quantity Produced', compute='_compute_qty_produced',
+        readonly=True, store=True,
+        digits=dp.get_precision('Product Unit of Measure'),
+        help="The number of products already processed and accepted by this work order")
     qty_wasted = fields.Float(
         'Quantity wasted', compute='_compute_qty_wasted',
         readonly=True,
         digits=dp.get_precision('Product Unit of Measure'),
         help="The number of products wasted in the process by this work order")
+    qty_wasted_accumulated = fields.Float(
+        'Quantity wasted accumulated', compute='_compute_qty_wasted_accumulated',
+        readonly=True,
+        digits=dp.get_precision('Product Unit of Measure'),
+        help="The number of products wasted up to this work order")
 
     @api.model
     def create(self, values):
@@ -126,6 +181,13 @@ class BatomMrpWorkorder(models.Model):
         return workorder
 
     @api.one
+    @api.depends('production_id.product_qty', 'qty_produced', 'inprocess_move_trigger')
+    def _compute_is_produced(self):
+        self.is_produced = (self.qty_produced >= self.production_id.product_qty and
+            self.qty_produced >= self.qty_in - self.qty_wasted and
+            (not self.prev_work_order_id or self.prev_work_order_id.is_produced))
+
+    @api.one
     @api.depends('inprocess_move_trigger')
     def _compute_qty_processed(self):
         moves = self.env['batom.mrp.inprocess_move'].search([
@@ -134,6 +196,19 @@ class BatomMrpWorkorder(models.Model):
             ('state', 'in', ['processed', 'qc', 'qcok', 'transport', 'done']),
             ])
         self.qty_processed = sum(moves.mapped('product_qty'))
+
+    @api.one
+    @api.depends('inprocess_move_trigger')
+    def _compute_qty_arrived(self):
+        if self.prev_work_order_id:
+            moves = self.env['batom.mrp.inprocess_move'].search([
+                ('production_id', '=', self.production_id.id),
+                ('source_workorder_id', '=', self.prev_work_order_id.id),
+                ('state', 'in', ['transport']),
+                ])
+            self.qty_arrived = sum(moves.mapped('product_qty'))
+        else:
+            self.qty_arrived = 0
 
     @api.one
     @api.depends('inprocess_move_trigger')
@@ -146,7 +221,21 @@ class BatomMrpWorkorder(models.Model):
                 ])
             self.qty_in = sum(moves.mapped('product_qty'))
         else:
-            self.qty_in = self.production_id.x_product_qty_origin
+            quants = self.env['stock.scrap'].search([
+                ('production_id', '=', self.production_id.id),
+                ('workorder_id', '=', False)
+                ])
+            self.qty_in = self.production_id.x_product_qty_origin - sum(quants.mapped('x_production_qty_to_decrease'))
+
+    @api.one
+    @api.depends('inprocess_move_trigger')
+    def _compute_qty_to_qc(self):
+        moves = self.env['batom.mrp.inprocess_move'].search([
+            ('production_id', '=', self.production_id.id),
+            ('source_workorder_id', '=', self.id),
+            ('state', 'in', ['processed']),
+            ])
+        self.qty_to_qc = sum(moves.mapped('product_qty'))
 
     @api.one
     @api.depends('inprocess_move_trigger')
@@ -160,6 +249,26 @@ class BatomMrpWorkorder(models.Model):
 
     @api.one
     @api.depends('inprocess_move_trigger')
+    def _compute_qty_qcok(self):
+        moves = self.env['batom.mrp.inprocess_move'].search([
+            ('production_id', '=', self.production_id.id),
+            ('source_workorder_id', '=', self.id),
+            ('state', 'in', ['qcok']),
+            ])
+        self.qty_qcok = sum(moves.mapped('product_qty'))
+
+    @api.one
+    @api.depends('inprocess_move_trigger')
+    def _compute_qty_out(self):
+        moves = self.env['batom.mrp.inprocess_move'].search([
+            ('production_id', '=', self.production_id.id),
+            ('source_workorder_id', '=', self.id),
+            ('state', 'in', ['transport']),
+            ])
+        self.qty_out = sum(moves.mapped('product_qty'))
+
+    @api.one
+    @api.depends('inprocess_move_trigger')
     def _compute_qty_produced(self):
         moves = self.env['batom.mrp.inprocess_move'].search([
             ('production_id', '=', self.production_id.id),
@@ -169,13 +278,24 @@ class BatomMrpWorkorder(models.Model):
         self.qty_produced = sum(moves.mapped('product_qty'))
 
     @api.one
-    @api.depends('production_id')
     def _compute_qty_wasted(self):
         quants = self.env['stock.scrap'].search([
             ('production_id', '=', self.production_id.id),
             ('workorder_id', '=', self.id)
             ])
         self.qty_wasted = sum(quants.mapped('x_production_qty_to_decrease'))
+
+    @api.one
+    def _compute_qty_wasted_accumulated(self):
+        if self.prev_work_order_id:
+            self.qty_wasted_accumulated = self.qty_wasted + self.prev_work_order_id.qty_wasted_accumulated
+        else:
+            quants = self.env['stock.scrap'].search([
+                ('production_id', '=', self.production_id.id),
+                ('workorder_id', '=', False)
+                ])
+            self.qty_wasted_accumulated = self.qty_wasted + sum(quants.mapped('x_production_qty_to_decrease'))
+            
 
 class BatomMrpWorkcenter(models.Model):
     #_name = 'batom.mrp.workcenter.productivity.loss'
@@ -193,7 +313,7 @@ class BatomStockScrap(models.Model):
         rc = super(BatomStockScrap, self).do_scrap()
         if rc:
             for scrap in self:
-                if scrap.x_update_production_qty and scrap.production_id != False:
+                if scrap.x_update_production_qty and scrap.workorder_id != False:
                     production = scrap.production_id
                     if production.exists():
                         bom_product_quants = self.env['mrp.bom.line'].search([('bom_id', '=', scrap.production_id.bom_id.id), ('product_id', '=', scrap.product_id.id)])
@@ -212,16 +332,36 @@ class BatomStockScrap(models.Model):
                                     product_qty = production.product_qty - qty_to_decrease
                                 else:
                                     product_qty = 0
-                                production.product_qty = product_qty
+                                change_product_qty = self.env['change.production.qty'].create({
+                                        'mo_id': self.production_id.id,
+                                        'product_qty': product_qty,
+                                        'triggered_by_scrapping': True,
+                                    })
+                                change_product_qty.change_prod_qty()
                                 
                                 for wo in production.workorder_ids:
                                     operation = wo.operation_id
                                     if production.product_id.tracking == 'serial':
                                         quantity = 1.0
                                     else:
-                                        quantity = wo.qty_production - wo.qty_produced
+                                        quantity = wo.qty_production - wo.qty_processed
                                         quantity = quantity if (quantity > 0) else 0
                                     wo.qty_producing = quantity
                                     if wo.qty_produced < wo.qty_production and wo.state == 'done':
                                         wo.state = 'progress'
-                                
+                                    
+                                move_lots = self.env['stock.move.lots'].search([
+                                    ('production_id', '=', scrap.production_id.id),
+                                    ('product_id', '=', scrap.product_id.id),
+                                    ('lot_id', '=', scrap.lot_id.id),
+                                    ])
+                                i = 0
+                                while qty_to_decrease > 0 and i < len(move_lots):
+                                    if move_lots[i].quantity_done > qty_to_decrease:
+                                        move_lots[i].quantity_done = move_lots[i].quantity_done - qty_to_decrease
+                                        qty_to_decrease = 0
+                                    elif move_lots[i].quantity_done > 0:
+                                        qty_to_decrease = qty_to_decrease - move_lots[i].quantity_done
+                                        move_lots[i].quantity_done = 0
+                                    i = i + 1
+                                    

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-07 02:54+0000\n"
-"PO-Revision-Date: 2017-02-07 02:54+0000\n"
+"POT-Creation-Date: 2017-02-23 02:35+0000\n"
+"PO-Revision-Date: 2017-02-23 02:35+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -231,25 +231,25 @@ msgid "Pause"
 msgstr "暫停"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:139
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:142
 #, python-format
 msgid "Please enter a quantity higher than 0 for the processed quantity to be added."
 msgstr "Please enter a quantity higher than 0 for the processed quantity to be added."
 
 #. module: batom_mrp
 #: code:addons/batom_mrp/wizard/batom_mrp_production.py:105
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:122
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:208
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:236
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:252
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:269
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:286
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:125
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:214
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:230
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:246
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:263
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:280
 #, python-format
 msgid "Please enter a quantity higher than 0 for the quantity to receieve."
 msgstr "Please enter a quantity higher than 0 for the quantity to receieve."
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:146
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:149
 #, python-format
 msgid "Please provide a lot for the consumed material."
 msgstr "請選擇原料批號。"
@@ -323,9 +323,24 @@ msgid "Quantity"
 msgstr "數量"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_arrived
+msgid "Quantity Arrived"
+msgstr "待收數量"
+
+#. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
-msgid "Quantity In (Wasted) / Inspecting / Out"
-msgstr "已入(報廢)/檢驗中/出量"
+msgid "Quantity Arrived / In / Produced"
+msgstr "待收 / 已入 / 已生產"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_out
+msgid "Quantity Out"
+msgstr "已出數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_qcok
+msgid "Quantity Passed QC"
+msgstr "Quantity Passed QC"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_processed_to_new_routing
@@ -333,14 +348,24 @@ msgid "Quantity Processed to New Routing"
 msgstr "已完工轉子製令數量"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_in
+msgid "Quantity Received"
+msgstr "Quantity Received"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_unprocessed_to_new_routing
 msgid "Quantity Unprocessed to New Routing"
 msgstr "未完工轉子製令數量"
 
 #. module: batom_mrp
-#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_in
-msgid "Quantity received"
-msgstr "已入數量"
+#: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
+msgid "Quantity Wasted / Accumulated"
+msgstr "損耗 / 累計"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_to_qc
+msgid "Quantity to QC"
+msgstr "Quantity to QC"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_qty_to_receive
@@ -391,6 +416,11 @@ msgstr "檢驗中數量"
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_wasted
 msgid "Quantity wasted"
 msgstr "耗損數量"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_qty_wasted_accumulated
+msgid "Quantity wasted accumulated"
+msgstr "Quantity wasted accumulated"
 
 #. module: batom_mrp
 #: selection:batom.mrp.inprocess_move,state:0
@@ -474,6 +504,21 @@ msgid "TPM Big Losses"
 msgstr "TPM 大損失"
 
 #. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_qcok
+msgid "The number of products already processed and inspected by this work order"
+msgstr "The number of products already processed and inspected by this work order"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_to_qc
+msgid "The number of products already processed and ready for inspection by this work order"
+msgstr "The number of products already processed and ready for inspection by this work order"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_out
+msgid "The number of products already processed and sent to the next process"
+msgstr "The number of products already processed and sent to the next process"
+
+#. module: batom_mrp
 #: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_qc
 msgid "The number of products already processed and under inspection by this work order"
 msgstr "The number of products already processed and under inspection by this work order"
@@ -489,25 +534,35 @@ msgid "The number of products received and to be processed by this work order"
 msgstr "The number of products received and to be processed by this work order"
 
 #. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_arrived
+msgid "The number of products to be received by this work order"
+msgstr "The number of products to be received by this work order"
+
+#. module: batom_mrp
 #: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_wasted
 msgid "The number of products wasted in the process by this work order"
 msgstr "本供單製程中耗損的數量"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:240
+#: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_wasted_accumulated
+msgid "The number of products wasted up to this work order"
+msgstr "The number of products wasted up to this work order"
+
+#. module: batom_mrp
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:234
 #, python-format
 msgid "The quantity for QC passed, %d, is greater than available %d."
 msgstr "檢驗通過數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:156
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:159
 #, python-format
 msgid "The quantity of the lot you selected is %d that is leass than %d."
 msgstr "您所選擇的批號庫存量是 %d，少於需求量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:143
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:183
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:146
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:189
 #, python-format
 msgid "The quantity to be added, %d, is greater than available %d."
 msgstr "新增數量 %d 大於可用數量 %d。"
@@ -519,31 +574,31 @@ msgid "The quantity to be received, %d, is greater than available %d."
 msgstr "驗收數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:126
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:129
 #, python-format
 msgid "The quantity to be rejected, %d, is greater than available %d."
 msgstr "拒收數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:212
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:218
 #, python-format
 msgid "The quantity to inspect, %d, is greater than available %d."
 msgstr "送驗數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:256
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:250
 #, python-format
 msgid "The quantity to return, %d, is greater than available %d."
 msgstr "退回數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:273
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:267
 #, python-format
 msgid "The quantity to rework, %d, is greater than available %d."
 msgstr "重工數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:290
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:284
 #, python-format
 msgid "The quantity to send to next process, %d, is greater than available %d."
 msgstr "送下製程數量 %d 大於可用數量 %d。"
@@ -590,9 +645,24 @@ msgid "The quantity will be returned to the previous process"
 msgstr "The quantity will be returned to the previous process"
 
 #. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
+msgid "To Inspect / Inspecting / Ready / Out"
+msgstr "待檢 / 檢驗 / 待出 / 已出"
+
+#. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
 msgid "To Next Process"
 msgstr "送下製程"
+
+#. module: batom_mrp
+#: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
+msgid "To Produce"
+msgstr "排定生產"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_change_production_qty_triggered_by_scrapping
+msgid "Triggered by scrapping"
+msgstr "Triggered by scrapping"
 
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
