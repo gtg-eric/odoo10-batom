@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-23 02:35+0000\n"
-"PO-Revision-Date: 2017-02-23 02:35+0000\n"
+"POT-Creation-Date: 2017-03-06 06:15+0000\n"
+"PO-Revision-Date: 2017-03-06 06:15+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -19,6 +19,18 @@ msgstr ""
 #: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
 msgid "Add Processed"
 msgstr "完工"
+
+#. module: batom_mrp
+#: selection:mrp.routing.workcenter,inspection_method:0
+#: selection:mrp.workorder,inspection_method:0
+msgid "All"
+msgstr "全檢"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_routing_workcenter_auto_received
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_auto_received
+msgid "Automatic Receving Input Parts"
+msgstr "自動驗收"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_batom_mrp_inprocess_move
@@ -34,6 +46,12 @@ msgstr "物料清單"
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
 msgid "Block"
 msgstr "阻塞"
+
+#. module: batom_mrp
+#: selection:mrp.routing.workcenter,inspection_method:0
+#: selection:mrp.workorder,inspection_method:0
+msgid "By Percentage"
+msgstr "抽檢"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_bom_x_batom_bom_no
@@ -159,6 +177,12 @@ msgid "Inspected OK"
 msgstr "檢驗通過"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_routing_workcenter_inspection_method
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_inspection_method
+msgid "Inspection Method"
+msgstr "檢驗方式"
+
+#. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
 msgid "Inspection Return"
 msgstr "檢驗退回"
@@ -239,11 +263,11 @@ msgstr "Please enter a quantity higher than 0 for the processed quantity to be a
 #. module: batom_mrp
 #: code:addons/batom_mrp/wizard/batom_mrp_production.py:105
 #: code:addons/batom_mrp/wizard/batom_mrp_production.py:125
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:214
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:230
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:246
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:263
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:280
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:218
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:234
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:250
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:267
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:284
 #, python-format
 msgid "Please enter a quantity higher than 0 for the quantity to receieve."
 msgstr "Please enter a quantity higher than 0 for the quantity to receieve."
@@ -454,6 +478,12 @@ msgid "Scrap"
 msgstr "報廢"
 
 #. module: batom_mrp
+#: selection:mrp.routing.workcenter,inspection_method:0
+#: selection:mrp.workorder,inspection_method:0
+msgid "Self QC"
+msgstr "自檢"
+
+#. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
 msgid "Send for Inspection"
 msgstr "送驗"
@@ -549,7 +579,7 @@ msgid "The number of products wasted up to this work order"
 msgstr "The number of products wasted up to this work order"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:234
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:238
 #, python-format
 msgid "The quantity for QC passed, %d, is greater than available %d."
 msgstr "檢驗通過數量 %d 大於可用數量 %d。"
@@ -580,25 +610,25 @@ msgid "The quantity to be rejected, %d, is greater than available %d."
 msgstr "拒收數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:218
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:222
 #, python-format
 msgid "The quantity to inspect, %d, is greater than available %d."
 msgstr "送驗數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:250
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:254
 #, python-format
 msgid "The quantity to return, %d, is greater than available %d."
 msgstr "退回數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:267
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:271
 #, python-format
 msgid "The quantity to rework, %d, is greater than available %d."
 msgstr "重工數量 %d 大於可用數量 %d。"
 
 #. module: batom_mrp
-#: code:addons/batom_mrp/wizard/batom_mrp_production.py:284
+#: code:addons/batom_mrp/wizard/batom_mrp_production.py:288
 #, python-format
 msgid "The quantity to send to next process, %d, is greater than available %d."
 msgstr "送下製程數量 %d 大於可用數量 %d。"
@@ -657,7 +687,7 @@ msgstr "送下製程"
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
 msgid "To Produce"
-msgstr "排定生產"
+msgstr "待生產"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_change_production_qty_triggered_by_scrapping
@@ -693,6 +723,11 @@ msgstr "版本說明"
 #: model:ir.model,name:batom_mrp.model_mrp_workcenter
 msgid "Work Center"
 msgstr "工作中心"
+
+#. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_mrp_routing_workcenter
+msgid "Work Center Usage"
+msgstr "工作中心使用情況"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_mrp_workorder

@@ -78,6 +78,12 @@
                         <field name="production_availability" nolabel="1" widget="bullet_state" options="{'classes': {'assigned': 'success', 'waiting': 'danger'}}" attrs="{'invisible': [('state', '=', 'done')]}"/>
                     </div>
                 </xpath>
+                <xpath expr="(//page)[4]/group" position="inside">
+                    <group>
+                        <field name="inspection_method"/>
+                        <field name="auto_received"/>
+                    </group>
+                </xpath>
             </field>
         </record>
         <record id="batom_stock_scrap_view_form2_mrp_inherit_mrp" model="ir.ui.view">
@@ -131,6 +137,18 @@
             <field name="view_id" ref="view_online_stock_tree"/>
             <field name="search_view_id" ref="search_online_stock_filter"/>
             <field name="context">{}</field>
+        </record>
+
+        <record id="batom_mrp_routing_workcenter_form_view" model="ir.ui.view">
+            <field name="name">batom.mrp.routing.workcenter.form</field>
+            <field name="model">mrp.routing.workcenter</field>
+            <field name="inherit_id" ref="mrp.mrp_routing_workcenter_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='workorder']" position="inside">
+                    <field name="inspection_method"/>
+                    <field name="auto_received"/>
+                </xpath>
+            </field>
         </record>
 
         <menuitem id="menu_mrp_online_stock"

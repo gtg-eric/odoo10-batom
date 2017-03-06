@@ -188,6 +188,10 @@ class BatomRecordProduction(models.Model):
                 if self.qty_processed_addition > max_addition:
                     error_message = _("The quantity to be added, %d, is greater than available %d.")%(self.qty_processed_addition, max_addition)
                 else:
+                    if self.workorder_id.inspection_method == 'self':
+                        state = 'qcok'
+                    else:
+                        state = 'processed'
                     self.env['batom.mrp.inprocess_move'].create({
                         'name': self.production_id.name + u'/' + self.workorder_id.name,
                         'product_id': self.product_id.id,
@@ -199,7 +203,7 @@ class BatomRecordProduction(models.Model):
                         'dest_operation_id': self.workorder_id.next_work_order_id.operation_id.id,
                         'source_partner_id': self.workorder_id.operation_id.workcenter_id.x_supplier_id.id,
                         'dest_partner_id': self.workorder_id.next_work_order_id.operation_id.workcenter_id.x_supplier_id.id,
-                        'state': 'processed',
+                        'state': state,
                         })
                     self._trigger_field_recomputing(self.workorder_id, False, False)
             
@@ -283,12 +287,12 @@ class BatomRecordProduction(models.Model):
             if self.qty_to_next_process > max_qty:
                 error_message = _("The quantity to send to next process, %d, is greater than available %d.")%(self.qty_to_next_process, max_qty)
             else:
-                if self.workorder_id.next_work_order_id:
-                    self._change_in_process_move_state(self.qty_to_next_process, self.workorder_id, False, ['qcok'], 'transport')
-                else:
+                if not self.workorder_id.next_work_order_id or self.workorder_id.next_work_order_id.auto_received:
                     self._change_in_process_move_state(self.qty_to_next_process, self.workorder_id, False, ['qcok'], 'done')
                     self.workorder_id.qty_producing = self.qty_to_next_process
                     self.workorder_id.record_production()
+                else:
+                    self._change_in_process_move_state(self.qty_to_next_process, self.workorder_id, False, ['qcok'], 'transport')
                 self._trigger_field_recomputing(self.workorder_id, False, True)
             
         if error_message:

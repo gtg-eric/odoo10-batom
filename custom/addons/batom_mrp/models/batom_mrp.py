@@ -10,6 +10,22 @@ from odoo.addons import decimal_precision as dp
 
 _logger = logging.getLogger(__name__)
 
+class BatomMrpRoutingWorkcenter(models.Model):
+    #_name = "batom.mrp.routing.workcenter"
+    _inherit = "mrp.routing.workcenter"
+    
+    inspection_method = fields.Selection([
+        ('self', 'Self QC'),
+        ('percentage', 'By Percentage'),
+        ('all', 'All')],
+        string='Inspection Method',
+        default='percentage', index=True,
+        )
+    auto_received = fields.Boolean(
+        string='Automatic Receving Input Parts',
+        default=False, index=True,
+        )
+
 class BatomMrpBom(models.Model):
     #_name = 'batom.mrp.bom'
     _inherit = 'mrp.bom'
@@ -51,11 +67,15 @@ class BatomMrpProduction(models.Model):
         workorders = super(BatomMrpProduction, self)._generate_workorders(exploded_boms)
         prev_workorder = False
         for workorder in workorders:
+            values = {}
+            if workorder.operation_id:
+                values['inspection_method'] = workorder.operation_id.inspection_method
+                values['auto_received'] = workorder.operation_id.auto_received
             if prev_workorder:
-                workorder.write({
-                    'prev_work_order_id': prev_workorder.id,
-                    'inprocess_move_trigger': workorder.inprocess_move_trigger + 1,
-                })
+                values['prev_work_order_id'] = prev_workorder.id
+                values['inprocess_move_trigger'] = workorder.inprocess_move_trigger + 1
+            if values:
+                workorder.write(values)
             prev_workorder = workorder
         return workorders
 
@@ -107,6 +127,17 @@ class BatomMrpWorkorder(models.Model):
 
     prev_work_order_id = fields.Many2one('mrp.workorder', "Previous Work Order")
     inprocess_move_trigger = fields.Integer('field recomputing trigger', default=0)
+    inspection_method = fields.Selection([
+        ('self', 'Self QC'),
+        ('percentage', 'By Percentage'),
+        ('all', 'All')],
+        string='Inspection Method',
+        default='percentage', index=True,
+        )
+    auto_received = fields.Boolean(
+        string='Automatic Receving Input Parts',
+        default=False, index=True,
+        )
     qty_processed = fields.Float(
         'Quantity', compute='_compute_qty_processed',
         readonly=True, store=True,
