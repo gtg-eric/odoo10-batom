@@ -30,7 +30,7 @@ class BatomMrpBom(models.Model):
     #_name = 'batom.mrp.bom'
     _inherit = 'mrp.bom'
     
-    x_batom_bom_no = fields.Integer('CHI BoM #')
+    x_batom_bom_no = fields.Integer('CHI BoM #') # CHI bom ItemNo = 0 would be converted to the number of BOM's
     x_version_description = fields.Char('Version Description')
 
 class BatomMrpWorkcenter(models.Model):
@@ -127,6 +127,10 @@ class BatomMrpWorkorder(models.Model):
 
     prev_work_order_id = fields.Many2one('mrp.workorder', "Previous Work Order")
     inprocess_move_trigger = fields.Integer('field recomputing trigger', default=0)
+    workercenter_name = fields.Char(
+        'Workcenter',
+        related='workcenter_id.name', readonly=True,
+        help='Technical: used in views only.')
     inspection_method = fields.Selection([
         ('self', 'Self QC'),
         ('percentage', 'By Percentage'),
@@ -396,3 +400,6 @@ class BatomStockScrap(models.Model):
                                         move_lots[i].quantity_done = 0
                                     i = i + 1
                                     
+class BatomProductSupplierinfo(models.Model):
+    _inherit = 'product.supplierinfo'
+    target_product_id = fields.Many2one('product.product', 'Product to Process')

@@ -51,6 +51,11 @@
                         <field name="qty_produced"/>
                     </div>
                 </xpath>
+                <xpath expr="//div[@class='o_row']/parent::group" position="after">
+                    <group>
+                        <field name="workercenter_name"/>
+                    </group>
+                </xpath>
                 <xpath expr="//div[@name='div_qty_produced']" position="after">
                     <label for="qty_wasted" string="Quantity Wasted / Accumulated"/>
                     <div class="o_row" name="div_qty_wasted">
@@ -147,6 +152,17 @@
                 <xpath expr="//group[@name='workorder']" position="inside">
                     <field name="inspection_method"/>
                     <field name="auto_received"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="batom_product_supplierinfo_tree_view" model="ir.ui.view">
+            <field name="name">batom.product.supplierinfo.tree.view</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="target_product_id"/>
                 </xpath>
             </field>
         </record>

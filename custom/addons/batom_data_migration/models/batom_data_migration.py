@@ -4,6 +4,7 @@
 
 import os
 import logging
+from datetime import datetime
 from odoo import models, fields, api,  _
 import odoo
 import odoo.addons.base_external_dbsource
@@ -161,6 +162,7 @@ def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
         elif createIfNotExist:
             workcenterValues = ({
                 'name': process.name + ' <- ' + supplier.display_name,
+                'code': processCode + ' <- ' + supplier.x_supplier_code,
                 'x_process_id': process.id,
                 'x_supplier_id': supplier.id,
                 'resource_type': 'material',
@@ -170,6 +172,117 @@ def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
         _logger.warning('Exception in migrate_bom:', exc_info=True)
 
     return workcenter
+
+def _createOdooProduct(self, cursorChi, productId):
+    odooProduct = False
+    chiProduct = cursorChi.execute(u"SELECT ProdId, ClassId, ProdForm, Unit, ProdName, EngName, ProdDesc, "
+        u"CurrId, CAvgCost, SuggestPrice, NWeight, NUnit "
+        u"FROM comProduct "
+        u"WHERE ProdId = '" + productId.decode('utf-8') + u"'"
+        ).fetchone()
+    if chiProduct != None:
+        if chiProduct.ProdName and chiProduct.ProdName.strip():
+            name = chiProduct.ProdName
+        else:
+            name = chiProduct.ProdId
+        currency_id = _currencyIdConversion(self, chiProduct.CurrId)
+        uom_id = _uomIdConversion(self, chiProduct.Unit.decode('utf-8'))
+        # ProdForm: 1-物料，2半成品，3-成品，4-採購件，5-組合品，6-非庫存品，7-非庫存品(管成本)，8-易耗品
+        # ClassId ClassName
+        # --------------
+        # *	特殊科目
+        # 1	運費
+        # 2	雜項支出
+        # 3	包裝費
+        # 4	樣品費
+        # 5	製-包裝費
+        # 6	進料
+        # 7	製-模具費
+        # A	原料
+        # B	半成品
+        # C	成品
+        # D	零配件
+        # E	物料
+        # F	模治具
+        # G	紙箱
+        # H	開發件
+        # I	商品
+        sale_ok = False
+        purchase_ok = False
+        type = 'consu' # 'consu', 'service', 'product'
+        tracking = 'none'
+        if chiProduct.ProdForm == 3 or chiProduct.ClassId == 'C' or chiProduct.ClassId == 'I':
+            sale_ok = True
+        if chiProduct.ProdForm in [1, 2, 4]:
+            purchase_ok = True
+        if chiProduct.ProdForm <= 5:
+            type = 'product'
+            tracking = 'lot'
+        productValues = ({
+            'name': name,
+            'default_code': chiProduct.ProdId,
+            'x_saved_code': chiProduct.ProdId,
+            'type': type,
+            'tracking': tracking,
+            'description': chiProduct.ProdDesc,
+            'sale_ok': sale_ok,
+            'purchase_ok': purchase_ok,
+            'currency_id': currency_id,
+            'standard_price': chiProduct.CAvgCost,
+            'price': chiProduct.SuggestPrice,
+            'uom_id': uom_id,
+            'uom_po_id': uom_id,
+            'weight': chiProduct.NWeight,
+            # warehouse_id, location_id, routes_id,
+            })
+        
+        odooProducts = productModel.search([('default_code', '=', chiProduct.ProdId)])
+        if len(odooProducts) == 0:
+            odooProduct = productModel.create(productValues)
+        else:
+            odooProduct = odooProducts[0]
+            odooProduct.write(productValues)
+        if chiProduct.EngName and chiProduct.EngName.strip():
+            engName = chiProduct.EngName
+            _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
+    return odooProduct
+
+def _createOdooBom(self, cursorChi, chiBom, itemNo, active):
+    bomModel = self.env['mrp.bom']
+    productTemplateModel = self.env['product.template']
+    template = productTemplateModel.search([('default_code', '=', chiBom.ProductId)])[0]
+    chiBomMaterials = cursorChi.execute(
+        u"SELECT SerNo, SubProdId, QtyOfBatch "
+        u"FROM prdBOMMats "
+        u"WHERE ProductId='" + chiBom.ProductId.decode('utf-8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
+        u"ORDER BY SerNo").fetchall()
+    chiBomProcesses = cursorChi.execute(
+        u"SELECT SerNo, MkPgmId, ProdtClass, Producer, DailyProdtQty, PrepareDays, WorkTimeOfBatch, PriceOfProc "
+        u"FROM prdBOMPgms "
+        u"WHERE MainProdId='" + chiBom.ProductId.decode('utf-8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
+        u"ORDER BY SerNo").fetchall()
+    odooRouting = self._createRouting(chiBom, chiBomMaterials, chiBomProcesses, itemNo, active)
+    bomValues = ({
+        'code': u'~' + chiBom.ProductId.decode('utf-8') + u"#" + str(itemNo),
+        'product_tmpl_id': template.id,
+        'x_batom_bom_no': itemNo,
+        'x_version_description': chiBom.CurVersion,
+        'product_qty': chiBom.BatchAmount,
+        'type': 'normal',
+        'routing_id': odooRouting.id,
+        'active': active,
+        })
+    
+    odooBoms = bomModel.search([
+        ('product_tmpl_id', '=', template.id),
+        ('x_batom_bom_no', '=', itemNo),
+        ])
+    if len(odooBoms) == 0:
+        odooBom = bomModel.create(bomValues)
+    else:
+        odooBom = odooBoms[0]
+        odooBom.write(bomValues)
+    self._createBomLines(odooBom, odooRouting, chiBom, chiBomMaterials, chiBomProcesses)
     
 class batom_partner_code(models.Model):
     #_name = 'batom.partner_code'
@@ -541,8 +654,8 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                 'email': chiPartner.Email,
                                 'fax': chiPartner.FaxNo if (chiPartner.FaxNo != None and chiPartner.FaxNo and chiPartner.FaxNo.strip()) else (
                                     address.fax if (address != None) else None),
-                                'name': chiPartner.FullName,
-                                'commercial_company_name': chiPartner.InvoiceHead,
+                                'name': chiPartner.ShortName,
+                                'commercial_company_name': chiPartner.InvoiceHead if chiPartner.InvoiceHead else chiPartner.FullName,
                                 'mobile': chiPartner.MobileTel,
                                 'vat': chiPartner.TaxNo,
                                 'phone': chiPartner.Telephone1 if (chiPartner.Telephone1 != None and chiPartner.Telephone1 and chiPartner.Telephone1.strip()) else (
@@ -559,7 +672,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                 'street': address.street if address != None else None,
                                 'street2': address.street2 if address != None else None,
                                 })
-                            newPartner.write({'display_name': chiPartner.ShortName})
+                            #newPartner.write({'display_name': chiPartner.ShortName})
                             
                             if chiPartner.LinkMan != None and chiPartner.LinkMan and chiPartner.LinkMan.strip():
                                 contact = _partner_address(None, None, chiPartner.LinkMan, chiPartner.LinkManProf, newPartner.phone, None, newPartner.fax, None, None)
@@ -800,76 +913,7 @@ class BatomMigrateProduct(models.TransientModel):
         nDone = 0
         for productId in productIds:
             try:
-                chiProduct = cursorChi.execute(u"SELECT ProdId, ClassId, ProdForm, Unit, ProdName, EngName, ProdDesc, "
-                    u"CurrId, CAvgCost, SuggestPrice, NWeight, NUnit "
-                    u"FROM comProduct "
-                    u"WHERE ProdId = '" + productId.decode('utf-8') + u"'"
-                    ).fetchone()
-                if chiProduct != None:
-                    if chiProduct.ProdName and chiProduct.ProdName.strip():
-                        name = chiProduct.ProdName
-                    else:
-                        name = chiProduct.ProdId
-                    currency_id = _currencyIdConversion(self, chiProduct.CurrId)
-                    uom_id = _uomIdConversion(self, chiProduct.Unit.decode('utf-8'))
-                    # ProdForm: 1-物料，2半成品，3-成品，4-採購件，5-組合品，6-非庫存品，7-非庫存品(管成本)，8-易耗品
-                    # ClassId ClassName
-                    # --------------
-                    # *	特殊科目
-                    # 1	運費
-                    # 2	雜項支出
-                    # 3	包裝費
-                    # 4	樣品費
-                    # 5	製-包裝費
-                    # 6	進料
-                    # 7	製-模具費
-                    # A	原料
-                    # B	半成品
-                    # C	成品
-                    # D	零配件
-                    # E	物料
-                    # F	模治具
-                    # G	紙箱
-                    # H	開發件
-                    # I	商品
-                    sale_ok = False
-                    purchase_ok = False
-                    type = 'consu' # 'consu', 'service', 'product'
-                    tracking = 'none'
-                    if chiProduct.ProdForm == 3 or chiProduct.ClassId == 'C' or chiProduct.ClassId == 'I':
-                        sale_ok = True
-                    if chiProduct.ProdForm in [1, 2, 4]:
-                        purchase_ok = True
-                    if chiProduct.ProdForm <= 5:
-                        type = 'product'
-                        tracking = 'lot'
-                    productValues = ({
-                        'name': name,
-                        'default_code': chiProduct.ProdId,
-                        'x_saved_code': chiProduct.ProdId,
-                        'type': type,
-                        'tracking': tracking,
-                        'description': chiProduct.ProdDesc,
-                        'sale_ok': sale_ok,
-                        'purchase_ok': purchase_ok,
-                        'currency_id': currency_id,
-                        'standard_price': chiProduct.CAvgCost,
-                        'price': chiProduct.SuggestPrice,
-                        'uom_id': uom_id,
-                        'uom_po_id': uom_id,
-                        'weight': chiProduct.NWeight,
-                        # warehouse_id, location_id, routes_id,
-                        })
-                    
-                    odooProducts = productModel.search([('default_code', '=', chiProduct.ProdId)])
-                    if len(odooProducts) == 0:
-                        odooProduct = productModel.create(productValues)
-                    else:
-                        odooProduct = odooProducts[0]
-                        odooProduct.write(productValues)
-                    if chiProduct.EngName and chiProduct.EngName.strip():
-                        engName = chiProduct.EngName
-                        _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
+                _createOdooProduct(self, cursorChi, productId)
             except Exception:
                 _logger.warning('Exception in migrate_product:', exc_info=True)
                 import pdb; pdb.set_trace()
@@ -971,7 +1015,8 @@ class BatomMigrateProduct(models.TransientModel):
         for process in processes:
             try:
                 if process.ProcessId and process.ProcessId.strip():
-                    odooProducts = productModel.search([('default_code', '=', process.ProcessId)])
+                    processId = process.ProcessId.strip()
+                    odooProducts = productModel.search([('default_code', '=', processId)])
                     if len(odooProducts) == 0:
                         name = process.ProcessName
                         sale_ok = False
@@ -979,7 +1024,7 @@ class BatomMigrateProduct(models.TransientModel):
                         type = 'service'
                         productValues = ({
                             'name': name,
-                            'default_code': process.ProcessId,
+                            'default_code': processId,
                             'type': type,
                             'sale_ok': sale_ok,
                             'purchase_ok': purchase_ok,
@@ -1006,7 +1051,8 @@ class BatomMigrateProduct(models.TransientModel):
         for process in processes:
             try:
                 if process.ProcessId and process.ProcessId.strip():
-                    odooProducts = productModel.search([('default_code', '=', process.ProcessId)])
+                    processId = process.ProcessId.strip()
+                    odooProducts = productModel.search([('default_code', '=', processId)])
                     if len(odooProducts) == 0:
                         name = process.ShopProcess
                         sale_ok = False
@@ -1014,7 +1060,7 @@ class BatomMigrateProduct(models.TransientModel):
                         type = 'service'
                         productValues = ({
                             'name': name,
-                            'default_code': process.ProcessId,
+                            'default_code': processId,
                             'type': type,
                             'sale_ok': sale_ok,
                             'purchase_ok': purchase_ok,
@@ -1094,7 +1140,7 @@ class BatomMigrateBom(models.TransientModel):
             self._defaultMaterialAcquisitionProcess = self._getDefaultMaterialAcquisitionProcess()
         return _getWorkcenter(self, self._defaultMaterialAcquisitionProcess.default_code, None, True)
     
-    def _createRouting(self, chiBom, chiBomMaterials, chiBomProcesses):
+    def _createRouting(self, chiBom, chiBomMaterials, chiBomProcesses, itemNo, active):
         odooRouting = None
         try:
             routingModel = self.env['mrp.routing']
@@ -1104,15 +1150,16 @@ class BatomMigrateBom(models.TransientModel):
             else:
                 odooRoutings = routingModel.search([
                     ('x_product_id', '=', productTemplate.id),
-                    ('x_batom_bom_no', '=', chiBom.ItemNo),
+                    ('x_batom_bom_no', '=', itemNo),
                     ])
                 if len(odooRoutings) <= 0:
                     routingValues = ({
-                        'code': u'~' + chiBom.ProductId.decode('utf-8') + u"#" + str(chiBom.ItemNo),
-                        'name': u'RO/' + chiBom.ProductName.decode('utf-8') + u" #" + str(chiBom.ItemNo),
+                        'code': u'~' + chiBom.ProductId.decode('utf-8') + u"#" + str(itemNo),
+                        'name': u'RO/' + chiBom.ProductName.decode('utf-8') + u" #" + str(itemNo),
                         'x_product_id': productTemplate.id,
-                        'x_batom_bom_no': chiBom.ItemNo,
+                        'x_batom_bom_no': itemNo,
                         'note': u'由正航 ' + chiBom.ProductId.decode('utf-8') + u'(' + chiBom.ProductName.decode('utf-8') + u') BoM自動產生的製程路徑',
+                        'active': active,
                         })
                     odooRouting = routingModel.create(routingValues)
                     routingWorkcenterModel = self.env['mrp.routing.workcenter']
@@ -1131,6 +1178,7 @@ class BatomMigrateBom(models.TransientModel):
                             'note': u'由正航 ' + chiBom.ProductId.decode('utf-8') + u'(' + chiBom.ProductName.decode('utf-8') + u') BoM自動產生的' + odooWorkcenter.x_process_id.name + u'作業',
                             'time_mode': 'manual',
                             'time_cycle_manual': time_cycle_manual,
+                            'inspection_method': 'self',
                             })
                         routingWorkcenter = routingWorkcenterModel.create(routingWorkcenterValues)
                     for chiBomProcess in chiBomProcesses:
@@ -1248,166 +1296,24 @@ class BatomMigrateBom(models.TransientModel):
                 continue
                 
     def _migrate_chiBom(self, cursorChi):
-        chiBoms = cursorChi.execute('SELECT ProductId, ProductName, ItemNo, CurVersion, Flag, NorProdtMode, BatchAmount FROM prdBOMMain ORDER BY ProductId, ItemNo').fetchall()
-        bomModel = self.env['mrp.bom']
-        productTemplateModel = self.env['product.template']
-        
-        nCount = len(chiBoms)
-        nDone = 0
-        for chiBom in chiBoms:
-            try:
-                template = productTemplateModel.search([('default_code', '=', chiBom.ProductId)])[0]
-                chiBomMaterials = cursorChi.execute(
-                    u"SELECT SerNo, SubProdId, QtyOfBatch "
-                    u"FROM prdBOMMats "
-                    u"WHERE ProductId='" + chiBom.ProductId.decode('utf-8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
-                    u"ORDER BY SerNo").fetchall()
-                chiBomProcesses = cursorChi.execute(
-                    u"SELECT SerNo, MkPgmId, ProdtClass, Producer, DailyProdtQty, PrepareDays, WorkTimeOfBatch, PriceOfProc "
-                    u"FROM prdBOMPgms "
-                    u"WHERE MainProdId='" + chiBom.ProductId.decode('utf-8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
-                    u"ORDER BY SerNo").fetchall()
-                odooRouting = self._createRouting(chiBom, chiBomMaterials, chiBomProcesses)
-                bomValues = ({
-                    'code': u'~' + chiBom.ProductId.decode('utf-8') + u"#" + str(chiBom.ItemNo),
-                    'product_tmpl_id': template.id,
-                    'x_batom_bom_no': chiBom.ItemNo,
-                    'x_version_description': chiBom.CurVersion,
-                    'product_qty': chiBom.BatchAmount,
-                    'type': 'normal',
-                    'routing_id': odooRouting.id,
-                    })
-                
-                odooBoms = bomModel.search([
-                    ('product_tmpl_id', '=', template.id),
-                    ('x_batom_bom_no', '=', chiBom.ItemNo),
-                    ])
-                if len(odooBoms) == 0:
-                    odooBom = bomModel.create(bomValues)
-                else:
-                    odooBom = odooBoms[0]
-                    odooBom.write(bomValues)
-                self._createBomLines(odooBom, odooRouting, chiBom, chiBomMaterials, chiBomProcesses)
-            except Exception:
-                _logger.warning('Exception in migrate_bom:', exc_info=True)
-                import pdb; pdb.set_trace()
-                continue
-            nDone += 1
-            if nDone % 10 == 0:
-                print str(nDone) + '/' + str(nCount)
-                self.env.cr.commit()
-        self.env.cr.commit()
-                
-    def _createProcessPrice(self, applicableProductAttribute, chiBom, chiBomProcesses):
-        productModel = self.env['product.product']
-        productTemplateModel = self.env['product.template']
-        productAttributeValueModel = self.env['product.attribute.value']
-        productAttributeLineModel = self.env['product.attribute.line']
-        productSupplierInfoModel = self.env['product.supplierinfo']
-        
-        dummyProductAttributeValues = productAttributeValueModel.search([('name', '=', '*')])
-        if len(dummyProductAttributeValues) > 0:
-            dummyProductAttributeValue = dummyProductAttributeValues[0]
-        else:
-            # dummy service product variant
-            dummyProductAttributeValue = productAttributeValueModel.create({
-                'attribute_id': applicableProductAttribute.id,
-                'name': '*',
-                })
-        productAttributeValues = productAttributeValueModel.search([('name', '=', chiBom.ProductId)])
-        if len(productAttributeValues) > 0:
-            productAttributeValue = productAttributeValues[0]
-        else:
-            productAttributeValue = productAttributeValueModel.create({
-                'attribute_id': applicableProductAttribute.id,
-                'name': chiBom.ProductId,
-                })
-        for chiBomProcess in chiBomProcesses:
-            try:
-                supplier = _getSupplier(self, chiBomProcess.Producer, True)
-                processProductTemplate = _getProductTemplate(self, chiBomProcess.MkPgmId)
-                if supplier != None and processProductTemplate != None:
-                    addedVariantValueIds = []
-                    productAttributeLines = productAttributeLineModel.search([
-                        ('product_tmpl_id', '=', processProductTemplate.id),
-                        ('attribute_id', '=', applicableProductAttribute.id),
-                        ])
-                    if len(productAttributeLines) > 0:
-                        productAttributeLine = productAttributeLines[0]
-                        if productAttributeValue not in productAttributeLine.value_ids:
-                            productAttributeLine.write({
-                                'value_ids': [(4, productAttributeValue.id)]
-                                })
-                            addedVariantValueIds = [productAttributeValue.id]
-                    else:
-                        productAttributeLine = productAttributeLineModel.create({
-                            'product_tmpl_id': processProductTemplate.id,
-                            'attribute_id': applicableProductAttribute.id,
-                            # it needs 2 or more attribute values for creating product variants
-                            'value_ids': [(6, 0, [dummyProductAttributeValue.id, productAttributeValue.id])],
-                            })
-                        addedVariantValueIds = [dummyProductAttributeValue.id, productAttributeValue.id]
-                    addedVariantProduct = None
-                    if len(addedVariantValueIds) > 0: 
-                        # create the per product process product variant
-                        processProductTemplate.create_variant_ids()
-                        for addedVariantValueId in addedVariantValueIds:
-                            addedVariantValue = productAttributeValueModel.browse(addedVariantValueId)
-                            perProductProcessCode = processProductTemplate.default_code + u'->' + addedVariantValue.name
-                            perProductProcessName = processProductTemplate.name + u'->' + chiBom.ProductName.decode('utf-8')
-                            for product in addedVariantValue.product_ids:
-                                product.write({
-                                    'default_code': perProductProcessCode,
-                                    'name': None if (addedVariantValue.name == '*') else perProductProcessName
-                                    })
-                                if addedVariantValue.name != '*':
-                                    addedVariantProduct = product
-                    if addedVariantProduct != None:
-                        productSupplierInfos = productSupplierInfoModel.search([
-                            ('name', '=', supplier.id),
-                            ('product_code', '=', addedVariantProduct.default_code),
-                            ('price', '=', chiBomProcess.PriceOfProc),
-                            '|', ('date_start', '=', chiBom.EffectDate), ('price', '=', 0),
-                            ('product_id', '=', addedVariantProduct.id),
-                            ])
-                        if len(productSupplierInfos) <= 0:
-                            productSupplierInfoValues = ({
-                                'name': supplier.id,
-                                'product_name': supplier.display_name + ' -> ' + addedVariantProduct.name,
-                                'product_code': addedVariantProduct.default_code,
-                                'price': chiBomProcess.PriceOfProc,
-                                'date_start': chiBom.EffectDate,
-                                'product_id': addedVariantProduct.id,
-                                'product_tmpl_id': addedVariantProduct.product_tmpl_id.id,
-                                })
-                            productSupplierInfoModel.create(productSupplierInfoValues)
-            except Exception:
-                _logger.warning('Exception in migrate_bom:', exc_info=True)
-                continue
-        
-    def _migrate_chiProcessPrice(self, cursorChi):
         chiBoms = cursorChi.execute('SELECT ProductId, ProductName, ItemNo, CurVersion, Flag, NorProdtMode, BatchAmount, EffectDate FROM prdBOMMain ORDER BY ProductId, ItemNo').fetchall()
-        productAttributeModel = self.env['product.attribute']
+        chiBomVersions = cursorChi.execute('SELECT ProductId, count(*) as count FROM prdBOMMain GROUP BY ProductId ORDER BY ProductId').fetchall()
         
-        # applicable products for a specific process
-        applicableProductAttributes = productAttributeModel.search([('name', '=', u'適用產品')])
-        if len(applicableProductAttributes) > 0:
-            applicableProductAttribute = applicableProductAttributes[0]
-        else:
-            applicableProductAttribute = productAttributeModel.create({
-                'name': u'適用產品',
-                })
-        
+        bomVersions = {}
+        for chiBomVersion in chiBomVersions:
+            bomVersions[chiBomVersion.ProductId] = chiBomVersion.count
+            
         nCount = len(chiBoms)
         nDone = 0
         for chiBom in chiBoms:
             try:
-                chiBomProcesses = cursorChi.execute(
-                    u"SELECT SerNo, MkPgmId, ProdtClass, Producer, DailyProdtQty, PrepareDays, WorkTimeOfBatch, PriceOfProc "
-                    u"FROM prdBOMPgms "
-                    u"WHERE MainProdId='" + chiBom.ProductId.decode('utf-8') + u"' and ItemNo=" + str(chiBom.ItemNo) + u" "
-                    u"ORDER BY SerNo").fetchall()
-                self._createProcessPrice(applicableProductAttribute, chiBom, chiBomProcesses)
+                if chiBom.ItemNo == 0:
+                    itemNo = bomVersions[chiBom.ProductId]
+                    active = True
+                else:
+                    itemNo = chiBom.ItemNo
+                    active = False
+                _createOdooBom(self, cursorChi, chiBom, itemNo, active)
             except Exception:
                 _logger.warning('Exception in migrate_bom:', exc_info=True)
                 continue
@@ -1416,6 +1322,133 @@ class BatomMigrateBom(models.TransientModel):
                 print str(nDone) + '/' + str(nCount)
                 self.env.cr.commit()
         self.env.cr.commit()
+
+    def _createProcessPrice(self, production, chiProduction, chiWorkorder):
+        productSupplierInfoModel = self.env['product.supplierinfo']
+                    
+        try:
+            supplier = _getSupplier(self, chiWorkorder.Producer, True)
+            processProduct = _getProduct(self, chiWorkorder.MkPgmId)
+            if supplier and processProduct:
+                productSupplierInfos = productSupplierInfoModel.search([
+                    ('name', '=', supplier.id),
+                    ('target_product_id', '=', production.product_id.id),
+                    ('price', '=', chiWorkorder.Price),
+                    '|',
+                    ('date_start', '=', datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d')),
+                    ('price', '=', 0),
+                    ('product_id', '=', processProduct.id),
+                    ])
+                if len(productSupplierInfos) <= 0:
+                    productSupplierInfoValues = ({
+                        'name': supplier.id,
+                        'product_name': supplier.display_name + ' -> ' + processProduct.name,
+                        'product_code': processProduct.default_code + u'->' + production.product_id.default_code,
+                        'price': chiWorkorder.Price,
+                        'date_start': datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d'),
+                        'product_id': processProduct.id,
+                        'product_tmpl_id': processProduct.product_tmpl_id.id,
+                        'target_product_id': production.product_id.id
+                        })
+                    productSupplierInfoModel.create(productSupplierInfoValues)
+        except Exception:
+            _logger.warning('Exception in migrate_bom:', exc_info=True)
+            import pdb; pdb.set_trace()
+        
+#    def _createProcessPrice(self, production, chiProduction, chiWorkorder):
+#        productAttributeModel = self.env['product.attribute']
+#        productAttributeValueModel = self.env['product.attribute.value']
+#        productAttributeLineModel = self.env['product.attribute.line']
+#        productSupplierInfoModel = self.env['product.supplierinfo']
+#                    
+#        # applicable products for a specific process
+#        applicableProductAttributes = productAttributeModel.search([('name', '=', u'適用產品')])
+#        if len(applicableProductAttributes) > 0:
+#            applicableProductAttribute = applicableProductAttributes[0]
+#        else:
+#            applicableProductAttribute = productAttributeModel.create({
+#                'name': u'適用產品',
+#                })
+#        
+#        dummyProductAttributeValues = productAttributeValueModel.search([('name', '=', '*')])
+#        if len(dummyProductAttributeValues) > 0:
+#            dummyProductAttributeValue = dummyProductAttributeValues[0]
+#        else:
+#            # dummy service product variant
+#            dummyProductAttributeValue = productAttributeValueModel.create({
+#                'attribute_id': applicableProductAttribute.id,
+#                'name': '*',
+#                })
+#        productAttributeValues = productAttributeValueModel.search([('name', '=', production.product_id.default_code)])
+#        if len(productAttributeValues) > 0:
+#            productAttributeValue = productAttributeValues[0]
+#        else:
+#            productAttributeValue = productAttributeValueModel.create({
+#                'attribute_id': applicableProductAttribute.id,
+#                'name': production.product_id.default_code,
+#                })
+#        
+#        try:
+#            supplier = _getSupplier(self, chiWorkorder.Producer, True)
+#            processProductTemplate = _getProductTemplate(self, chiWorkorder.MkPgmId)
+#            if supplier and processProductTemplate:
+#                addedVariantValueIds = []
+#                productAttributeLines = productAttributeLineModel.search([
+#                    ('product_tmpl_id', '=', processProductTemplate.id),
+#                    ('attribute_id', '=', applicableProductAttribute.id),
+#                    ])
+#                newVariantProduct = False
+#                if len(productAttributeLines) > 0:
+#                    productAttributeLine = productAttributeLines[0]
+#                    if productAttributeValue not in productAttributeLine.value_ids:
+#                        productAttributeLine.write({
+#                            'value_ids': [(4, productAttributeValue.id)]
+#                            })
+#                        newVariantProduct = True
+#                else:
+#                    productAttributeLine = productAttributeLineModel.create({
+#                        'product_tmpl_id': processProductTemplate.id,
+#                        'attribute_id': applicableProductAttribute.id,
+#                        # it needs 2 or more attribute values for creating product variants
+#                        'value_ids': [(6, 0, [dummyProductAttributeValue.id, productAttributeValue.id])],
+#                        })
+#                    newVariantProduct = True
+#                if newVariantProduct: 
+#                    # create the per product process product variant
+#                    processProductTemplate.create_variant_ids()
+#                addedVariantProduct = False
+#                for product in productAttributeValue.product_ids:
+#                    if product.product_tmpl_id == processProductTemplate:
+#                        addedVariantProduct = product
+#                        if not product.default_code:
+#                            perProductProcessCode = processProductTemplate.default_code + u'->' + productAttributeValue.name
+#                            product.write({
+#                                'default_code': perProductProcessCode,
+#                                })
+#                if addedVariantProduct:
+#                    productSupplierInfos = productSupplierInfoModel.search([
+#                        ('name', '=', supplier.id),
+#                        ('product_code', '=', addedVariantProduct.default_code),
+#                        ('price', '=', chiWorkorder.Price),
+#                        '|',
+#                        ('date_start', '=', datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d')),
+#                        ('price', '=', 0),
+#                        ('product_id', '=', addedVariantProduct.id),
+#                        ])
+#                    if len(productSupplierInfos) <= 0:
+#                        productSupplierInfoValues = ({
+#                            'name': supplier.id,
+#                            'product_name': supplier.display_name + ' -> ' + addedVariantProduct.name,
+#                            'product_code': addedVariantProduct.default_code,
+#                            'price': chiWorkorder.Price,
+#                            'date_start': datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d'),
+#                            'product_id': addedVariantProduct.id,
+#                            'product_tmpl_id': addedVariantProduct.product_tmpl_id.id,
+#                            })
+#                        productSupplierInfoModel.create(productSupplierInfoValues)
+#        except Exception:
+#            _logger.warning('Exception in migrate_bom:', exc_info=True)
+#            import pdb; pdb.set_trace()
         
     def _migrate_inRouting(self, cursorBatom):
         inProducts = cursorBatom.execute('SELECT ProdId, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdId').fetchall()
@@ -1470,6 +1503,215 @@ class BatomMigrateBom(models.TransientModel):
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_bom:', exc_info=True)
+            if connChi:
+                connChi.close()
+            if connBatom:
+                connBatom.close()
+    
+    def _matchBom(self, odooBom, materials, workorders):
+        matched = True
+        odooBomLines = odooBom.bom_line_ids
+        if odooBomLines[0].product_id.default_code == 'MTAC':
+            odooBomLines = odooBomLines[1:]
+        for material in materials:
+            i = 0
+            found = False
+            while i < len(odooBomLines):
+                if (not odooBomLines[i].product_id.product_tmpl_id.x_is_process and
+                        odooBomLines[i].product_id.default_code == material.SubProdID and
+                        odooBomLines[i].product_qty == material.UnitOughtQty):
+                    odooBomLines = odooBomLines[:i] + odooBomLines[i + 1:]
+                    found = True
+                    break
+                else:
+                    i += 1
+            if not found:
+                matched = False
+                break
+                
+        if matched:
+            for workorder in workorders:
+                if workorder.Producer == '01':
+                    workorder.Producer = False
+                if (odooBomLines[0].operation_id.workcenter_id.x_process_id.default_code == workorder.MkPgmID and
+                        odooBomLines[0].operation_id.workcenter_id.x_supplier_id.x_supplier_code == workorder.Producer):
+                    odooBomLines = odooBomLines[1:]
+                else:
+                    matched = False
+                    break
+        return matched
+        
+    def _getBom(self, cursorChi, chiMo):
+        matchedOdooBom = False
+        templates = self.env['product.template'].search([('default_code', '=', chiMo.ProductId)])
+        if templates:
+            template = templates[0]
+        else:
+            odooProduct = _createOdooProduct(self, cursorChi, productId)
+            template = odooProduct.product_tmpl_id
+            
+        if template:
+            odooBoms = self.env['mrp.bom'].search([
+                '|',
+                ('active', '=', True),
+                ('active', '=', False),
+                ('product_tmpl_id', '=', template.id),
+                ])
+            if not odooBoms:
+                chiBoms = cursorChi.execute(
+                    u"SELECT ProductId, ProductName, ItemNo, CurVersion, Flag, NorProdtMode, BatchAmount, EffectDate "
+                    u"FROM prdBOMMain WHERE ProductId ='" + chiMo.ProductId.decode('utf-8') + u"' "
+                    u"ORDER ItemNo").fetchall()
+                for chiBom in chiBoms:
+                    try:
+                        if chiBom.ItemNo == 0:
+                            itemNo = len(chiBoms)
+                            active = True
+                        else:
+                            itemNo = chiBom.ItemNo
+                            active = False
+                        odooBoms.append(_createOdooBom(self, cursorChi, chiBom, itemNo, active))
+                    except Exception:
+                        _logger.warning('Exception in migrate_bom:', exc_info=True)
+                        import pdb; pdb.set_trace()
+                        continue
+            if odooBoms:
+                materials = cursorChi.execute(
+                    "SELECT SerNo, SubProdID, ProcRowNO, UnitOughtQty "
+                    "FROM prdMkOrdMats "
+                    "WHERE MkOrdNo='" + chiMo.MkOrdNo + "' "
+                    "ORDER BY SerNo").fetchall()
+                workorders = cursorChi.execute(
+                    "SELECT SerNo, RowNO, MkPgmID, Producer, Price "
+                    "FROM prdMkOrdPgms "
+                    "WHERE MkOrdNo='" + chiMo.MkOrdNo + "' "
+                    "ORDER BY SerNo").fetchall()
+                for odooBom in odooBoms:
+                    if self._matchBom(odooBom, materials, workorders):
+                        matchedOdooBom = odooBom
+                        break
+                if not matchedOdooBom:
+                    matchedOdooBom = odooBoms[0]
+        return matchedOdooBom
+
+    def _migrate_chiMo(self, cursorChi, cursorBatom, mo_id, flag):
+        productionModel = self.env['mrp.production']
+        workorderModel = self.env['mrp.workorder']
+
+        if flag == 1:
+            name = 'B' + mo_id[1:]
+        elif flag == 1:
+            name = 'C' + mo_id[1:]
+        else:
+            name = mo_id
+        if not productionModel.search([('name', '=', name)]):
+            sql = (
+                "SELECT MkOrdNo, MkOrdDate, ProductId, ProdtQty, MakerId "
+                "FROM prdMkOrdMain "
+                "WHERE MkOrdNo='" + mo_id + "' AND Flag=" + str(flag))
+            manufactureOrders = cursorChi.execute(sql).fetchall()
+            
+            if manufactureOrders:
+                try:
+                    manufactureOrder = manufactureOrders[0]
+                    targetBom = self._getBom(cursorChi, manufactureOrder)
+                    if targetBom:
+                        products = self.env['product.product'].search([
+                            ('default_code', '=', manufactureOrder.ProductId)
+                            ])
+                        product = products[0] if products else False
+                        users = self.env['res.users'].search([
+                            ('login', '=', manufactureOrder.MakerId)
+                            ])
+                        user = users[0] if users else False
+                        productionValues = ({
+                            'name': name,
+                            'product_id': product.id if product else False,
+                            'bom_id': targetBom.id,
+                            'routing_id': targetBom.routing_id.id,
+                            'product_qty': manufactureOrder.ProdtQty,
+                            'product_uom_id': product.product_tmpl_id.uom_id.id if product else False,
+                            'user_id': user.id if user else False,
+                            })
+                        production = productionModel.create(productionValues)
+                        production.button_plan()
+                        
+                        sql = (
+                            "SELECT MkPgmId, Producer, Price "
+                            "FROM prdMkOrdPgms "
+                            "WHERE MkOrdNo='" + mo_id + "' AND Flag=" + str(flag) + " "
+                            "ORDER BY SerNo")
+                        workorders = cursorChi.execute(sql).fetchall()
+                        for workorder in workorders:
+                            if workorder.Price > 0:
+                                self._createProcessPrice(production, manufactureOrder, workorder)
+                except Exception:
+                    _logger.warning('Exception in migrate_bom:', exc_info=True)
+                    import pdb; pdb.set_trace()
+            self.env.cr.commit()
+            
+    @api.multi
+    def migrate_mo(self, mo_id, flag = 3):
+        try:
+            self.ensure_one()
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+
+            self._migrate_chiMo(cursorChi, cursorBatom, mo_id, flag)
+            connChi.close()
+            connBatom.close()
+        except Exception:
+            _logger.warning('Exception in migrate_mo:', exc_info=True)
+            import pdb; pdb.set_trace()
+            if connChi:
+                connChi.close()
+            if connBatom:
+                connBatom.close()
+            
+    @api.multi
+    def migrate_mo_by_date(self, dateStart, dateEnd = '99999999'):
+        self.ensure_one()
+        if len(dateStart) != 8 or not dateStart.isdigit():
+            print '"' + dateStart + '" is not a valid date'
+            return
+        if len(dateEnd) != 8 or not dateEnd.isdigit():
+            print '"' + dateEnd + '" is not a valid date'
+            return
+            
+        try:
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+            
+            sql = (
+                "SELECT Flag, MkOrdNo "
+                "FROM prdMkOrdMain "
+                "WHERE MkOrdDate BETWEEN " + dateStart + " AND " + dateEnd + " AND Flag in (1, 2, 3)")
+            manufactureOrders = cursorChi.execute(sql).fetchall()
+            nCount = len(manufactureOrders)
+            if nCount > 1000:
+                print str(nCount) + ' qualified MOs which is more than 1000'
+            else:
+                nDone = 0
+                for manufactureOrder in manufactureOrders:
+                    self._migrate_chiMo(cursorChi, cursorBatom, manufactureOrder.MkOrdNo, manufactureOrder.Flag)
+                    nDone += 1
+                    if nDone % 10 == 0:
+                        print str(nDone) + '/' + str(nCount)
+                        self.env.cr.commit()
+            self.env.cr.commit()
+            connChi.close()
+            connBatom.close()
+        except Exception:
+            _logger.warning('Exception in migrate_mo_by_date:', exc_info=True)
+            import pdb; pdb.set_trace()
             if connChi:
                 connChi.close()
             if connBatom:
