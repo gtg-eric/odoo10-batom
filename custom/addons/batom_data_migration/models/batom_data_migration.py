@@ -121,6 +121,10 @@ def _getSupplier(self, supplierCode, defaultIfNotFound):
         supplierCompany = self.env['res.company']._company_default_get()
         if supplierCompany:
             supplier = supplierCompany.partner_id
+            if not supplier.x_supplier_code:
+                supplier.write({
+                    'x_supplier_code': '01',
+                    })
 
     return supplier
         
@@ -162,7 +166,7 @@ def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
         elif createIfNotExist:
             workcenterValues = ({
                 'name': process.name + ' <- ' + supplier.display_name,
-                'code': processCode + ' <- ' + supplier.x_supplier_code,
+                'code': processCode + ' <- ' + (supplier.x_supplier_code if supplier.x_supplier_code else '01'),
                 'x_process_id': process.id,
                 'x_supplier_id': supplier.id,
                 'resource_type': 'material',
@@ -170,6 +174,7 @@ def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
             workcenter = workcenterModel.create(workcenterValues);
     except Exception:
         _logger.warning('Exception in migrate_bom:', exc_info=True)
+        import pdb; pdb.set_trace()
 
     return workcenter
 
@@ -270,7 +275,7 @@ def _createOdooBom(self, cursorChi, chiBom, itemNo, active):
         'x_version_description': chiBom.CurVersion,
         'product_qty': chiBom.BatchAmount,
         'type': 'normal',
-        'routing_id': odooRouting.id,
+        'routing_id': odooRouting.id if odooRouting else False,
         'active': active,
         })
     
@@ -1158,7 +1163,9 @@ class BatomMigrateBom(models.TransientModel):
                     ('x_product_id', '=', productTemplate.id),
                     ('x_batom_bom_no', '=', itemNo),
                     ])
-                if len(odooRoutings) <= 0:
+                if len(odooRoutings) > 0:
+                    odooRouting = odooRoutings[0]
+                else:
                     routingValues = ({
                         'code': u'~' + chiBom.ProductId.decode('utf-8') + u"#" + str(itemNo),
                         'name': u'RO/' + chiBom.ProductName.decode('utf-8') + u" #" + str(itemNo),
@@ -1336,22 +1343,38 @@ class BatomMigrateBom(models.TransientModel):
             supplier = _getSupplier(self, chiWorkorder.Producer, True)
             processProduct = _getProduct(self, chiWorkorder.MkPgmId)
             if supplier and processProduct:
+                date_start = datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d')
                 productSupplierInfos = productSupplierInfoModel.search([
                     ('name', '=', supplier.id),
                     ('target_product_id', '=', production.product_id.id),
-                    ('price', '=', chiWorkorder.Price),
-                    '|',
-                    ('date_start', '=', datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d')),
-                    ('price', '=', 0),
                     ('product_id', '=', processProduct.id),
-                    ])
-                if len(productSupplierInfos) <= 0:
+                    ], order='date_start')
+                newPrice = True
+                if len(productSupplierInfos) > 0:
+                    nMatchCount = 0
+                    for productSupplierInfo in productSupplierInfos:
+                        supplierInfoDateStart = datetime.strptime(productSupplierInfo.date_start, '%Y-%m-%d')
+                        if productSupplierInfo.price == chiWorkorder.Price:
+                            nMatchCount += 1
+                            if date_start == supplierInfoDateStart:
+                                newPrice = False # identical entry exists
+                                break
+                            
+                            elif date_start < supplierInfoDateStart or nMatchCount > 1:
+                                productSupplierInfo.write({
+                                    'date_start': date_start,
+                                    })
+                                newPrice = False # only needs to adjust the start date of the same price entry
+                                break
+                        elif date_start < supplierInfoDateStart:
+                            break
+                if newPrice:
                     productSupplierInfoValues = ({
                         'name': supplier.id,
                         'product_name': supplier.display_name + ' -> ' + processProduct.name,
                         'product_code': processProduct.default_code + u'->' + production.product_id.default_code,
                         'price': chiWorkorder.Price,
-                        'date_start': datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d'),
+                        'date_start': date_start,
                         'product_id': processProduct.id,
                         'product_tmpl_id': processProduct.product_tmpl_id.id,
                         'target_product_id': production.product_id.id
@@ -1515,36 +1538,42 @@ class BatomMigrateBom(models.TransientModel):
                 connBatom.close()
     
     def _matchBom(self, odooBom, materials, workorders):
-        matched = True
-        odooBomLines = odooBom.bom_line_ids
-        if odooBomLines[0].product_id.default_code == 'MTAC':
-            odooBomLines = odooBomLines[1:]
-        for material in materials:
-            i = 0
-            found = False
-            while i < len(odooBomLines):
-                if (not odooBomLines[i].product_id.product_tmpl_id.x_is_process and
-                        odooBomLines[i].product_id.default_code == material.SubProdID and
-                        odooBomLines[i].product_qty == material.UnitOughtQty):
-                    odooBomLines = odooBomLines[:i] + odooBomLines[i + 1:]
-                    found = True
-                    break
-                else:
-                    i += 1
-            if not found:
-                matched = False
-                break
-                
-        if matched:
-            for workorder in workorders:
-                if workorder.Producer == '01':
-                    workorder.Producer = False
-                if (odooBomLines[0].operation_id.workcenter_id.x_process_id.default_code == workorder.MkPgmID and
-                        odooBomLines[0].operation_id.workcenter_id.x_supplier_id.x_supplier_code == workorder.Producer):
-                    odooBomLines = odooBomLines[1:]
-                else:
+        try:
+            matched = True
+            odooBomLines = odooBom.bom_line_ids
+            if odooBomLines[0].product_id.default_code == 'MTAC':
+                odooBomLines = odooBomLines[1:]
+            for material in materials:
+                i = 0
+                found = False
+                while i < len(odooBomLines):
+                    if (not odooBomLines[i].product_id.product_tmpl_id.x_is_process and
+                            odooBomLines[i].product_id.default_code == material.SubProdID and
+                            odooBomLines[i].product_qty == material.UnitOughtQty):
+                        odooBomLines = odooBomLines[:i] + odooBomLines[i + 1:]
+                        found = True
+                        break
+                    else:
+                        i += 1
+                if not found:
                     matched = False
                     break
+                    
+            if matched:
+                for workorder in workorders:
+                    if workorder.Producer == '01':
+                        workorder.Producer = False
+                    if (odooBomLines and
+                            odooBomLines[0].operation_id.workcenter_id.x_process_id.default_code == workorder.MkPgmID and
+                            odooBomLines[0].operation_id.workcenter_id.x_supplier_id.x_supplier_code == workorder.Producer):
+                        odooBomLines = odooBomLines[1:]
+                    else:
+                        matched = False
+                        break
+        except Exception:
+            _logger.warning('Exception in _matchBom:', exc_info=True)
+            import pdb; pdb.set_trace()
+        
         return matched
         
     def _getBom(self, cursorChi, chiMo):
