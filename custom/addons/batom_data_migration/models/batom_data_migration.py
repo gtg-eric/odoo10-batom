@@ -236,6 +236,7 @@ def _createOdooProduct(self, cursorChi, productId):
             # warehouse_id, location_id, routes_id,
             })
         
+        productModel = self.env['product.product']
         odooProducts = productModel.search([('default_code', '=', chiProduct.ProdId)])
         if len(odooProducts) == 0:
             odooProduct = productModel.create(productValues)
@@ -596,6 +597,8 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             odooPartnerMigration = self.env['batom.partner_migration'].search([('odoo_id', '=', None)])
             partnerModel = self.env['res.partner']
             
+            nCount = len(odooPartnerMigration)
+            nDone = 0
             for migration in odooPartnerMigration:
                 try:
                     if migration.type == 1:
@@ -712,6 +715,10 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                 'supplier': supplierValue,
                                 })
                             newPartner.write({'display_name': inPartner.ShortName})
+                    nDone += 1
+                    if nDone % 10 == 0:
+                        print str(nDone) + '/' + str(nCount)
+                        self.env.cr.commit()
                 except Exception:
                     _logger.warning('Exception in apply_partner_data:', exc_info=True)
                     continue
@@ -904,7 +911,6 @@ class BatomMigrateProduct(models.TransientModel):
         # base_external_dbsource seems to have size limit of the query result
         # query the values directly may not returns all qualified records
         chiProductIds = cursorChi.execute('SELECT ProdId FROM comProduct ORDER BY ProdId').fetchall()
-        productModel = self.env['product.product']
         productIds = []
         for chiProductId in chiProductIds:
             productIds.append(chiProductId.ProdId)
