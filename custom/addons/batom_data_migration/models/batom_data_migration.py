@@ -1350,24 +1350,67 @@ class BatomMigrateBom(models.TransientModel):
                     ('product_id', '=', processProduct.id),
                     ], order='date_start')
                 newPrice = True
+                # the following logic will merge the same price entries into date ranges
+                # it does not try to handle all cases perfectly
                 if len(productSupplierInfos) > 0:
-                    nMatchCount = 0
-                    for productSupplierInfo in productSupplierInfos:
+                    i = 0
+                    idxToInsert = -1
+                    previousDate = False
+                    previousDateSamePrice = False
+                    nextDate = False
+                    nextDateSamePrice = False
+                    while i < len(productSupplierInfos):
+                        productSupplierInfo = productSupplierInfos[i]
                         supplierInfoDateStart = datetime.strptime(productSupplierInfo.date_start, '%Y-%m-%d')
-                        if productSupplierInfo.price == chiWorkorder.Price:
-                            nMatchCount += 1
+                        if date_start <= supplierInfoDateStart:
+                            if idxToInsert < 0:
+                                idxToInsert = i
+                                nextDate = supplierInfoDateStart
+                                if chiWorkorder.Price == productSupplierInfo.price:
+                                    nextDateSamePrice = True
+                                    break
                             if date_start == supplierInfoDateStart:
-                                newPrice = False # identical entry exists
+                                if chiWorkorder.Price == productSupplierInfo.price:
+                                    newPrice = False # duplicate. flag it as no action needed
+                                    break
+                        elif idxToInsert >= 0:
+                            if nextDate == supplierInfoDateStart:
+                                if chiWorkorder.Price == productSupplierInfo.price:
+                                    nextDateSamePrice = True
+                                    break
+                            else:
                                 break
-                            
-                            elif date_start < supplierInfoDateStart or nMatchCount > 1:
-                                productSupplierInfo.write({
+                        if idxToInsert < 0 and previousDate != supplierInfoDateStart:
+                            previousDate = supplierInfoDateStart
+                            if chiWorkorder.Price == productSupplierInfo.price:
+                                previousDateSamePrice = True
+                            else:
+                                previousDateSamePrice = False
+                        i += 1
+                    
+                    if newPrice:
+                        if idxToInsert < 0:
+                            idxToInsert = i
+                        if previousDateSamePrice and nextDateSamePrice:
+                            newPrice = False # inside an existing date range with the same price.  no action needed
+                        elif previousDateSamePrice:
+                            if (idxToInsert >= 2 and
+                                    productSupplierInfos[idxToInsert - 1].price == chiWorkorder.Price and
+                                    productSupplierInfos[idxToInsert - 2].price == chiWorkorder.Price):
+                                productSupplierInfos[idxToInsert - 1].write({
                                     'date_start': date_start,
                                     })
-                                newPrice = False # only needs to adjust the start date of the same price entry
-                                break
-                        elif date_start < supplierInfoDateStart:
-                            break
+                                newPrice = False
+                        elif nextDateSamePrice:
+                            if (idxToInsert < len(productSupplierInfos) - 1 and
+                                    productSupplierInfos[idxToInsert].price == chiWorkorder.Price and
+                                    productSupplierInfos[idxToInsert + 1].price == chiWorkorder.Price):
+                                productSupplierInfos[idxToInsert].write({
+                                    'date_start': date_start,
+                                    })
+                                newPrice = False
+                        # else: create new price
+                        
                 if newPrice:
                     productSupplierInfoValues = ({
                         'name': supplier.id,
@@ -1383,101 +1426,6 @@ class BatomMigrateBom(models.TransientModel):
         except Exception:
             _logger.warning('Exception in migrate_bom:', exc_info=True)
             import pdb; pdb.set_trace()
-        
-#    def _createProcessPrice(self, production, chiProduction, chiWorkorder):
-#        productAttributeModel = self.env['product.attribute']
-#        productAttributeValueModel = self.env['product.attribute.value']
-#        productAttributeLineModel = self.env['product.attribute.line']
-#        productSupplierInfoModel = self.env['product.supplierinfo']
-#                    
-#        # applicable products for a specific process
-#        applicableProductAttributes = productAttributeModel.search([('name', '=', u'適用產品')])
-#        if len(applicableProductAttributes) > 0:
-#            applicableProductAttribute = applicableProductAttributes[0]
-#        else:
-#            applicableProductAttribute = productAttributeModel.create({
-#                'name': u'適用產品',
-#                })
-#        
-#        dummyProductAttributeValues = productAttributeValueModel.search([('name', '=', '*')])
-#        if len(dummyProductAttributeValues) > 0:
-#            dummyProductAttributeValue = dummyProductAttributeValues[0]
-#        else:
-#            # dummy service product variant
-#            dummyProductAttributeValue = productAttributeValueModel.create({
-#                'attribute_id': applicableProductAttribute.id,
-#                'name': '*',
-#                })
-#        productAttributeValues = productAttributeValueModel.search([('name', '=', production.product_id.default_code)])
-#        if len(productAttributeValues) > 0:
-#            productAttributeValue = productAttributeValues[0]
-#        else:
-#            productAttributeValue = productAttributeValueModel.create({
-#                'attribute_id': applicableProductAttribute.id,
-#                'name': production.product_id.default_code,
-#                })
-#        
-#        try:
-#            supplier = _getSupplier(self, chiWorkorder.Producer, True)
-#            processProductTemplate = _getProductTemplate(self, chiWorkorder.MkPgmId)
-#            if supplier and processProductTemplate:
-#                addedVariantValueIds = []
-#                productAttributeLines = productAttributeLineModel.search([
-#                    ('product_tmpl_id', '=', processProductTemplate.id),
-#                    ('attribute_id', '=', applicableProductAttribute.id),
-#                    ])
-#                newVariantProduct = False
-#                if len(productAttributeLines) > 0:
-#                    productAttributeLine = productAttributeLines[0]
-#                    if productAttributeValue not in productAttributeLine.value_ids:
-#                        productAttributeLine.write({
-#                            'value_ids': [(4, productAttributeValue.id)]
-#                            })
-#                        newVariantProduct = True
-#                else:
-#                    productAttributeLine = productAttributeLineModel.create({
-#                        'product_tmpl_id': processProductTemplate.id,
-#                        'attribute_id': applicableProductAttribute.id,
-#                        # it needs 2 or more attribute values for creating product variants
-#                        'value_ids': [(6, 0, [dummyProductAttributeValue.id, productAttributeValue.id])],
-#                        })
-#                    newVariantProduct = True
-#                if newVariantProduct: 
-#                    # create the per product process product variant
-#                    processProductTemplate.create_variant_ids()
-#                addedVariantProduct = False
-#                for product in productAttributeValue.product_ids:
-#                    if product.product_tmpl_id == processProductTemplate:
-#                        addedVariantProduct = product
-#                        if not product.default_code:
-#                            perProductProcessCode = processProductTemplate.default_code + u'->' + productAttributeValue.name
-#                            product.write({
-#                                'default_code': perProductProcessCode,
-#                                })
-#                if addedVariantProduct:
-#                    productSupplierInfos = productSupplierInfoModel.search([
-#                        ('name', '=', supplier.id),
-#                        ('product_code', '=', addedVariantProduct.default_code),
-#                        ('price', '=', chiWorkorder.Price),
-#                        '|',
-#                        ('date_start', '=', datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d')),
-#                        ('price', '=', 0),
-#                        ('product_id', '=', addedVariantProduct.id),
-#                        ])
-#                    if len(productSupplierInfos) <= 0:
-#                        productSupplierInfoValues = ({
-#                            'name': supplier.id,
-#                            'product_name': supplier.display_name + ' -> ' + addedVariantProduct.name,
-#                            'product_code': addedVariantProduct.default_code,
-#                            'price': chiWorkorder.Price,
-#                            'date_start': datetime.strptime(str(chiProduction.MkOrdDate), '%Y%m%d'),
-#                            'product_id': addedVariantProduct.id,
-#                            'product_tmpl_id': addedVariantProduct.product_tmpl_id.id,
-#                            })
-#                        productSupplierInfoModel.create(productSupplierInfoValues)
-#        except Exception:
-#            _logger.warning('Exception in migrate_bom:', exc_info=True)
-#            import pdb; pdb.set_trace()
         
     def _migrate_inRouting(self, cursorBatom):
         inProducts = cursorBatom.execute('SELECT ProdId, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdId').fetchall()
@@ -1526,8 +1474,6 @@ class BatomMigrateBom(models.TransientModel):
             cursorBatom = connBatom.cursor()
 
             self._migrate_chiBom(cursorChi)
-            #self._migrate_chiProcessPrice(cursorChi)
-            # self._migrate_inRouting(cursorBatom)
             connChi.close()
             connBatom.close()
         except Exception:
@@ -1731,16 +1677,13 @@ class BatomMigrateBom(models.TransientModel):
                 "WHERE MkOrdDate BETWEEN " + dateStart + " AND " + dateEnd + " AND Flag in (1, 2, 3)")
             manufactureOrders = cursorChi.execute(sql).fetchall()
             nCount = len(manufactureOrders)
-            if nCount > 1000:
-                print str(nCount) + ' qualified MOs which is more than 1000'
-            else:
-                nDone = 0
-                for manufactureOrder in manufactureOrders:
-                    self._migrate_chiMo(cursorChi, cursorBatom, manufactureOrder.MkOrdNo, manufactureOrder.Flag)
-                    nDone += 1
-                    if nDone % 10 == 0:
-                        print str(nDone) + '/' + str(nCount)
-                        self.env.cr.commit()
+            nDone = 0
+            for manufactureOrder in manufactureOrders:
+                self._migrate_chiMo(cursorChi, cursorBatom, manufactureOrder.MkOrdNo, manufactureOrder.Flag)
+                nDone += 1
+                if nDone % 10 == 0:
+                    print str(nDone) + '/' + str(nCount)
+                    self.env.cr.commit()
             self.env.cr.commit()
             connChi.close()
             connBatom.close()
