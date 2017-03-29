@@ -4,7 +4,12 @@
 
 import os
 import logging
-from datetime import datetime
+import re
+from datetime import datetime, timedelta
+import openpyxl
+from openpyxl import load_workbook
+from openpyxl.utils import coordinate_from_string, column_index_from_string
+from openpyxl.utils.cell import rows_from_range
 from odoo import models, fields, api,  _
 import odoo
 import odoo.addons.base_external_dbsource
@@ -366,6 +371,21 @@ class _partner_address:
         self.fax = fax
         self.email = email
         self.memo = memo
+
+class _material_assignment:
+    def __init__(self, product_code, product_qty, production_code, inventory_flag, inventory_code, adjustment_code, material_cost, cut_cost, forge_cost, material_lot, dispatch_date, used=False):
+        self.product_code = product_code
+        self.product_qty = product_qty
+        self.production_code = production_code
+        self.inventory_flag = inventory_flag
+        self.inventory_code = inventory_code
+        self.adjustment_code = adjustment_code
+        self.material_cost = material_cost
+        self.cut_cost = cut_cost
+        self.forge_cost = forge_cost
+        self.material_lot = material_lot
+        self.dispatch_date = dispatch_date
+        self.used = used
 
 class BatomPartnerMigrationRefresh(models.TransientModel):
     _name = "batom.partner_migration_refresh"
@@ -1580,12 +1600,13 @@ class BatomMigrateBom(models.TransientModel):
         workorderModel = self.env['mrp.workorder']
 
         if flag == 1:
-            name = 'B' + mo_id[1:]
-        elif flag == 1:
-            name = 'C' + mo_id[1:]
+            name = 'M' + mo_id[1:]
+        elif flag == 2:
+            name = 'N' + mo_id[1:]
         else:
             name = mo_id
-        if not productionModel.search([('name', '=', name)]):
+        production = productionModel.search([('name', '=', name)])
+        if not production:
             sql = (
                 "SELECT MkOrdNo, MkOrdDate, ProductId, ProdtQty, MakerId "
                 "FROM prdMkOrdMain "
@@ -1630,6 +1651,7 @@ class BatomMigrateBom(models.TransientModel):
                     _logger.warning('Exception in migrate_bom:', exc_info=True)
                     import pdb; pdb.set_trace()
             self.env.cr.commit()
+        return production
             
     @api.multi
     def migrate_mo(self, mo_id, flag = 3):
@@ -1652,7 +1674,227 @@ class BatomMigrateBom(models.TransientModel):
                 connChi.close()
             if connBatom:
                 connBatom.close()
+    
+    def _unmergeProductAndLotCells(self, sheet):
+        for range_ in sheet.merged_cell_ranges:
+            merged_cells = list(rows_from_range(range_))
+            rows = len(merged_cells)
+            xy = coordinate_from_string(merged_cells[0][0])
+            if rows > 1 and (xy[0] == 'A' or xy[0] == 'I'): # product cod column or lot code column
+                sheet.unmerge_cells(merged_cells[0][0] + ':' + merged_cells[rows - 1][0])
+                for i in xrange(1, rows):
+                    sheet[merged_cells[i][0]].value = sheet[merged_cells[0][0]].value
+
+    def _isQuantity(self, cell):
+        return cell.value and cell.data_type == 'n' # number cell
+    
+    def _getMaterialLot(self, row):
+        lot = False
+        if row[8].value:
+            if row[8].data_type == 's': # text cell
+                lot = row[8].value.strip()
+            else:
+                lot = str(row[8].value)
+            if (not lot or # blank
+                    lot.upper() == 'X' or
+                    lot == u'待通知'):
+                lot = False
+        return lot
+    
+    def _getCost(self, cell):
+        cost = False
+        if self._isQuantity(cell):
+            cost = cell.value
+        elif cell.value:
+            values = cell.value.strip().split()
+            for value in values:
+                try:
+                    cost = float(value)
+                    break
+                except ValueError:
+                    pass
+        return cost
+    
+    def _getCustCost(self, row):
+        return self._getCost(row[1])
+        
+    def _getMaterialCost(self, row):
+        return self._getCost(row[2])
+    
+    def _getForgeCost(self, row):
+        return self._getCost(row[4])
+    
+    def _getAdditionalRowsInMergedCells(self, sheet, cell):
+        additionalRowsInMergedCells = 0
+        idx = cell.coordinate
+        for range_ in sheet.merged_cell_ranges:
+            merged_cells = list(rows_from_range(range_))
+            for row in merged_cells:
+                if idx in row:
+                    dditionalRowsInMergedCells = len(merged_cells) - 1
+                    break
+        return dditionalRowsInMergedCells
+        
+    def _getDispatchDate(self, row):
+        dispatch_date = False
+        try:
+            if row[7].value and row[7].data_type == 's': # text cell
+                value = row[7].value.strip()
+                if len(value) > 4 and value[:4] == u'製表日期':
+                    dateTokens = re.findall(r"[\w]+", value) # 製表日期 will be stripped out
+                    if len(dateTokens) == 3:
+                        dispatch_date = datetime(int(dateTokens[0]), int(dateTokens[1]), int(dateTokens[2])).date()
+        except:
+            pass
+        return dispatch_date
+        
+    def _matchProductCode(self, productCodeCellValue, productCode):
+        matched = False
+        productCodeValues = re.findall(r"[\w-]+", productCodeCellValue)
+        for productCodeValue in productCodeValues:
+            if productCode.find(productCodeValue) >= 0:
+                matched = True
+                break
+        return matched
+    
+    def _updateMaterialAssignmentCodes(self, cursorChi, materialAssignment, productCodeCellValue, row):
+        try:
+            if row[7].value:
+                code = row[7].value.strip().upper()
+                if code:
+                    adjustment_code = False
+                    inventory_flag = False
+                    inventory_code = False
+                    production_code = False
+                    results = False
+                    if code[:1] == u'調' and code[1:2] == 'A':
+                        adjustment_code = code[1:]
+                        results = cursorChi.execute(
+                            "SELECT ProdId, Quantity "
+                            "FROM comProdRec "
+                            "WHERE Flag = '300' AND BillNO = '" + adjustment_code + "'"
+                            ).fetchall()
+                    elif code[:1] == u'進' and code[1:2] == 'A':
+                        inventory_flag = '100'
+                        inventory_code = code[1:]
+                        results = cursorChi.execute(
+                            "SELECT ProdId, Quantity "
+                            "FROM comProdRec "
+                            "WHERE Flag = '100' AND BillNO = '" + inventory_code + "'"
+                            ).fetchall()
+                    elif code[:1] == 'A':
+                        production_code = code
+                        results = cursorChi.execute(
+                            "SELECT comProdRec.Flag, BillNo, ProdId, Quantity "
+                            "FROM comProdRec INNER JOIN "
+                            "(SELECT Flag, WareInNo FROM prdWareIn "
+                            "WHERE Flag IN ('311', '312') AND "
+                            "MkOrdNo = '" + production_code + "') tmpWareIn ON "
+                            "(comProdRec.Flag = tmpWareIn.Flag AND comProdRec.BillNo = tmpWareIn.WareInNo)"
+                            ).fetchall()
+                    if results:
+                        matched = False
+                        message = ""
+                        for result in results:
+                            if self._matchProductCode(productCodeCellValue, result.ProdId):
+                                matched = True
+                                if not materialAssignment.product_code:
+                                    materialAssignment.product_code = result.ProdId
+                                    materialAssignment.product_qty = result.Quantity
+                                    materialAssignment.adjustment_code = adjustment_code
+                                    materialAssignment.inventory_code = inventory_code
+                                    materialAssignment.production_code = production_code
+                                elif materialAssignment.product_code == result.ProdId:
+                                    materialAssignment.product_qty += result.Quantity
+                            else:
+                                message =  'product code "' + productCodeCellValue + '" does not match "' + result.ProdId + '" "' + row[7].value + '"'
+                        if not matched:
+                            print message
+        except:
+            _logger.warning('Exception in _updateMaterialAssignmentCodes:', exc_info=True)
             
+    def _createMaterialAssignments(self, materialAssignments):
+        materialAssignmentModel = self.env['batom.material_assignment']
+        for materialAssignment in materialAssignments:
+            if materialAssignment.production_code or materialAssignment.inventory_code or materialAssignment.adjustment_code:
+                if (materialAssignmentModel.search([
+                        ('production_code', '=', materialAssignment.production_code),
+                        ('inventory_code', '=', materialAssignment.inventory_code),
+                        ('adjustment_code', '=', materialAssignment.adjustment_code),
+                        ])):
+                    print ('Material assignment for' +
+                        (' MO ' + materialAssignment.production_code if materialAssignment.production_code else '') +
+                        (' iventory in ' + materialAssignment.inventory_code if materialAssignment.inventory_code else '') +
+                        (' iventory adjustoment ' + materialAssignment.adjustment_code if materialAssignment.adjustment_code else '') +
+                        ' already exists')
+                    materialAssignment = False
+            else:
+                materialAssignment = False
+            if materialAssignment:
+                materialAssignmentModel.create({
+                    'product_code': materialAssignment.product_code,
+                    'product_qty': materialAssignment.product_qty,
+                    'production_code': materialAssignment.production_code,
+                    'inventory_code': materialAssignment.inventory_code,
+                    'adjustment_code': materialAssignment.adjustment_code,
+                    'cut_cost': materialAssignment.cut_cost,
+                    'material_cost': materialAssignment.material_cost,
+                    'forge_cost': materialAssignment.forge_cost,
+                    'material_lot': materialAssignment.material_lot,
+                    'dispatch_date': materialAssignment.dispatch_date,
+                    })
+                print ('Creating material assignment for' +
+                    (' MO ' + materialAssignment.production_code if materialAssignment.production_code else '') +
+                    (' iventory in ' + materialAssignment.inventory_code if materialAssignment.inventory_code else '') +
+                    (' iventory adjustoment ' + materialAssignment.adjustment_code if materialAssignment.adjustment_code else ''))
+
+    def _getInventoryInFromChiMo(self, cursorChi, production_id, product_code, product_qty, date_start, date_end):
+        returnedMaterialAssignments = []
+        materialAssignments = self.env['batom.material_assignment'].search([
+            ('product_code', '=', product_code),
+            ('production_code', '!=', False),
+            ('dispatch_date', '>=', date_start), 
+            ('dispatch_date', '<=', date_end), 
+            ('used', '=', False),
+            ], order='dispatch_date desc')
+        found = False
+        inventoryMaterialAssignments = []
+        for materialAssignment in materialAssignments:
+            inventoryIns = cursorChi.execute(
+                "SELECT comProdRec.Flag, BillNo, ProdId, Quantity "
+                "FROM comProdRec INNER JOIN "
+                "(SELECT Flag, WareInNo FROM prdWareIn "
+                "WHERE Flag IN ('311', '312') AND "
+                "MkOrdNo = '" + materialAssignment.production_code + "') tmpWareIn ON "
+                "(comProdRec.Flag = tmpWareIn.Flag AND comProdRec.BillNo = tmpWareIn.WareInNo)"
+                ).fetchall()
+            for inventoryIn in inventoryIns:
+                justFound = False
+                if not found and inventoryIn.Quantity == product_qty:
+                    found = True
+                    justFound = True
+                inventoryMaterialAssignment = self.env['batom.material_assignment'].create({
+                    'product_code': product_code,
+                    'product_qty': product_qty,
+                    'production_code': False,
+                    'inventory_flag': str(inventoryIn.Flag),
+                    'inventory_code': inventoryIn.BillNo,
+                    'adjustment_code': False,
+                    'cut_cost': materialAssignment.cut_cost,
+                    'material_cost': materialAssignment.material_cost,
+                    'forge_cost': materialAssignment.forge_cost,
+                    'material_lot': materialAssignment.material_lot,
+                    'dispatch_date': materialAssignment.dispatch_date,
+                    'used': justFound,
+                    'used_by_production_ids': [(4, [production_id])] if justFound else False,
+                    })
+                if justFound:
+                    returnedMaterialAssignments.append(inventoryMaterialAssignment)
+            if found:
+                self.env.cr.commit()
+                break
+        return returnedMaterialAssignments
+                
     @api.multi
     def migrate_mo_by_date(self, dateStart, dateEnd = '99999999'):
         self.ensure_one()
@@ -1694,9 +1936,323 @@ class BatomMigrateBom(models.TransientModel):
                 connChi.close()
             if connBatom:
                 connBatom.close()
+            
+    @api.multi
+    def load_lot_sheet(self, xlsx_file):
+        self.ensure_one()
+        try:
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            materialAssignments = []
+            nMaterialAssignments = 0
+            idxToAssignDispatchDate = 0
+            wb = load_workbook(filename = xlsx_file)
+            ws = wb.active
+            self._unmergeProductAndLotCells(ws)
+            mergedCells = ws.merged_cells
+            additionalRowsInMergedCells = 0
+            materialAssignment = False
+            productCodeCellValue = False
+            for row in ws.iter_rows():
+                if additionalRowsInMergedCells == 0:
+                    if materialAssignment:
+                        if materialAssignment.product_code:
+                            materialAssignments.append(materialAssignment)
+                            nMaterialAssignments += 1
+                        materialAssignment = False
+                    if self._isQuantity(row[3]):
+                        if row[0].value:
+                            productCodeCellValue = row[0].value
+                        material_lot = self._getMaterialLot(row)
+                        if not material_lot:
+                            materialAssignment = False
+                        else:
+                            materialAssignment = _material_assignment(
+                                product_code = False,
+                                product_qty = False,
+                                production_code = False,
+                                inventory_flag = False,
+                                inventory_code = False,
+                                adjustment_code = False,
+                                cut_cost = self._getCustCost(row),
+                                material_cost = self._getMaterialCost(row),
+                                forge_cost = self._getForgeCost(row),
+                                material_lot = material_lot,
+                                dispatch_date = False)
+                            if row[3].coordinate in mergedCells:
+                                additionalRowsInMergedCells = self._getAdditionalRowsInMergedCells(ws, row[3])
+                            self._updateMaterialAssignmentCodes(cursorChi, materialAssignment, productCodeCellValue, row)
+                    elif idxToAssignDispatchDate < nMaterialAssignments:
+                        dispatch_date = self._getDispatchDate(row)
+                        if dispatch_date:
+                            while idxToAssignDispatchDate < nMaterialAssignments:
+                                materialAssignments[idxToAssignDispatchDate].dispatch_date = dispatch_date
+                                idxToAssignDispatchDate += 1
+                else:
+                    additionalRowsInMergedCells -= 1
+                    if materialAssignment and not materialAssignment.product_code:
+                        self._updateMaterialAssignmentCodes(cursorChi, materialAssignment, productCodeCellValue, row)
+
+            self._createMaterialAssignments(materialAssignments)
+            self.env.cr.commit()
+            connChi.close()
+        except Exception:
+            _logger.warning('Exception in load_lot_sheet:', exc_info=True)
+            import pdb; pdb.set_trace()
+            if connChi:
+                connChi.close()
+
+    def _check_migrate_workorders(self, cursorChi, cursorBatom, mo_id, flag):
+        productionModel = self.env['mrp.production']
+        workorderModel = self.env['mrp.workorder']
+
+        if flag == 1:
+            productionCode = 'M' + mo_id[1:]
+        elif flag == 2:
+            productionCode = 'N' + mo_id[1:]
+        else:
+            productionCode = mo_id
+        try:
+            odooProductions = productionModel.search([('name', '=', productionCode)])
+            if odooProductions:
+                odooProduction = odooProductions[0]
+            else:
+                odooProduction = self._migrate_chiMo(cursorChi, cursorBatom, mo_id, flag)
+            if odooProduction:
+                materialAssignments = self.env['batom.material_assignment'].search([
+                    ('used_by_production_ids', '=', odooProduction.id)
+                    ])
+                if materialAssignments:
+                    for materialAssignment in materialAssignments:
+                        if materialAssignment.production_code:
+                            print ('MO ' + materialAssignment.production_code + ' is used for ' + productionCode + '/' +
+                                materialAssignment.product_code + '/' +
+                                str(materialAssignment.product_qty))
+                        elif materialAssignment.inventory_code:
+                            print ('Warehouse in ' + materialAssignment.inventory_code + ' is used for ' + productionCode + '/' +
+                                materialAssignment.product_code + '/' +
+                                str(materialAssignment.product_qty))
+                        else:
+                            print ('Inventory adjustment ' + materialAssignment.adjustment_code + ' is used for ' + productionCode + '/' +
+                                materialAssignment.product_code + '/' +
+                                str(materialAssignment.product_qty))
+                else:
+                    yyyy = int(productionCode[1:5])
+                    mm = int(productionCode[5:7])
+                    dd = int(productionCode[7:9])
+                    date_end = datetime(yyyy, mm, dd).date()
+                    date_start = date_end - timedelta(days = 180)
+                    date_end = date_end + timedelta(days = 30)
+                    bom_product_quants = self.env['mrp.bom.line'].search([
+                        ('bom_id', '=', odooProduction.bom_id.id),
+                        ('product_id.type', '=', 'product')
+                        ])
+                    for bom_product_quant in bom_product_quants:
+                        materialAssignments = self.env['batom.material_assignment'].search([
+                            '|',
+                            ('used_by_production_ids', '=', odooProduction.id),
+                            ('product_code', '=', bom_product_quant.product_id.default_code),
+                            ('product_qty', '=', odooProduction.product_qty * bom_product_quant.product_qty),
+                            ('dispatch_date', '>=', date_start), 
+                            ('dispatch_date', '<=', date_end), 
+                            ('used', '=', False),
+                            ], order='dispatch_date desc')
+                        if not materialAssignments:
+                            materialAssignments = self._getInventoryInFromChiMo(cursorChi, odooProduction.id, bom_product_quant.product_id.default_code, odooProduction.product_qty * bom_product_quant.product_qty, date_start, date_end)
+                        if not materialAssignments:
+                            print ('Corresponding material assignment could not be fond for ' + productionCode + '/' +
+                                bom_product_quant.product_id.default_code + '/' +
+                                str(odooProduction.product_qty * bom_product_quant.product_qty))
+                        else:
+                            materialAssignment = materialAssignments[0]
+                            if odooProduction not in materialAssignment.used_by_production_ids:
+                                materialAssignment.write({
+                                    'used_by_production_ids': [(4, [odooProduction.id])],
+                                    'used': True,
+                                    })
+                            if materialAssignment.production_code:
+                                print ('MO ' + materialAssignment.production_code + ' is used for ' + productionCode + '/' +
+                                    bom_product_quant.product_id.default_code + '/' +
+                                    str(odooProduction.product_qty * bom_product_quant.product_qty))
+                            elif materialAssignment.inventory_code:
+                                print ('Inventory in ' + 
+                                    (materialAssignment.inventory_flag + '/' if materialAssignment.inventory_flag else '') +
+                                    materialAssignment.inventory_code + ' is used for ' + productionCode + '/' +
+                                    bom_product_quant.product_id.default_code + '/' +
+                                    str(odooProduction.product_qty * bom_product_quant.product_qty))
+                            else:
+                                print ('Inventory adjustment ' + materialAssignment.adjustment_code + ' is used for ' + productionCode + '/' +
+                                    bom_product_quant.product_id.default_code + '/' +
+                                    str(odooProduction.product_qty * bom_product_quant.product_qty))
+            else:
+                print 'Manufacture order ' + productionCode + ' can not be found'
+        except Exception:
+            _logger.warning('Exception in _check_migrate_workorders:', exc_info=True)
+            import pdb; pdb.set_trace()
+            
+    @api.multi
+    def check_migrate_workorders(self, mo_id, flag = 3):
+        try:
+            self.ensure_one()
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+
+            self._check_migrate_workorders(cursorChi, cursorBatom, mo_id, flag)
+            self.env.cr.commit()
+            connChi.close()
+            connBatom.close()
+        except Exception:
+            _logger.warning('Exception in check_migrate_workorders:', exc_info=True)
+            import pdb; pdb.set_trace()
+            if connChi:
+                connChi.close()
+            if connBatom:
+                connBatom.close()
+    
+    @api.multi
+    def check_migrate_workorders_by_date(self, dateStart, dateEnd = '99999999'):
+        self.ensure_one()
+        if len(dateStart) != 8 or not dateStart.isdigit():
+            print '"' + dateStart + '" is not a valid date'
+            return
+        if len(dateEnd) != 8 or not dateEnd.isdigit():
+            print '"' + dateEnd + '" is not a valid date'
+            return
+            
+        try:
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+            
+            sql = (
+                "SELECT Flag, MkOrdNo "
+                "FROM prdMkOrdMain "
+                "WHERE MkOrdDate BETWEEN " + dateStart + " AND " + dateEnd + " AND Flag in (1, 2, 3)")
+            manufactureOrders = cursorChi.execute(sql).fetchall()
+            nCount = len(manufactureOrders)
+            nDone = 0
+            for manufactureOrder in manufactureOrders:
+                self._check_migrate_workorders(cursorChi, cursorBatom, manufactureOrder.MkOrdNo, manufactureOrder.Flag)
+                nDone += 1
+                if nDone % 10 == 0:
+                    print str(nDone) + '/' + str(nCount)
+                    self.env.cr.commit()
+            self.env.cr.commit()
+            connChi.close()
+            connBatom.close()
+        except Exception:
+            _logger.warning('Exception in check_migrate_workorders_by_date:', exc_info=True)
+            import pdb; pdb.set_trace()
+            if connChi:
+                connChi.close()
+            if connBatom:
+                connBatom.close()
+
+    def _migrate_inWorkorders(self, cursorChi, cursorBatom, mo_id, flag):
+        productionModel = self.env['mrp.production']
+        workorderModel = self.env['mrp.workorder']
+
+        if flag == 1:
+            productionCode = 'M' + mo_id[1:]
+        elif flag == 2:
+            productionCode = 'N' + mo_id[1:]
+        else:
+            productionCode = mo_id
+        try:
+            odooProductions = productionModel.search([('name', '=', productionCode)])
+            if odooProductions:
+                odooProduction = odooProductions[0]
+            else:
+                odooProduction = self._migrate_chiMo(cursorChi, cursorBatom, mo_id, flag)
+            if odooProduction:
+                self._check_migrate_workorders(cursorChi, cursorBatom, mo_id, flag)
+                materialAssignments = self.env['batom.material_assignment'].search([
+                    ('used_by_production_ids', '=', odooProduction.id)
+                    ])
+                if materialAssignments:
+                    for materialAssignment in materialAssignments:
+                else:
+            else:
+                print 'Manufacture order ' + productionCode + ' can not be found'
+        except Exception:
+            _logger.warning('Exception in _migrate_inWorkorders:', exc_info=True)
+            import pdb; pdb.set_trace()
+            
+    @api.multi
+    def migrate_workorders(self, mo_id, flag = 3):
+        try:
+            self.ensure_one()
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+
+            self._migrate_inWorkorders(cursorChi, cursorBatom, mo_id, flag)
+            self.env.cr.commit()
+            connChi.close()
+            connBatom.close()
+        except Exception:
+            _logger.warning('Exception in migrate_workorders:', exc_info=True)
+            import pdb; pdb.set_trace()
+            if connChi:
+                connChi.close()
+            if connBatom:
+                connBatom.close()
+    
+    @api.multi
+    def migrate_workorders_by_date(self, dateStart, dateEnd = '99999999'):
+        self.ensure_one()
+        if len(dateStart) != 8 or not dateStart.isdigit():
+            print '"' + dateStart + '" is not a valid date'
+            return
+        if len(dateEnd) != 8 or not dateEnd.isdigit():
+            print '"' + dateEnd + '" is not a valid date'
+            return
+            
+        try:
+            dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+            
+            sql = (
+                "SELECT Flag, MkOrdNo "
+                "FROM prdMkOrdMain "
+                "WHERE MkOrdDate BETWEEN " + dateStart + " AND " + dateEnd + " AND Flag in (1, 2, 3)")
+            manufactureOrders = cursorChi.execute(sql).fetchall()
+            nCount = len(manufactureOrders)
+            nDone = 0
+            for manufactureOrder in manufactureOrders:
+                self._migrate_inWorkorders(cursorChi, cursorBatom, manufactureOrder.MkOrdNo, manufactureOrder.Flag)
+                nDone += 1
+                if nDone % 10 == 0:
+                    print str(nDone) + '/' + str(nCount)
+                    self.env.cr.commit()
+            self.env.cr.commit()
+            connChi.close()
+            connBatom.close()
+        except Exception:
+            _logger.warning('Exception in migrate_workorders_by_date:', exc_info=True)
+            import pdb; pdb.set_trace()
+            if connChi:
+                connChi.close()
+            if connBatom:
+                connBatom.close()
     
 class BatomPartnerMigration(models.Model):
-    _name = "batom.partner_migration"
+    _name = 'batom.partner_migration'
     _description = 'Partner Data Migration'
     
     type = fields.Selection([(1, 'Customer'), (2, 'Sppplier')], string='Type', required=True)
@@ -1709,3 +2265,24 @@ class BatomPartnerMigration(models.Model):
     odoo_id = fields.Char('Odoo Id', required=False, size=20)
     odoo_short_name = fields.Char('Odoo Short Name', required=False, size=12)
     odoo_full_name = fields.Char('Odoo Full Name', required=False, size=80)
+    
+class BatomMaterialAssignment(models.Model):
+    _name = 'batom.material_assignment'
+    _description = 'Raw Material Assignment'
+    
+    product_code = fields.Char('Product Code', size=20)
+    product_qty = fields.Float('Product Quantity')
+    production_code = fields.Char('Production Code', size=20)
+    inventory_flag = fields.Char('Inventory In Flag', size=20) 
+    inventory_code = fields.Char('Inventory In Code', size=20)
+    adjustment_code = fields.Char('Inventory Adjustment Code', size=20)
+    material_cost = fields.Float('Row Material Cost')
+    cut_cost = fields.Float('Cut Cost')
+    forge_cost = fields.Float('Forge Cost')
+    material_lot = fields.Char('Material Lot', size=20)
+    dispatch_date = fields.Date('Dispatch Date')
+    imported = fields.Boolean('Imported', default=False)
+    used = fields.Boolean('Used', default=False)
+    used_by_production_ids = fields.Many2many(
+        comodel_name='mrp.production', relation='batom_material_assignment_production_rel',
+        column1='material_assignment_id', column2='production_id', string='Used by')
