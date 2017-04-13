@@ -53,7 +53,7 @@ class BatomCutter(models.Model):
     od = fields.Char('OD') # OD
     length = fields.Char('Length') # Length
     bore = fields.Char('Bore') # Bore
-    df = fields.Char(' D+F (Workpiece)') # D+F(工件)
+    df = fields.Char('D+F (Workpiece)') # D+F(工件)
     price = fields.Float('Price') # 單價
     price_currency_id = fields.Many2one('res.currency', string='Price Currency')
     exchange_rate = fields.Float('Exchange Rate') # 匯率
