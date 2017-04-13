@@ -9,6 +9,62 @@ from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 
 _logger = logging.getLogger(__name__)
+    
+class batom_partner_code(models.Model):
+    #_name = 'batom.partner_code'
+    _inherit = 'res.partner'
+    
+    x_customer_code = fields.Char('Customer Code')
+    x_supplier_code = fields.Char('Supplier Code')
+    x_phone2 = fields.Char('Phone 2')
+    x_phone3 = fields.Char('Phone 3')
+
+class batom_partner_category(models.Model):
+    #_name = 'batom.partner.category'
+    _inherit = 'res.partner.category'
+    
+    x_flag = fields.Integer('Category Flag')
+    x_category_code = fields.Char('Category Code', required=False, size=6)
+    x_memo = fields.Char('Memo', required=False)
+
+class BatomAccountType(models.Model):
+    _name = "batom.account.type"
+    _description = "Batom Account Type"
+
+    code = fields.Char(string='Account Type Code', required=True)
+    name = fields.Char(string='Account Type', required=True)
+
+class BatomAccountAccount(models.Model):
+    #_name = 'batom.account.account'
+    _inherit = 'account.account'
+
+    x_batom_type_id = fields.Many2one('batom.account.type', string='Batom Account Type')
+    x_batom_parent_id = fields.Many2one('account.account', string='Batom Parent Account')
+
+
+class BatomProductProduct(models.Model):
+    #_name = 'batom.product.product'
+    _inherit = 'product.product'
+
+    seller_ids = fields.One2many('product.supplierinfo', 'product_id', 'Vendors')
+
+class BatomProductTemplate(models.Model):
+    #_name = 'batom.product.template'
+    _inherit = 'product.template'
+
+    x_is_process = fields.Boolean('Manufacturing Process', default=False)
+    x_saved_code = fields.Char('Internal Reference with Variants')
+    default_code = fields.Char(
+        'Internal Reference', compute='_compute_default_code',
+        inverse='_set_default_code', store=True)
+
+    @api.depends('product_variant_ids', 'product_variant_ids.default_code')
+    def _compute_default_code(self):
+        unique_variants = self.filtered(lambda template: len(template.product_variant_ids) == 1)
+        for template in unique_variants:
+            template.default_code = template.product_variant_ids.default_code
+        for template in (self - unique_variants):
+            template.default_code = template.x_saved_code
 
 class BatomMrpRoutingWorkcenter(models.Model):
     #_name = "batom.mrp.routing.workcenter"

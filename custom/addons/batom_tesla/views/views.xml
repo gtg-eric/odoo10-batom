@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="view_tesla_press_info_tree" model="ir.ui.view">
+            <field name="name">Tesla Press Info Tree</field>
+            <field name="model">batom.tesla.press_info</field>
+            <field name="arch" type="xml">
+                <tree string="Tesla Press Info">
+                    <field name="name"/>
+                    <field name="timestamp"/>
+                    <field name="gear_qr"/>
+                    <field name="pinion_qr"/>
+                    <field name="result"/>
+                    <field name="ng_reason"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_tesla_press_info_filter">
+            <field name="name">Online Inventory Filter</field>
+            <field name="model">batom.tesla.press_info</field>
+            <field name="arch" type="xml">
+                <search string="Tesla Press Info Filter">
+                    <field name="name" string="Barcode" filter_domain="['|','|',('name','ilike',self),('gear_qr','ilike',self),('pinion_qr','ilike',self)]"/>
+                    <field name="timestamp" string="Timestamp" filter_domain="[('timestamp','ilike',self)]"/>
+                    <separator/>
+                    <filter name="ok" string="OK" domain="[('result','=','OK')]"/>
+                    <filter name="ng" string="NG" domain="[('result','=','NG')]"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_tesla_press_info" model="ir.actions.act_window">
+            <field name="name">Tesla Press Information</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.tesla.press_info</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_tesla_press_info_tree"/>
+            <field name="search_view_id" ref="search_tesla_press_info_filter"/>
+        </record>
+        
+        <record id="view_tesla_press_info_form" model="ir.ui.view">
+            <field name="name">batom.tesla.press_info.form</field>
+            <field name="model">batom.tesla.press_info</field>
+            <field name="arch" type="xml">
+                <form string="Tesla Press Info">
+                    <sheet>
+                        <group>
+                            <group name="data">
+                                <field name="name"/>
+                                <field name="timestamp"/>
+                                <field name="gear_qr"/>
+                                <field name="pinion_qr"/>
+                                <field name="qr_id"/>
+                                <field name="result"/>
+                                <field name="ng_reason"/>
+                                <field name="chart_file_name"/>
+                            </group>
+                            <group name="chart">
+                                <field name="chart" widget="image" class="press_image" img_width="526" img_height="358" filename="chart_file_name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <menuitem id="menu_tesla_press_info" name="Tesla Press Info"
+            parent="mrp.menu_mrp_reporting"
+            action="action_tesla_press_info"
+            sequence="30"/>
+    </data>
+</odoo>

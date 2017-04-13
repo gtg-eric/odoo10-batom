@@ -48,11 +48,11 @@ class BatomMrpInProcessMove(models.Model):
         auto_join=True, index=True, required=False, states={'done': [('readonly', True)]},
         )
     source_operation_id = fields.Many2one(
-        'mrp.operation', 'Source Operation',
+        'mrp.routing.workcenter', 'Source Operation',
         auto_join=True, index=True, required=False, states={'done': [('readonly', True)]},
         )
     dest_operation_id = fields.Many2one(
-        'mrp.operation', 'Destination Operation',
+        'mrp.routing.workcenter', 'Destination Operation',
         auto_join=True, index=True, required=False, states={'done': [('readonly', True)]},
         )
     source_partner_id = fields.Many2one(

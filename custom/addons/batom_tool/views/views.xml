@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="view_cutter_tree" model="ir.ui.view">
+            <field name="name">Cutter Tree</field>
+            <field name="model">batom.cutter</field>
+            <field name="arch" type="xml">
+                <tree string="Cutter">
+                    <field name="cutter_group_id"/>
+                    <field name="batom_code"/>
+                    <field name="cutter_class"/>
+                    <field name="cutter_code"/>
+                    <field name="product_code"/>
+                    <field name="supplier"/>
+                    <field name="consigned_to"/>
+                    <field name="storage"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_cutter_filter">
+            <field name="name">Online Inventory Filter</field>
+            <field name="model">batom.cutter</field>
+            <field name="arch" type="xml">
+                <search string="Cutter Filter">
+                    <field name="cutter_group_id"/>
+                    <field name="batom_code"/>
+                    <field name="cutter_class"/>
+                    <field name="cutter_code"/>
+                    <field name="product_code"/>
+                    <field name="supplier"/>
+                    <field name="consigned_to"/>
+                    <field name="storage"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_cutter" model="ir.actions.act_window">
+            <field name="name">Cutter Information</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.cutter</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_cutter_tree"/>
+            <field name="search_view_id" ref="search_cutter_filter"/>
+        </record>
+        
+        <record id="view_cutter_form" model="ir.ui.view">
+            <field name="name">batom.cutter.form</field>
+            <field name="model">batom.cutter</field>
+            <field name="arch" type="xml">
+                <form string="Cutter">
+                    <sheet>
+                        <group>
+                            <group name="data">
+                                <field name="cutter_group_id"/>
+                                <field name="batom_code"/>
+                                <field name="cutter_class"/>
+                                <field name="cutter_code"/>
+                                <field name="consigned_to"/>
+                                <field name="storage"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Used by Products">
+                                <group>
+                                    <group>
+                                        <field name="product_code"/>
+                                    </group>
+                                </group>
+                                <field name="product_ids">
+                                    <tree editable="bottom">
+                                        <field name="default_code"/>
+                                        <field name="name"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Suppliers">
+                                <group>
+                                    <group>
+                                        <field name="supplier"/>
+                                    </group>
+                                </group>
+                                <field name="supplier_ids">
+                                    <tree editable="bottom">
+                                        <field name="x_supplier_code"/>
+                                        <field name="name"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Costs">
+                                <group>
+                                    <group>
+                                        <field name="price" widget='monetary' options="{'currency_field': 'price_currency_id'}"/>
+                                        <field name="tax" widget='monetary' options="{'currency_field': 'tax_currency_id'}"/>
+                                        <field name="shipping" widget='monetary' options="{'currency_field': 'shipping_currency_id'}"/>
+                                        <field name="exchange_rate"/>
+                                    </group>
+                                    <group>
+                                        <field name="coating"/>
+                                        <field name="dressing_cost" widget='monetary' options="{'currency_field': 'dressing_cost_currency_id'}"/>
+                                        <field name="sharpening_cost" widget='monetary' options="{'currency_field': 'sharpening_cost_currency_id'}"/>
+                                        <field name="titanium_cost" widget='monetary' options="{'currency_field': 'titanium_cost_currency_id'}"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Miscellaneous">
+                                <group>
+                                    <group>
+                                        <field name="state"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group>
+                                        <field name="remarks"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <menuitem id="menu_cutter" name="Cutter"
+            parent="mrp.menu_mrp_reporting"
+            action="action_cutter"
+            sequence="30"/>
+    </data>
+</odoo>

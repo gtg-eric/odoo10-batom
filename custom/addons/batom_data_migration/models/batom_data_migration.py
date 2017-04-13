@@ -6,6 +6,7 @@ import os
 import logging
 import re
 from datetime import datetime, timedelta
+import time
 import openpyxl
 from openpyxl import load_workbook
 from openpyxl.utils import coordinate_from_string, column_index_from_string
@@ -294,62 +295,6 @@ def _createOdooBom(self, cursorChi, chiBom, itemNo, active):
         odooBom = odooBoms[0]
         odooBom.write(bomValues)
     self._createBomLines(odooBom, odooRouting, chiBom, chiBomMaterials, chiBomProcesses)
-    
-class batom_partner_code(models.Model):
-    #_name = 'batom.partner_code'
-    _inherit = 'res.partner'
-    
-    x_customer_code = fields.Char('Customer Code')
-    x_supplier_code = fields.Char('Supplier Code')
-    x_phone2 = fields.Char('Phone 2')
-    x_phone3 = fields.Char('Phone 3')
-
-class batom_partner_category(models.Model):
-    #_name = 'batom.partner.category'
-    _inherit = 'res.partner.category'
-    
-    x_flag = fields.Integer('Category Flag')
-    x_category_code = fields.Char('Category Code', required=False, size=6)
-    x_memo = fields.Char('Memo', required=False)
-
-class BatomAccountType(models.Model):
-    _name = "batom.account.type"
-    _description = "Batom Account Type"
-
-    code = fields.Char(string='Account Type Code', required=True)
-    name = fields.Char(string='Account Type', required=True)
-
-class BatomAccountAccount(models.Model):
-    #_name = 'batom.account.account'
-    _inherit = 'account.account'
-
-    x_batom_type_id = fields.Many2one('batom.account.type', string='Batom Account Type')
-    x_batom_parent_id = fields.Many2one('account.account', string='Batom Parent Account')
-
-
-class BatomProductProduct(models.Model):
-    #_name = 'batom.product.product'
-    _inherit = 'product.product'
-
-    seller_ids = fields.One2many('product.supplierinfo', 'product_id', 'Vendors')
-
-class BatomProductTemplate(models.Model):
-    #_name = 'batom.product.template'
-    _inherit = 'product.template'
-
-    x_is_process = fields.Boolean('Manufacturing Process', default=False)
-    x_saved_code = fields.Char('Internal Reference with Variants')
-    default_code = fields.Char(
-        'Internal Reference', compute='_compute_default_code',
-        inverse='_set_default_code', store=True)
-
-    @api.depends('product_variant_ids', 'product_variant_ids.default_code')
-    def _compute_default_code(self):
-        unique_variants = self.filtered(lambda template: len(template.product_variant_ids) == 1)
-        for template in unique_variants:
-            template.default_code = template.product_variant_ids.default_code
-        for template in (self - unique_variants):
-            template.default_code = template.x_saved_code
 
 class _partner_migration:
     def __init__(self, id, shortName, fullName):
@@ -386,6 +331,12 @@ class _material_assignment:
         self.material_lot = material_lot
         self.dispatch_date = dispatch_date
         self.used = used
+
+class _tool_sheet_format:
+    def __init__(self, special_format_name, column_names, original_column_names):
+        self.special_format_name = special_format_name
+        self.column_names = column_names
+        self.original_column_names = original_column_names
 
 class BatomPartnerMigrationRefresh(models.TransientModel):
     _name = "batom.partner_migration_refresh"
@@ -2177,9 +2128,9 @@ class BatomMigrateBom(models.TransientModel):
                 materialAssignments = self.env['batom.material_assignment'].search([
                     ('used_by_production_ids', '=', odooProduction.id)
                     ])
-                if materialAssignments:
-                    for materialAssignment in materialAssignments:
-                else:
+                #if materialAssignments:
+                #    for materialAssignment in materialAssignments:
+                #else:
             else:
                 print 'Manufacture order ' + productionCode + ' can not be found'
         except Exception:
@@ -2250,6 +2201,287 @@ class BatomMigrateBom(models.TransientModel):
                 connChi.close()
             if connBatom:
                 connBatom.close()
+    
+    _ignored_sheets = [u'Sheet1', u'刀具資料-舊不用', u'酉潤刀數據', u'回明細', u'刀具清單']
+    
+    def _get_or_add_cutter_group(self, group_name):
+        cutter_group = False
+        cutter_groups = self.env['batom.cutter.group'].search([
+            ('name', '=', group_name),
+            ])
+        if len(cutter_groups) > 0:
+            cutter_group = cutter_groups[0]
+        elif not group_name in self._ignored_sheets:
+            try:
+                cutter_group = self.env['batom.cutter.group'].create({
+                    'name': group_name
+                    })
+            except Exception:
+                _logger.warning('Exception in migrate_workorders_by_date:', exc_info=True)
+                import pdb; pdb.set_trace()
+        return cutter_group
+        
+    _sheet_format_column_mapping = ({
+        u'圖面': 'image_file',
+        u'狀態': 'state',
+        u'本土編號': 'batom_code',
+        u'履歷表': 'history_list',
+        u'詢/訂價編號': 'inquiry_number',
+        u'工件編號': 'product_code',
+        u'刀具製造商': 'supplier',
+        u'刀具種類': 'cutter_class',
+        u'刀具編號': 'cutter_code',
+        u'Material': 'material',
+        u'TYPE': 'type',
+        u'MOD': 'mod',
+        u'DP': 'dp',
+        u'PA': 'pa',
+        u'Teeth': 'teeth',
+        u'Teeth(工件)': 'teeth',
+        u'OD': 'od',
+        u'Length': 'length',
+        u'Bore': 'bore',
+        u'D+F': 'df',
+        u'D+F(工件)': 'df',
+        u'coating': 'coating',
+        u'單價': 'price',
+        u'匯率': 'exchange_rate',
+        u'稅': 'tax',
+        u'運費': 'shipping',
+        u'修刀': 'dressing_cost',
+        u'修刀費': 'dressing_cost',
+        u'修刀費用': 'dressing_cost',
+        u'磨刀費': 'sharpening_cost',
+        u'鍍鈦費': 'titanium_cost',
+        u'年份': 'year',
+        u'Total': 'total',
+        u'保管廠商': 'consigned_to',
+        u'保管日期': 'consigned_date',
+        u'歸還日期': 'returned_date',
+        u'本土保管處': 'storage',
+        u'本土保管處(2015/12/24)': 'storage',
+        u'備註': 'remarks',
+        u'詢價單': 'inquiry_form',
+        u'供應商報價單': 'supplier_quotation',
+        u'採購申請單': 'purchase_request',
+        u'訂購單': 'purchase_order',
+        u'訂單確認': 'order_confirmation',
+        u'Invoice': 'invoice',
+        u'訂購日期': 'order_date',
+        u'期望交期': 'expected_delivery_date',
+        u'現況': 'status',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        })
+    def _getSheetFormatColumnName(self, sheet_title, column_title):
+        column_name = False
+        if column_title:
+            if column_title in self._sheet_format_column_mapping:
+                column_name = self._sheet_format_column_mapping[column_title]
+            else:
+                print u'column mapping not found: ' + sheet_title + u'/' + column_title
+        return column_name
+        
+    _specialSheetNames = [u'攻牙刀&軸承', u'Liebherr資料']
+    
+    def _getSheetFormat(self, ws):
+        special_format_name = False
+        column_names = []
+        original_column_names = []
+        if ws.title in self._specialSheetNames:
+            special_format_name = ws.title
+        else:
+            for cell in ws[1]:
+                if cell.value:
+                    column_names.append(self._getSheetFormatColumnName(ws.title, cell.value))
+                    original_column_names.append(cell.value)
+                else:
+                    break
+        return _tool_sheet_format(special_format_name, column_names, original_column_names)
+        
+    def _getProductIds(self, product_codes):
+        product_list = re.findall(r"[\w]+", product_codes)
+        product_ids = []
+        for product_code in product_list:
+            products = self.env['product.product'].search([
+                ('default_code', '=', product_code),
+                ])
+            if len(products) == 0:
+                suppliers = self.env['product.product'].search([
+                    ('default_code', 'like', product_code),
+                    ])
+            if len(products) > 0:
+                product_ids.append(products[0].id)
+        return product_ids
+    
+    def _getSupplierId(self, supplier_name):
+        suppliers = self.env['res.partner'].search([
+            ('supplier', '=', True),
+            ('is_company', '=', True),
+            ('name', '=', supplier_name),
+            ])
+        if len(suppliers) == 0:
+            suppliers = self.env['res.partner'].search([
+                ('supplier', '=', True),
+                ('is_company', '=', True),
+                ('name', 'like', supplier_name),
+                ])
+        if len(suppliers) > 0:
+            return suppliers[0].id
+        else:
+            return False
+    
+    _currency_format_mapping = ({
+        u'[$\xa3-809]': 'GBP',
+        u'[$\xa5-411]': 'JPY',
+        u'"US$"': 'USD',
+        u'"NT$"': 'TWD',
+        })
+
+    def _getCurrencyFromFormat(self, number_format):
+        currency_id = _currencyIdConversion(self, 'TWD')
+        for key, value in self._currency_format_mapping.iteritems():
+            if number_format.find(key) >= 0:
+                currency_id = _currencyIdConversion(self, value)
+                break
+        return currency_id
+        
+    def _appendRemarks(selv, values, original_column_name, value):
+        if 'remarks' in values:
+            values['remarks'] += '\n' + original_column_name + '=' + value
+        else:
+            values['remarks'] = original_column_name + '=' + value
+            
+    _hyperlink_columns = ([
+        'image_file',
+        'history_list',
+        'inquiry_form',
+        'supplier_quotation',
+        'purchase_request',
+        'purchase_order',
+        'order_confirmation',
+        ])
+    _state_mapping = ({
+        u'物料': 'material',
+        u'進貨': 'bought',
+        u'進貨-客供': 'consigned',
+        u'進貨-轉賣': 'sold',
+        })
+    _number_columns = ([
+        'exchange_rate',
+        'total',
+        ])
+    _currency_columns = ([
+        'price',
+        'tax',
+        'shipping',
+        'dressing_cost',
+        'sharpening_cost',
+        'titanium_cost',
+        ])
+    
+    def _addToolRow(self, cutter_group, sheet_format, row):
+        cutter = False
+        try:
+            if not sheet_format.special_format_name:
+                values = {'cutter_group_id': cutter_group.id}
+                i = 0
+                while i < len(sheet_format.column_names):
+                    column_name = sheet_format.column_names[i]
+                    original_column_name = sheet_format.original_column_names[i]
+                    value = row[i].value
+                    if column_name and value:
+                        if column_name in self._hyperlink_columns and row[i].hyperlink:
+                            value = row[i].hyperlink.target
+                        elif column_name == 'state':
+                            if value in self._state_mapping:
+                                value = self._state_mapping[value]
+                            else:
+                                print u'invalid state: ' + cutter_group.name + u'/' + value
+                                self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                value = None
+                        elif column_name == 'product_code':
+                            product_ids = self._getProductIds(value if row[i].data_type == 's' else str(value))
+                            if product_ids:
+                                values['product_ids'] = [(4, product_ids)]
+                        elif column_name == 'supplier':
+                            supplier_id = self._getSupplierId(value if row[i].data_type == 's' else str(value))
+                            if supplier_id:
+                                values['supplier_ids'] = [(4, [supplier_id])]
+                        elif column_name == 'consigned_to':
+                            supplier_id = self._getSupplierId(value if row[i].data_type == 's' else str(value))
+                            if supplier_id:
+                                values['consigned_to_id'] = supplier_id
+                        elif column_name in self._number_columns:
+                            if not self._isQuantity(row[i]):
+                                self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                value = None
+                        elif column_name in self._currency_columns:
+                            if not self._isQuantity(row[i]):
+                                idx =  value.find('RMB')
+                                if idx >= 0:
+                                    value = value[0:idx] + value[idx + 3:]
+                                    try:
+                                        value = float(s)
+                                        currency_id = _currencyIdConversion(self, 'CNY')
+                                        values[column_name + '_currency_id'] = currency_id;
+                                    except ValueError:
+                                        self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                        value = None
+                                else:
+                                    self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    value = None
+                            else:
+                                currency_id = self._getCurrencyFromFormat(row[i].number_format)
+                                if currency_id:
+                                    values[column_name + '_currency_id'] = currency_id;
+                        if value:
+                            if column_name == 'remarks':
+                                if 'remarks' in values:
+                                    values['remarks'] = (value if row[i].data_type == 's' else str(value)) + '\n' + values['remarks']
+                                else:
+                                    values['remarks'] = value
+                            else:
+                                values[column_name] = value
+                    elif original_column_name and value:
+                        self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                    i += 1
+                cutter = self.env['batom.cutter'].create(values)
+        except Exception:
+            _logger.warning('Exception in load_tool_sheet:', exc_info=True)
+            import pdb; pdb.set_trace()
+        return cutter
+    
+    def _addToolSheet(self, ws):
+        print ws.title
+        cutter_group = self._get_or_add_cutter_group(ws.title)
+        if cutter_group:
+            sheet_format = self._getSheetFormat(ws)
+            first_row = True
+            nDone = 0
+            last_seconds = float(int(round(time.time() * 1000))) / 1000
+            for row in ws.iter_rows():
+                if first_row:
+                    first_row = False
+                else:
+                    cutter = self._addToolRow(cutter_group, sheet_format, row)
+                current_seconds = float(int(round(time.time() / 1000))) * 1000
+                nDone += 1
+                last_seconds = current_seconds
+                if nDone % 10 == 0:
+                    if nDone % 100 == 0:
+                        print str(nDone) + " - " + str(current_seconds - last_seconds)
+                    self.env.cr.commit()
+            
+    @api.multi
+    def load_tool_sheet(self, xlsx_file):
+        self.ensure_one()
+        try:
+            wb = load_workbook(filename = xlsx_file)
+            for ws in wb.worksheets:
+                self._addToolSheet(ws);
+                self.env.cr.commit()
+        except Exception:
+            _logger.warning('Exception in load_tool_sheet:', exc_info=True)
+            import pdb; pdb.set_trace()
     
 class BatomPartnerMigration(models.Model):
     _name = 'batom.partner_migration'
