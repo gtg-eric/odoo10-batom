@@ -89,5 +89,5 @@ class BatomCutter(models.Model):
     @api.one
     @api.depends('batom_code')
     def _compute_name(self):
-        if self.batom_code
+        if self.batom_code:
             self.name = self.batom_code

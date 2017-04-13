@@ -2420,7 +2420,7 @@ class BatomMigrateBom(models.TransientModel):
                                 if idx >= 0:
                                     value = value[0:idx] + value[idx + 3:]
                                     try:
-                                        value = float(s)
+                                        value = float(value)
                                         currency_id = _currencyIdConversion(self, 'CNY')
                                         values[column_name + '_currency_id'] = currency_id;
                                     except ValueError:
