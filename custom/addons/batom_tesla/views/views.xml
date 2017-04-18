@@ -52,10 +52,10 @@
                                 <field name="qr_id"/>
                                 <field name="result"/>
                                 <field name="ng_reason"/>
-                                <field name="chart_file_name"/>
                             </group>
                             <group name="chart">
-                                <field name="chart" widget="image" class="press_image" img_width="526" img_height="358" filename="chart_file_name"/>
+                                <field name="chart_file_name" readonly="1" invisible="1"/>
+                                <field name="chart" widget="image" img_width="526" img_height="358" filename="chart_file_name"/>
                             </group>
                         </group>
                     </sheet>

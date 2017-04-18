@@ -4,13 +4,16 @@
 
 import os
 import logging
+import base64
 import re
 from datetime import datetime, timedelta
 import time
+import os.path
 import openpyxl
 from openpyxl import load_workbook
 from openpyxl.utils import coordinate_from_string, column_index_from_string
 from openpyxl.utils.cell import rows_from_range
+import xlrd
 from odoo import models, fields, api,  _
 import odoo
 import odoo.addons.base_external_dbsource
@@ -2243,6 +2246,7 @@ class BatomMigrateBom(models.TransientModel):
         u'Bore': 'bore',
         u'D+F': 'df',
         u'D+F(工件)': 'df',
+        u'DTR s/n': 'dtr_sn',
         u'coating': 'coating',
         u'單價': 'price',
         u'匯率': 'exchange_rate',
@@ -2271,6 +2275,7 @@ class BatomMigrateBom(models.TransientModel):
         u'期望交期': 'expected_delivery_date',
         u'現況': 'status',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
         })
+        
     def _getSheetFormatColumnName(self, sheet_title, column_title):
         column_name = False
         if column_title:
@@ -2298,14 +2303,14 @@ class BatomMigrateBom(models.TransientModel):
         return _tool_sheet_format(special_format_name, column_names, original_column_names)
         
     def _getProductIds(self, product_codes):
-        product_list = re.findall(r"[\w]+", product_codes)
+        product_list = re.findall(r"[\w^-]+", product_codes)
         product_ids = []
         for product_code in product_list:
             products = self.env['product.product'].search([
                 ('default_code', '=', product_code),
                 ])
             if len(products) == 0:
-                suppliers = self.env['product.product'].search([
+                products = self.env['product.product'].search([
                     ('default_code', 'like', product_code),
                     ])
             if len(products) > 0:
@@ -2344,20 +2349,216 @@ class BatomMigrateBom(models.TransientModel):
                 break
         return currency_id
         
-    def _appendRemarks(selv, values, original_column_name, value):
+    def _appendRemarks(self, values, original_column_name, value):
         if 'remarks' in values:
             values['remarks'] += '\n' + original_column_name + '=' + value
         else:
             values['remarks'] = original_column_name + '=' + value
+    
+    _out_actions = [u'加工', u'重磨', u'鍍鈦', u'修刀', u'鏟磨']
+    _in_actions = [u'一般', u'刀具檢驗']
+    
+    def _getCutterAction(self, name):
+        action = False
+        try:
+            actions = self.env['batom.cutter.action'].search([
+                ('name', '=', name),
+                ])
+            if len(actions):
+                action = actions[0]
+            else:
+                action = self.env['batom.cutter.action'].create({
+                    'name': name,
+                    'is_out': name in self._out_actions,
+                    'is_in': name in self._in_actions,
+                    })
+        except Exception:
+            _logger.warning('Exception in _getCutterAction:', exc_info=True)
+            import pdb; pdb.set_trace()
+        return action
+    
+    def _getXlrdCellStringValue(self, ws, row, col):
+        if ws.cell_type(row, col) == 0:
+            return None
+        elif ws.cell_type(row, col) == 1:
+            return ws.cell_value(row, col).strip()
+        else:
+            return str(ws.cell_value(row, col)).strip()
+    
+    def _getCutterHistories(self, history_file_path):
+        cutter_histories = []
+        try:
+            wb = xlrd.open_workbook(history_file_path)
+            ws = wb.sheets()[0]
+            in_header_rows = True
+            allowed_sharpening = False
+            standard_sharpening = False
+            allowed_sharpening_times = False
+            for i in range(ws.nrows):
+                row = ws.row(i)
+                if in_header_rows:
+                    if row[1].value == u'加工':
+                        in_header_rows = False
+                    elif row[6].value == u'可磨刃長':	
+                        if row[8].value and row[8].value != u'mm':
+                            allowed_sharpening = row[8].value
+                    elif row[6].value == u'標準研磨量':	
+                        if row[8].value and row[8].value != u'mm':
+                            standard_sharpening = row[8].value
+                    elif row[6].value == u'可磨次數':
+                        if row[8].value and row[8].value != u'次':
+                            idx = row[8].value.find(u'次')
+                            if idx >= 0:
+                                try:  
+                                    allowed_sharpening_times = int(row[8].value[0:idx])
+                                except ValueError:
+                                    pass
+                else:
+                    if row[0].value == u'總 計' or row[0].value == u'本土股份有限公司' or row[0].value == u'本土有限公司':
+                        in_header_rows = True
+                        allowed_sharpening = False
+                        standard_sharpening = False
+                        allowed_sharpening_times = False
+                    else:
+                        history_values = {}
+                        action = False
+                        if row[0].value and row[0].ctype == 3:
+                            try:
+                                year, month, day, hour, minute, second = xlrd.xldate_as_tuple(row[0].value, wb.datemode)
+                                history_values['date'] = datetime(year, month, day, hour, minute, second)
+                            except ValueError:
+                                self._appendRemarks(history_values, u'日期', str(row[0].value))
+                                value = None
+                        if row[1].value and self._getXlrdCellStringValue(ws, i, 1):
+                            action = self._getCutterAction(u'加工')
+                            history_values['action_id'] = action.id
+                        elif row[2].value and self._getXlrdCellStringValue(ws, i, 2):
+                            action = self._getCutterAction(u'重磨')
+                            history_values['action_id'] = action.id
+                        elif row[4].value and self._getXlrdCellStringValue(ws, i, 4):
+                            action = self._getCutterAction(u'鍍鈦')
+                            history_values['action_id'] = action.id
+                        elif row[5].value and self._getXlrdCellStringValue(ws, i, 5):
+                            action = self._getCutterAction(u'修刀')
+                            history_values['action_id'] = action.id
+                        elif row[6].value and self._getXlrdCellStringValue(ws, i, 6):
+                            action = self._getCutterAction(u'一般')
+                            history_values['action_id'] = action.id
+                        elif row[8].value and self._getXlrdCellStringValue(ws, i, 8):
+                            action = self._getCutterAction(u'刀具檢驗')
+                            history_values['action_id'] = action.id
+                        if row[3].value and self._getXlrdCellStringValue(ws, i, 3):
+                            try:
+                                history_values['sharpening_mm'] = float(row[3].value)
+                            except ValueError:
+                                self._appendRemarks(history_values, u'磨刀量mm', self._getXlrdCellStringValue(ws, i, 3))
+                                value = None
+                        if row[7].value and self._getXlrdCellStringValue(ws, i, 7):
+                            try:
+                                history_values['processed_quantity'] = float(row[7].value)
+                            except ValueError:
+                                self._appendRemarks(history_values, u'加工數量', self._getXlrdCellStringValue(ws, i, 7))
+                        if row[9].value:
+                            remarks = self._getXlrdCellStringValue(ws, i, 9)
+                            if remarks:
+                                if 'remarks' in history_values:
+                                    history_values['remarks'] = remarks + '\n' + history_values['remarks']
+                                else:
+                                    history_values['remarks'] = remarks
+                                if 'action_id' not in history_values and remarks.find(u'鏟磨') >= 0:
+                                    action = self._getCutterAction(u'鏟磨')
+                                    history_values['action_id'] = action.id
+                        if row[10].value and self._getXlrdCellStringValue(ws, i, 10):
+                            try:
+                                history_values['cost'] = float(row[10].value)
+                                # currency_id = self._getCurrencyFromFormat(row[10].number_format)
+                                # if currency_id:
+                                #     history_values['cost_currency_id'] =  currency_id
+                            except ValueError:
+                                self._appendRemarks(history_values, u'費用', self._getXlrdCellStringValue(ws, i, 10))
+                        if history_values:
+                            if allowed_sharpening:
+                                history_values['allowed_sharpening'] = allowed_sharpening
+                            if standard_sharpening:
+                                history_values['standard_sharpening'] = standard_sharpening
+                            if allowed_sharpening_times:
+                                history_values['allowed_sharpening_times'] = allowed_sharpening_times
+                            cutter_histories.append(history_values)
+        except Exception:
+            _logger.warning('Exception in _getCutterHistories(' + history_file_path + '):', exc_info=True)
+        return cutter_histories
+                        
+    def _getFileName(self, file_path):
+        file_name = False
+        try:
+            idx = file_path.rfind('/')
+            file_name = file_path[idx + 1:]
+        except Exception:
+            pass
+        return file_name
+        
+    def _getFileContent(self, file_path):
+        file_content = False
+        file = False
+        try:
+            file = open(file_path)
+            if file:
+                file_content = base64.encodestring(file.read())
+        except Exception:
+            _logger.warning('Exception in _getFileContent:', exc_info=True)
+        if file:
+            file.close()
+        return file_content
+        
+    def _getFilePathFromLink(self, link):
+        file_path = u'/opt/odoo/files/刀具資料庫/' + link.replace('\\', '/').replace('%20', ' ').replace('%60', '`')
+        try:
+            if not os.path.isfile(file_path):
+                idx = file_path.rfind('/')
+                if idx >= 0:
+                    file_name = file_path[idx + 1:]
+                    dir_name = file_path[:idx]
+                else:
+                    file_name = file_path
+                    dir_name = '.'
+                dir_file_names = os.listdir(dir_name)
+                lowercase_file_name = file_name.lower()
+                for dir_file_name in dir_file_names:
+                    if dir_file_name.lower() == lowercase_file_name:
+                        if dir_name == '.':
+                            file_path = dir_file_name
+                        else:
+                            file_path = dir_name + '/' + dir_file_name
+                        break
+        except Exception:
+            _logger.warning('Exception in _getFilePathFromLink(' + link + '):', exc_info=True)
+        return file_path
+    
+    def _createCutterHistories(self, cutter, cutter_histories):
+        for history_values in cutter_histories:
+            cutter_values = {}
+            if 'allowed_sharpening' in history_values:
+                cutter_values['allowed_sharpening'] = history_values['allowed_sharpening']
+                history_values.pop('allowed_sharpening', None)
+            if 'standard_sharpening' in history_values:
+                cutter_values['standard_sharpening'] = history_values['standard_sharpening']
+                history_values.pop('standard_sharpening', None)
+            if 'allowed_sharpening_times' in history_values:
+                cutter_values['allowed_sharpening_times'] = history_values['allowed_sharpening_times']
+                history_values.pop('allowed_sharpening_times', None)
+            if cutter_values:
+                cutter.write(cutter_values)
+            history_values['cutter_id'] = cutter.id
+            self.env['batom.cutter.history'].create(history_values)
             
-    _hyperlink_columns = ([
+    _file_columns = ([
         'image_file',
-        'history_list',
         'inquiry_form',
         'supplier_quotation',
         'purchase_request',
         'purchase_order',
         'order_confirmation',
+        'invoice',
         ])
     _state_mapping = ({
         u'物料': 'material',
@@ -2366,6 +2567,14 @@ class BatomMigrateBom(models.TransientModel):
         u'進貨-轉賣': 'sold',
         })
     _number_columns = ([
+        'mod',
+        'dp',
+        'pa',
+        'od',
+        'length',
+        'bore',
+        'df',
+        'dtr_sn',
         'exchange_rate',
         'total',
         ])
@@ -2377,9 +2586,15 @@ class BatomMigrateBom(models.TransientModel):
         'sharpening_cost',
         'titanium_cost',
         ])
+    _date_columns = ([
+        'year',
+        'order_date',
+        'expected_delivery_date',
+        ])
     
     def _addToolRow(self, cutter_group, sheet_format, row):
         cutter = False
+        cutter_histories = False
         try:
             if not sheet_format.special_format_name:
                 values = {'cutter_group_id': cutter_group.id}
@@ -2389,8 +2604,28 @@ class BatomMigrateBom(models.TransientModel):
                     original_column_name = sheet_format.original_column_names[i]
                     value = row[i].value
                     if column_name and value:
-                        if column_name in self._hyperlink_columns and row[i].hyperlink:
-                            value = row[i].hyperlink.target
+                        if column_name == 'history_list':
+                            if row[i].hyperlink:
+                                value = row[i].hyperlink.target
+                                if value != u'連結':
+                                    file_path = self._getFilePathFromLink(value)
+                                    file_name = self._getFileName(file_path)
+                                    cutter_histories = self._getCutterHistories(file_path)
+                                    values['history_file'] = self._getFileContent(file_path)
+                                    if value:
+                                        values['history_file_name'] = file_name
+                            value = None
+                        elif column_name in self._file_columns:
+                            if row[i].hyperlink:
+                                value = row[i].hyperlink.target
+                                if value != u'連結':
+                                    file_path = self._getFilePathFromLink(value)
+                                    file_name = self._getFileName(file_path)
+                                    value = self._getFileContent(file_path)
+                                    if value:
+                                        values[column_name + '_name'] = file_name
+                            else:
+                                value = None
                         elif column_name == 'state':
                             if value in self._state_mapping:
                                 value = self._state_mapping[value]
@@ -2414,6 +2649,12 @@ class BatomMigrateBom(models.TransientModel):
                             if not self._isQuantity(row[i]):
                                 self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                 value = None
+                            else:
+                                try:
+                                    value = float(value)
+                                except Exception:
+                                    self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    value = None
                         elif column_name in self._currency_columns:
                             if not self._isQuantity(row[i]):
                                 idx =  value.find('RMB')
@@ -2423,28 +2664,42 @@ class BatomMigrateBom(models.TransientModel):
                                         value = float(value)
                                         currency_id = _currencyIdConversion(self, 'CNY')
                                         values[column_name + '_currency_id'] = currency_id;
-                                    except ValueError:
+                                    except Exception:
                                         self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                         value = None
                                 else:
                                     self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                     value = None
                             else:
-                                currency_id = self._getCurrencyFromFormat(row[i].number_format)
-                                if currency_id:
-                                    values[column_name + '_currency_id'] = currency_id;
+                                try:
+                                    value = float(value)
+                                    currency_id = self._getCurrencyFromFormat(row[i].number_format)
+                                    if currency_id:
+                                        values[column_name + '_currency_id'] = currency_id;
+                                except Exception:
+                                    self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    value = None
+                        elif column_name in self._date_columns:
+                            try:
+                                value = datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
+                            except ValueError:
+                                self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                value = None
+                        
                         if value:
                             if column_name == 'remarks':
                                 if 'remarks' in values:
                                     values['remarks'] = (value if row[i].data_type == 's' else str(value)) + '\n' + values['remarks']
                                 else:
-                                    values['remarks'] = value
+                                    values['remarks'] = (value if row[i].data_type == 's' else str(value))
                             else:
                                 values[column_name] = value
                     elif original_column_name and value:
                         self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                     i += 1
                 cutter = self.env['batom.cutter'].create(values)
+                if cutter_histories:
+                    self._createCutterHistories(cutter, cutter_histories)
         except Exception:
             _logger.warning('Exception in load_tool_sheet:', exc_info=True)
             import pdb; pdb.set_trace()
@@ -2456,19 +2711,18 @@ class BatomMigrateBom(models.TransientModel):
         if cutter_group:
             sheet_format = self._getSheetFormat(ws)
             first_row = True
-            nDone = 0
             last_seconds = float(int(round(time.time() * 1000))) / 1000
+            nDone = 0
             for row in ws.iter_rows():
                 if first_row:
                     first_row = False
                 else:
                     cutter = self._addToolRow(cutter_group, sheet_format, row)
-                current_seconds = float(int(round(time.time() / 1000))) * 1000
                 nDone += 1
-                last_seconds = current_seconds
-                if nDone % 10 == 0:
-                    if nDone % 100 == 0:
-                        print str(nDone) + " - " + str(current_seconds - last_seconds)
+                if nDone % 100 == 0:
+                    current_seconds = float(int(round(time.time() / 1000))) * 1000
+                    print str(nDone) + " - " + str(round(current_seconds - last_seconds, 3))
+                    last_seconds = current_seconds
                     self.env.cr.commit()
             
     @api.multi
