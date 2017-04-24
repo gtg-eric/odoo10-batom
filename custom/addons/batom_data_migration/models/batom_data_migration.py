@@ -2716,7 +2716,7 @@ class BatomMigrateBom(models.TransientModel):
         if cutter_group:
             sheet_format = self._getToolSheetFormat(ws)
             first_row = True
-            last_seconds = float(int(round(time.time() * 1000))) / 1000
+            last_seconds = time.time()
             nDone = 0
             for row in ws.iter_rows():
                 if first_row:
@@ -2725,7 +2725,7 @@ class BatomMigrateBom(models.TransientModel):
                     cutter = self._addToolRow(cutter_group, sheet_format, row)
                 nDone += 1
                 if nDone % 100 == 0:
-                    current_seconds = float(int(round(time.time() / 1000))) * 1000
+                    current_seconds = time.time()
                     print str(nDone) + " - " + str(round(current_seconds - last_seconds, 3))
                     last_seconds = current_seconds
                     self.env.cr.commit()
@@ -2871,6 +2871,8 @@ class BatomMigrateBom(models.TransientModel):
                         employee_values[column_name] = value
                 i += 1
             if 'code' in employee_values and 'name' in employee_values:
+                if 'x_resignation_date' in employee_values:
+                    employee_values['active'] = False
                 employee_values['user_id'] = self._getOrCreateUserId(employee_values['name'], employee_values['code'])
                 employees = self.env['hr.employee'].search([
                     ('code', '=', employee_values['code'])
