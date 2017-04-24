@@ -13,6 +13,7 @@
     'depends': [
         'base',
         'base_external_dbsource',
+        'hr',
         'stock',
         'account',
         'mrp',

@@ -16,10 +16,10 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='user_id']" position="before">
-                <field name="x_code"/>
+            <xpath expr="//div[@class='oe_title']" position="inside">
+                <field name="code"/>
             </xpath>
-            <xpath expr="//field[@name='x_code']" position="after">
+            <xpath expr="//field[@name='user_id']" position="before">
                 <field name="x_on_board_date"/>
             </xpath>
             <xpath expr="//field[@name='x_on_board_date']" position="after">

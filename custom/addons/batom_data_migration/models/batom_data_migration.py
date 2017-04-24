@@ -341,6 +341,11 @@ class _tool_sheet_format:
         self.column_names = column_names
         self.original_column_names = original_column_names
 
+class _employee_sheet_format:
+    def __init__(self, column_names, original_column_names):
+        self.column_names = column_names
+        self.original_column_names = original_column_names
+
 class BatomPartnerMigrationRefresh(models.TransientModel):
     _name = "batom.partner_migration_refresh"
     _description = "Refresh Partner Data Migration Table"
@@ -2224,7 +2229,7 @@ class BatomMigrateBom(models.TransientModel):
                 import pdb; pdb.set_trace()
         return cutter_group
         
-    _sheet_format_column_mapping = ({
+    _tool_sheet_format_column_mapping = ({
         u'圖面': 'image_file',
         u'狀態': 'state',
         u'本土編號': 'batom_code',
@@ -2276,18 +2281,18 @@ class BatomMigrateBom(models.TransientModel):
         u'現況': 'status',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
         })
         
-    def _getSheetFormatColumnName(self, sheet_title, column_title):
+    def _getToolSheetFormatColumnName(self, sheet_title, column_title):
         column_name = False
         if column_title:
-            if column_title in self._sheet_format_column_mapping:
-                column_name = self._sheet_format_column_mapping[column_title]
+            if column_title in self._tool_sheet_format_column_mapping:
+                column_name = self._tool_sheet_format_column_mapping[column_title]
             else:
                 print u'column mapping not found: ' + sheet_title + u'/' + column_title
         return column_name
         
     _specialSheetNames = [u'攻牙刀&軸承', u'Liebherr資料']
     
-    def _getSheetFormat(self, ws):
+    def _getToolSheetFormat(self, ws):
         special_format_name = False
         column_names = []
         original_column_names = []
@@ -2296,7 +2301,7 @@ class BatomMigrateBom(models.TransientModel):
         else:
             for cell in ws[1]:
                 if cell.value:
-                    column_names.append(self._getSheetFormatColumnName(ws.title, cell.value))
+                    column_names.append(self._getToolSheetFormatColumnName(ws.title, cell.value))
                     original_column_names.append(cell.value)
                 else:
                     break
@@ -2709,7 +2714,7 @@ class BatomMigrateBom(models.TransientModel):
         print ws.title
         cutter_group = self._get_or_add_cutter_group(ws.title)
         if cutter_group:
-            sheet_format = self._getSheetFormat(ws)
+            sheet_format = self._getToolSheetFormat(ws)
             first_row = True
             last_seconds = float(int(round(time.time() * 1000))) / 1000
             nDone = 0
@@ -2735,6 +2740,208 @@ class BatomMigrateBom(models.TransientModel):
                 self.env.cr.commit()
         except Exception:
             _logger.warning('Exception in load_tool_sheet:', exc_info=True)
+            import pdb; pdb.set_trace()
+            
+    _employee_sheet_format_column_mapping = ({
+        u'員工編號': 'code',
+        u'員工姓名': 'name',
+        u'性別': 'gender',
+        u'英文名': 'x_english_name',
+        u'到職日期': 'x_on_board_date',
+        u'離職日': 'x_resignation_date',
+        u'部門': 'department_id.name',
+        u'職稱': 'job_id.name',
+        u'生日': 'birthday',
+        u'身分證字號': 'identification_id',
+        u'聯絡手機': 'mobile_phone',
+        u'聯絡電話': 'address_home_id.phone',
+        u'通訊地址': 'address_home_id.street',
+        u'地區': 'address_home_id.city',
+        })
+
+    _employee_date_columns = ([
+        'x_resignation_date',
+        'birthday',
+        ])
+
+    _employee_roc_date_columns = ([
+        'x_on_board_date',
+        ])
+    
+    def _getDepartmentId(self, name):
+        department = False
+        try:
+            departments = self.env['hr.department'].search([
+                ('name', '=', name)
+                ])
+            if departments:
+                department = departments[0]
+        except Exception:
+            pass
+        
+        return department.id if department else None
+        
+    def _getOrCreateJobId(self, name):
+        job = False
+        try:
+            jobs = self.env['hr.job'].search([
+                ('name', '=', name)
+                ])
+            if jobs:
+                job = jobs[0]
+            else:
+                job = self.env['hr.job'].create({
+                    'name': name
+                    })
+        except Exception:
+            pass
+        
+        return job.id if job else None
+    
+    def _getOrCreateUserId(self, name, login):
+        user = False
+        try:
+            users = self.env['res.users'].search([
+                ('login', '=', login)
+                ])
+            if users:
+                user = users[0]
+            else:
+                user = self.env['res.users'].create({
+                    'name': name,
+                    'login': login,
+                    })
+        except Exception:
+            pass
+        
+        return user.id if user else None
+    
+    def _addEmployeeRow(self, sheet_format, row):
+        employee = False
+        try:
+            employee_values = {}
+            address_home_values = {}
+            i = 0
+            while i < len(sheet_format.column_names):
+                column_name = sheet_format.column_names[i]
+                original_column_name = sheet_format.original_column_names[i]
+                value = row[i].value
+                if column_name and value:
+                    if column_name == 'department_id.name':
+                        employee_values['department_id'] = self._getDepartmentId(value)
+                        value = None
+                    elif column_name == 'job_id.name':
+                        employee_values['job_id'] = self._getOrCreateJobId(value)
+                        value = None
+                    elif column_name[:15] == 'address_home_id':
+                        address_home_values[column_name[16:]] = value
+                        value = None
+                    elif column_name == 'code' and row[i].data_type != 's':
+                        try:
+                            value = str(value)
+                        except Exception:
+                            value = None
+                    elif column_name == 'mobile_phone':
+                        address_home_values['mobile'] = value
+                    elif column_name == 'gender':
+                        if value == u'男':
+                            value = 'male'
+                        elif value == u'女':
+                            value = 'female'
+                        else:
+                            value = 'other'
+                    elif column_name in self._employee_date_columns:
+                        try:
+                            value = datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
+                        except Exception:
+                            value = None
+                    elif column_name in self._employee_roc_date_columns:
+                        try:
+                            dateTokens = re.findall(r"[\w]+", value)
+                            value = None
+                            if dateTokens:
+                                value = datetime(int(dateTokens[0]) + 1911, int(dateTokens[1]), int(dateTokens[2])).date()
+                        except Exception:
+                            value = None
+                    
+                    if value:
+                        employee_values[column_name] = value
+                i += 1
+            if 'code' in employee_values and 'name' in employee_values:
+                employee_values['user_id'] = self._getOrCreateUserId(employee_values['name'], employee_values['code'])
+                employees = self.env['hr.employee'].search([
+                    ('code', '=', employee_values['code'])
+                    ])
+                if employees:
+                    employee = employees[0]
+                if not employee and address_home_values:
+                    address_home = False
+                    try:
+                        address_home_values['name'] = employee_values['name']
+                        address_home_values['employee'] = True
+                        address_home_values['customer'] = False
+                        address_home = self.env['res.partner'].create(address_home_values)
+                    except Exception:
+                        pass
+                    if address_home:
+                        employee_values['address_home_id'] = address_home.id
+                if not employee:
+                    employee = self.env['hr.employee'].create(employee_values)
+                else:
+                    employee.write(employee_values)
+        except Exception:
+            _logger.warning('Exception in _addEmployeeRow:', exc_info=True)
+            import pdb; pdb.set_trace()
+        return employee
+        
+    def _getEmployeeSheetFormatColumnName(self, column_title):
+        column_name = False
+        if column_title:
+            if column_title in self._employee_sheet_format_column_mapping:
+                column_name = self._employee_sheet_format_column_mapping[column_title]
+        return column_name
+    
+    def _getEmployeeSheetFormat(self, ws):
+        column_names = []
+        original_column_names = []
+        for cell in ws[2]:
+            if cell.value:
+                column_names.append(self._getEmployeeSheetFormatColumnName(cell.value))
+                original_column_names.append(cell.value)
+            else:
+                break
+        return _employee_sheet_format(column_names, original_column_names)
+    
+    def _addEmployeeSheet(self, ws):
+        sheet_format = self._getEmployeeSheetFormat(ws)
+        first_row = True
+        second_row = True
+        last_seconds = float(int(round(time.time() * 1000))) / 1000
+        nDone = 0
+        for row in ws.iter_rows():
+            if first_row:
+                first_row = False
+            elif second_row:
+                second_row = False
+            else:
+                employee = self._addEmployeeRow(sheet_format, row)
+                nDone += 1
+                if nDone % 100 == 0:
+                    current_seconds = float(int(round(time.time() / 1000))) * 1000
+                    print str(nDone) + " - " + str(round(current_seconds - last_seconds, 3))
+                    last_seconds = current_seconds
+                    self.env.cr.commit()
+        
+    @api.multi
+    def load_employee_sheet(self, xlsx_file):
+        self.ensure_one()
+        try:
+            wb = load_workbook(filename = xlsx_file)
+            ws = wb.active
+            self._addEmployeeSheet(ws);
+            self.env.cr.commit()
+        except Exception:
+            _logger.warning('Exception in load_employee_sheet:', exc_info=True)
             import pdb; pdb.set_trace()
     
 class BatomPartnerMigration(models.Model):
