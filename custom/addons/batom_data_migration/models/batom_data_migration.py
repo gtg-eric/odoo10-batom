@@ -2852,7 +2852,10 @@ class BatomMigrateBom(models.TransientModel):
                             value = 'other'
                     elif column_name in self._employee_date_columns:
                         try:
-                            value = datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
+                            if row[i].data_type == 's':
+                                value = datetime.strptime(value, "%Y/%m/%d")
+                            else:
+                                value = datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
                         except Exception:
                             value = None
                     elif column_name in self._employee_roc_date_columns:
@@ -2916,7 +2919,6 @@ class BatomMigrateBom(models.TransientModel):
         sheet_format = self._getEmployeeSheetFormat(ws)
         first_row = True
         second_row = True
-        last_seconds = float(int(round(time.time() * 1000))) / 1000
         nDone = 0
         for row in ws.iter_rows():
             if first_row:
@@ -2927,9 +2929,7 @@ class BatomMigrateBom(models.TransientModel):
                 employee = self._addEmployeeRow(sheet_format, row)
                 nDone += 1
                 if nDone % 100 == 0:
-                    current_seconds = float(int(round(time.time() / 1000))) * 1000
-                    print str(nDone) + " - " + str(round(current_seconds - last_seconds, 3))
-                    last_seconds = current_seconds
+                    print str(nDone)
                     self.env.cr.commit()
         
     @api.multi
