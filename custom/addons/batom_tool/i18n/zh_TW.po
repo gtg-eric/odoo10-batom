@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 10:08+0000\n"
-"PO-Revision-Date: 2017-04-13 10:08+0000\n"
+"POT-Creation-Date: 2017-04-25 00:33+0000\n"
+"PO-Revision-Date: 2017-04-25 00:33+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,9 +16,30 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: batom_tool
-#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_df
-msgid "D+F (Workpiece)"
-msgstr "D+F(工件)"
+#: model:ir.model.fields,field_description:batom_tool.field_product_product_cutter_count
+#: model:ir.model.fields,field_description:batom_tool.field_product_template_cutter_count
+msgid "# Cutters"
+msgstr "# Cutters"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_processed_quantity
+msgid "# Parts Processed"
+msgstr "加工數量"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_action_id
+msgid "Action"
+msgstr "動作"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_allowed_sharpening
+msgid "Allowed Sharpening"
+msgstr "可磨刃長"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_allowed_sharpening_times
+msgid "Allowed Sharpening Times"
+msgstr "可磨次數"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_batom_code
@@ -52,23 +73,38 @@ msgid "Consigned To"
 msgstr "保管廠商"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_cost
+msgid "Cost"
+msgstr "成本"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_cost_currency_id
+msgid "Cost Currency"
+msgstr "Cost Currency"
+
+#. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
 msgid "Costs"
 msgstr "費用"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_create_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_create_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_create_uid
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_create_uid
 msgid "Created by"
 msgstr "創建人"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_create_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_create_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_create_date
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_create_date
 msgid "Created on"
 msgstr "創建時間"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_cutter_id
 #: model:ir.ui.menu,name:batom_tool.menu_cutter
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_tree
@@ -102,6 +138,17 @@ msgid "Cutter Group Name"
 msgstr "刀具群組名稱"
 
 #. module: batom_tool
+#: model:ir.model,name:batom_tool.model_batom_cutter_history
+msgid "Cutter History"
+msgstr "Cutter History"
+
+#. module: batom_tool
+#: model:ir.model,name:batom_tool.model_batom_cutter_action
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_name
+msgid "Cutter History Action"
+msgstr "Cutter History Action"
+
+#. module: batom_tool
 #: model:ir.actions.act_window,name:batom_tool.action_cutter
 #: model:ir.model,name:batom_tool.model_batom_cutter
 msgid "Cutter Information"
@@ -113,15 +160,45 @@ msgid "Cutter Supplier"
 msgstr "刀具製造商"
 
 #. module: batom_tool
+#: model:ir.actions.act_window,name:batom_tool.product_open_cutter
+#: model:ir.actions.act_window,name:batom_tool.template_open_cutter
+#: model:ir.ui.view,arch_db:batom_tool.product_product_form_view_cutter_button
+#: model:ir.ui.view,arch_db:batom_tool.product_template_form_view_cutter_button
+msgid "Cutters"
+msgstr "Cutters"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_df
+msgid "D+F (Workpiece)"
+msgstr "D+F(工件)"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_dp
 msgid "DP"
 msgstr "DP"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_dtr_sn
+msgid "DTR s/n"
+msgstr "DTR s/n"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_date
+msgid "Date"
+msgstr "日期"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_display_name
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_display_name
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_display_name
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_display_name
 msgid "Display Name"
 msgstr "顯示名稱"
+
+#. module: batom_tool
+#: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
+msgid "Documents"
+msgstr "文檔"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_dressing_cost
@@ -148,12 +225,25 @@ msgid "Expected Delivery Date"
 msgstr "期望交期"
 
 #. module: batom_tool
-#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_list
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_file
+msgid "History File"
+msgstr "History File"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_file_name
+msgid "History File Name"
+msgstr "History File Name"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_ids
+#: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
 msgid "History List"
 msgstr "履歷表"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_id
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_id
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_id
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_id
 msgid "ID"
 msgstr "ID"
@@ -164,9 +254,24 @@ msgid "Image File"
 msgstr "圖面"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_image_file_name
+msgid "Image File Name"
+msgstr "Image File Name"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_is_in
+msgid "In Action"
+msgstr "In Action"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_inquiry_form
 msgid "Inquiry Form"
 msgstr "詢價單"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_inquiry_form_name
+msgid "Inquiry Form File Name"
+msgstr "Inquiry Form File Name"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_inquiry_number
@@ -179,19 +284,30 @@ msgid "Invoice"
 msgstr "發票"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_invoice_name
+msgid "Invoice File Name"
+msgstr "Invoice File Name"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter___last_update
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action___last_update
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group___last_update
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history___last_update
 msgid "Last Modified on"
 msgstr "最後修改日"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_write_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_write_uid
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_write_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_write_uid
 msgid "Last Updated by"
 msgstr "最後更新人"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_write_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_write_date
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_write_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_write_date
 msgid "Last Updated on"
 msgstr "最後更新時間"
@@ -207,6 +323,11 @@ msgid "MOD"
 msgstr "MOD"
 
 #. module: batom_tool
+#: model:res.groups,name:batom_tool.group_tools_manager
+msgid "Manager"
+msgstr "管理員"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_material
 msgid "Material"
 msgstr "原料"
@@ -215,6 +336,11 @@ msgstr "原料"
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
 msgid "Miscellaneous"
 msgstr "雜項"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_name
+msgid "Name"
+msgstr "名字"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_od
@@ -227,14 +353,29 @@ msgid "Order Confirmation"
 msgstr "訂單確認"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_order_confirmation_name
+msgid "Order Confirmation File Name"
+msgstr "Order Confirmation File Name"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_order_date
 msgid "Order Date"
 msgstr "訂購日期"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_is_out
+msgid "Out Action"
+msgstr "Out Action"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_pa
 msgid "PA"
 msgstr "PA"
+
+#. module: batom_tool
+#: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
+msgid "Parameters"
+msgstr "參數"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_price
@@ -247,14 +388,29 @@ msgid "Price Currency"
 msgstr "Price Currency"
 
 #. module: batom_tool
+#: model:ir.model,name:batom_tool.model_product_product
+msgid "Product"
+msgstr "產品"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_product_code
 msgid "Product Code"
 msgstr "工件編號"
 
 #. module: batom_tool
+#: model:ir.model,name:batom_tool.model_product_template
+msgid "Product Template"
+msgstr "產品模板"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_purchase_order
 msgid "Purchase Order"
-msgstr "訂購單"
+msgstr "採購訂單"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_purchase_order_name
+msgid "Purchase Order File Name"
+msgstr "Purchase Order File Name"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_purchase_request
@@ -262,11 +418,17 @@ msgid "Purchase Request"
 msgstr "採購申請單"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_purchase_request_name
+msgid "Purchase Request File Name"
+msgstr "Purchase Request File Name"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_total
 msgid "Quantity"
 msgstr "數量"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_remarks
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_remarks
 msgid "Remarks"
 msgstr "備註"
@@ -275,6 +437,11 @@ msgstr "備註"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_returned_date
 msgid "Returned Date"
 msgstr "歸還日期"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_sharpening_mm
+msgid "Sharpening Amount (mm)"
+msgstr "磨刀量 (mm)"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_shipping
@@ -287,14 +454,19 @@ msgid "Shipping Cost Currency"
 msgstr "Shipping Cost Currency"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_standard_sharpening
+msgid "Standard Sharpening"
+msgstr "標準研磨量"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_state
 msgid "State"
-msgstr "狀態"
+msgstr "省/ 州"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_status
 msgid "Status"
-msgstr "現況"
+msgstr "狀態"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_supplier_ids
@@ -305,6 +477,11 @@ msgstr "刀具製造商"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_supplier_quotation
 msgid "Supplier Quotation"
 msgstr "Supplier Quotation"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_supplier_quotation_name
+msgid "Supplier Quotation File Name"
+msgstr "Supplier Quotation File Name"
 
 #. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
@@ -336,6 +513,16 @@ msgstr "Teeth (工件)"
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
 msgid "Used by Products"
 msgstr "用於產品"
+
+#. module: batom_tool
+#: model:res.groups,name:batom_tool.group_tools_user
+msgid "User"
+msgstr "用戶"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_product_product_cutter_ids
+msgid "Using Cutters"
+msgstr "Using Cutters"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_year

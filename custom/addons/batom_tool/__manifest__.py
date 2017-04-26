@@ -15,6 +15,8 @@
         'batom_mrp',
     ],
     'data': [
+        'security/tool_security.xml',
+        'security/ir.model.access.csv',
         'views/views.xml',
     ],
     'demo': [
