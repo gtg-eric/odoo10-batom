@@ -4,7 +4,7 @@
 {
     'name': 'Batom Tool Management',
     'version': '10.0.1.0.1',
-    'category': 'Tools',
+    'category': 'Tool Management',
     'author': "Eric Chou, Batom Co., Ltd.",
     'website': 'http://www.greattaiwangear.com/',
     'license': 'AGPL-3',

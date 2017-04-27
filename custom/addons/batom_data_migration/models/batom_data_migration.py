@@ -1709,7 +1709,7 @@ class BatomMigrateBom(models.TransientModel):
         
     def _matchProductCode(self, productCodeCellValue, productCode):
         matched = False
-        productCodeValues = re.findall(r"[\w-]+", productCodeCellValue)
+        productCodeValues = re.findall(r"[\w^-]+", productCodeCellValue)
         for productCodeValue in productCodeValues:
             if productCode.find(productCodeValue) >= 0:
                 matched = True
@@ -2230,38 +2230,38 @@ class BatomMigrateBom(models.TransientModel):
         return cutter_group
         
     _tool_sheet_format_column_mapping = ({
-        u'圖面': 'image_file',
+        u'圖面': 'model.image_file',
         u'狀態': 'state',
         u'本土編號': 'batom_code',
         u'履歷表': 'history_list',
         u'詢/訂價編號': 'inquiry_number',
         u'工件編號': 'product_code',
         u'刀具製造商': 'supplier',
-        u'刀具種類': 'cutter_class',
-        u'刀具編號': 'cutter_code',
-        u'Material': 'material',
-        u'TYPE': 'type',
-        u'MOD': 'mod',
-        u'DP': 'dp',
-        u'PA': 'pa',
-        u'Teeth': 'teeth',
-        u'Teeth(工件)': 'teeth',
-        u'OD': 'od',
-        u'Length': 'length',
-        u'Bore': 'bore',
-        u'D+F': 'df',
-        u'D+F(工件)': 'df',
-        u'DTR s/n': 'dtr_sn',
-        u'coating': 'coating',
+        u'刀具種類': 'model.cutter_class',
+        u'刀具編號': 'model.cutter_model_code',
+        u'Material': 'model.material',
+        u'TYPE': 'model.type',
+        u'MOD': 'model.mod',
+        u'DP': 'model.dp',
+        u'PA': 'model.pa',
+        u'Teeth': 'model.teeth',
+        u'Teeth(工件)': 'model.teeth',
+        u'OD': 'model.od',
+        u'Length': 'model.length',
+        u'Bore': 'model.bore',
+        u'D+F': 'model.df',
+        u'D+F(工件)': 'model.df',
+        u'DTR s/n': 'model.dtr_sn',
+        u'coating': 'model.coating',
         u'單價': 'price',
         u'匯率': 'exchange_rate',
         u'稅': 'tax',
         u'運費': 'shipping',
-        u'修刀': 'dressing_cost',
-        u'修刀費': 'dressing_cost',
-        u'修刀費用': 'dressing_cost',
-        u'磨刀費': 'sharpening_cost',
-        u'鍍鈦費': 'titanium_cost',
+        u'修刀': 'model.dressing_cost',
+        u'修刀費': 'model.dressing_cost',
+        u'修刀費用': 'model.dressing_cost',
+        u'磨刀費': 'model.sharpening_cost',
+        u'鍍鈦費': 'model.titanium_cost',
         u'年份': 'year',
         u'Total': 'total',
         u'保管廠商': 'consigned_to',
@@ -2556,8 +2556,19 @@ class BatomMigrateBom(models.TransientModel):
             history_values['cutter_id'] = cutter.id
             self.env['batom.cutter.history'].create(history_values)
             
+    def _getOrCreateCutterModel(self, values):
+        cutter_model = False
+        cutter_models = self.env['batom.cutter.model'].search([
+            ('cutter_model_code', '=', values['cutter_model_code'])
+            ])
+        if cutter_models:
+            cutter_model = cutter_models[0]
+        else:
+            cutter_model = self.env['batom.cutter.model'].create(values)
+        return cutter_model
+            
     _file_columns = ([
-        'image_file',
+        'model.image_file',
         'inquiry_form',
         'supplier_quotation',
         'purchase_request',
@@ -2572,14 +2583,14 @@ class BatomMigrateBom(models.TransientModel):
         u'進貨-轉賣': 'sold',
         })
     _number_columns = ([
-        'mod',
-        'dp',
-        'pa',
-        'od',
-        'length',
-        'bore',
-        'df',
-        'dtr_sn',
+        'model.mod',
+        'model.dp',
+        'model.pa',
+        'model.od',
+        'model.length',
+        'model.bore',
+        'model.df',
+        'model.dtr_sn',
         'exchange_rate',
         'total',
         ])
@@ -2587,9 +2598,9 @@ class BatomMigrateBom(models.TransientModel):
         'price',
         'tax',
         'shipping',
-        'dressing_cost',
-        'sharpening_cost',
-        'titanium_cost',
+        'model.dressing_cost',
+        'model.sharpening_cost',
+        'model.titanium_cost',
         ])
     _date_columns = ([
         'year',
@@ -2602,7 +2613,8 @@ class BatomMigrateBom(models.TransientModel):
         cutter_histories = False
         try:
             if not sheet_format.special_format_name:
-                values = {'cutter_group_id': cutter_group.id}
+                model_values = {'cutter_group_id': cutter_group.id}
+                cutter_values = {}
                 i = 0
                 while i < len(sheet_format.column_names):
                     column_name = sheet_format.column_names[i]
@@ -2616,9 +2628,9 @@ class BatomMigrateBom(models.TransientModel):
                                     file_path = self._getFilePathFromLink(value)
                                     file_name = self._getFileName(file_path)
                                     cutter_histories = self._getCutterHistories(file_path)
-                                    values['history_file'] = self._getFileContent(file_path)
+                                    cutter_values['history_file'] = self._getFileContent(file_path)
                                     if value:
-                                        values['history_file_name'] = file_name
+                                        cutter_values['history_file_name'] = file_name
                             value = None
                         elif column_name in self._file_columns:
                             if row[i].hyperlink:
@@ -2628,7 +2640,10 @@ class BatomMigrateBom(models.TransientModel):
                                     file_name = self._getFileName(file_path)
                                     value = self._getFileContent(file_path)
                                     if value:
-                                        values[column_name + '_name'] = file_name
+                                        if column_name.find('model.') >= 0:
+                                            model_values[column_name[6:] + '_name'] = file_name
+                                        else:
+                                            cutter_values[column_name + '_name'] = file_name
                             else:
                                 value = None
                         elif column_name == 'state':
@@ -2636,75 +2651,109 @@ class BatomMigrateBom(models.TransientModel):
                                 value = self._state_mapping[value]
                             else:
                                 print u'invalid state: ' + cutter_group.name + u'/' + value
-                                self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                 value = None
                         elif column_name == 'product_code':
                             product_ids = self._getProductIds(value if row[i].data_type == 's' else str(value))
                             if product_ids:
-                                values['product_ids'] = [(4, product_ids)]
+                                model_values['product_ids'] = [(4, product_ids)]
                         elif column_name == 'supplier':
                             supplier_id = self._getSupplierId(value if row[i].data_type == 's' else str(value))
                             if supplier_id:
-                                values['supplier_ids'] = [(4, [supplier_id])]
+                                model_values['supplier_ids'] = [(4, [supplier_id])]
+                        elif column_name == 'model.cutter_model_code':
+                            codeTokens = re.findall(r"[\w^-]+", value if row[i].data_type == 's' else str(value))
+                            if codeTokens:
+                                value = codeTokens[0]
+                            else:
+                                value = None
                         elif column_name == 'consigned_to':
                             supplier_id = self._getSupplierId(value if row[i].data_type == 's' else str(value))
                             if supplier_id:
-                                values['consigned_to_id'] = supplier_id
+                                cutter_values['consigned_to_id'] = supplier_id
                         elif column_name in self._number_columns:
                             if not self._isQuantity(row[i]):
-                                self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                 value = None
                             else:
                                 try:
                                     value = float(value)
                                 except Exception:
-                                    self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                     value = None
                         elif column_name in self._currency_columns:
                             if not self._isQuantity(row[i]):
-                                idx =  value.find('RMB')
-                                if idx >= 0:
+                                rmb_idx = value.find('RMB')
+                                usd_idx = value.find('USD')
+                                if rmb_idx >= 0 or usd_idx >= 0:
+                                    idx = rmb_idx if rmb_idx >= 0 else usd_idx
                                     value = value[0:idx] + value[idx + 3:]
                                     try:
                                         value = float(value)
-                                        currency_id = _currencyIdConversion(self, 'CNY')
-                                        values[column_name + '_currency_id'] = currency_id;
+                                        if rmb_idx >= 0:
+                                            currency_id = _currencyIdConversion(self, 'CNY')
+                                        else:
+                                            currency_id = _currencyIdConversion(self, 'USD')
+                                        if column_name.find('model.') >= 0:
+                                            model_values[column_name[6:] + '_currency_id'] = currency_id;
+                                        else:
+                                            cutter_values[column_name + '_currency_id'] = currency_id;
                                     except Exception:
-                                        self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                        self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                         value = None
                                 else:
-                                    self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                     value = None
                             else:
                                 try:
                                     value = float(value)
                                     currency_id = self._getCurrencyFromFormat(row[i].number_format)
                                     if currency_id:
-                                        values[column_name + '_currency_id'] = currency_id;
+                                        if column_name.find('model.') >= 0:
+                                            model_values[column_name[6:] + '_currency_id'] = currency_id;
+                                        else:
+                                            cutter_values[column_name + '_currency_id'] = currency_id;
                                 except Exception:
-                                    self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                     value = None
                         elif column_name in self._date_columns:
                             try:
                                 value = datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
                             except ValueError:
-                                self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                 value = None
                         
                         if value:
                             if column_name == 'remarks':
-                                if 'remarks' in values:
-                                    values['remarks'] = (value if row[i].data_type == 's' else str(value)) + '\n' + values['remarks']
+                                if 'remarks' in cutter_values:
+                                    cutter_values['remarks'] = (value if row[i].data_type == 's' else str(value)) + '\n' + cutter_values['remarks']
                                 else:
-                                    values['remarks'] = (value if row[i].data_type == 's' else str(value))
+                                    cutter_values['remarks'] = (value if row[i].data_type == 's' else str(value))
                             else:
-                                values[column_name] = value
+                                if column_name.find('model.') >= 0:
+                                    model_values[column_name[6:]] = value;
+                                else:
+                                    cutter_values[column_name] = value;
                     elif original_column_name and value:
-                        self._appendRemarks(values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                        self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                     i += 1
-                cutter = self.env['batom.cutter'].create(values)
-                if cutter_histories:
-                    self._createCutterHistories(cutter, cutter_histories)
+                if 'cutter_model_code' not in model_values:
+                    _logger.warning('No cutter model code:' + str(row[0]))
+                elif 'batom_code' not in cutter_values:
+                    _logger.warning('No batom code:' + str(row[0]))
+                else:
+                    cutters = self.env['batom.cutter'].search([
+                        ('batom_code', '=', cutter_values['batom_code']),
+                        ])
+                    if not cutters:
+                        cutter_model = self._getOrCreateCutterModel(model_values)
+                        if not cutter_model:
+                            _logger.warning('Cannot create cutter model: ' + model_values['cutter_model_code'])
+                        else:
+                            cutter_values['cutter_model_id'] = cutter_model.id
+                            cutter = self.env['batom.cutter'].create(cutter_values)
+                            if cutter_histories:
+                                self._createCutterHistories(cutter, cutter_histories)
         except Exception:
             _logger.warning('Exception in load_tool_sheet:', exc_info=True)
             import pdb; pdb.set_trace()
