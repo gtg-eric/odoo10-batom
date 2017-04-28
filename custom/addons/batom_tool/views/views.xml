@@ -40,6 +40,16 @@
             <field name="arch" type="xml">
                 <form string="Cutter Model">
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="action_view_cutter" type="object"
+                                icon="fa-cog">
+                                <field string="Cutters" name="cutter_count" widget="statinfo" />
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label class="oe_edit_only" for="cutter_model_code"/>
+                            <h1><field name="cutter_model_code"/></h1>
+                        </div>
                         <group>
                             <group name="data">
                                 <field name="cutter_model_code"/>

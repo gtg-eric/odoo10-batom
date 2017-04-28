@@ -27,6 +27,7 @@ class BatomCutterModel(models.Model):
     image_file = fields.Binary('Image File', attachment=True) # 圖面
     image_file_name = fields.Char('Image File Name')
     cutter_ids =  fields.One2many('batom.cutter', 'cutter_model_id', 'Cutters')
+    cutter_count = fields.Integer('# Cutters', compute='_compute_cutter_count')
     model_history_ids = fields.One2many('batom.cutter.model.history', 'cutter_model_id', 'History List') # 履歷表
     product_ids = fields.Many2many(
         comodel_name='product.product', relation='batom_cutter_model_product_rel',
@@ -82,6 +83,18 @@ class BatomCutterModel(models.Model):
                     product_code = ""
                 product_code += product.default_code
         self.product_code = product_code
+
+    def _compute_cutter_count(self):
+        if self.cutter_ids:
+            self.cutter_count = len(self.cutter_ids)
+        else:
+            self.cutter_count = 0
+    
+    @api.multi
+    def action_view_cutter(self):
+        action = self.env.ref('batom_tool.product_open_cutter').read()[0]
+        action['domain'] = [('id', 'in', self.cutter_ids.ids)]
+        return action
     
 class BatomCutter(models.Model):
     _name = "batom.cutter"

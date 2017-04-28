@@ -2665,35 +2665,49 @@ class BatomMigrateBom(models.TransientModel):
                                 value = self._state_mapping[value]
                             else:
                                 print u'invalid state: ' + cutter_group.name + u'/' + value
-                                self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                self._appendRemarks(cutter_values, original_column_name,
+                                    (value if row[i].data_type == 's' else
+                                    (None if row[i].data_type == 'f' else str(value))))
                                 value = None
                         elif column_name == 'product_code':
-                            product_ids = self._getProductIds(value if row[i].data_type == 's' else str(value))
+                            product_ids = self._getProductIds(
+                                (value if row[i].data_type == 's' else
+                                (None if row[i].data_type == 'f' else str(value))))
                             if product_ids:
                                 model_values['product_ids'] = [(4, product_ids)]
                         elif column_name == 'supplier':
-                            supplier_id = self._getSupplierId(value if row[i].data_type == 's' else str(value))
+                            supplier_id = self._getSupplierId(
+                                (value if row[i].data_type == 's' else
+                                (None if row[i].data_type == 'f' else str(value))))
                             if supplier_id:
                                 model_values['supplier_ids'] = [(4, [supplier_id])]
                         elif column_name == 'model.cutter_model_code':
-                            codeTokens = re.findall(r"[\w^-]+", value if row[i].data_type == 's' else str(value))
+                            codeTokens = re.findall(r"[\w^-]+",
+                                (value if row[i].data_type == 's' else
+                                (None if row[i].data_type == 'f' else str(value))))
                             if codeTokens:
                                 value = codeTokens[0]
                             else:
                                 value = None
                         elif column_name == 'consigned_to':
-                            supplier_id = self._getSupplierId(value if row[i].data_type == 's' else str(value))
+                            supplier_id = self._getSupplierId(
+                                (value if row[i].data_type == 's' else
+                                (None if row[i].data_type == 'f' else str(value))))
                             if supplier_id:
                                 cutter_values['consigned_to_id'] = supplier_id
                         elif column_name in self._number_columns:
                             if not self._isQuantity(row[i]):
-                                self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                self._appendRemarks(cutter_values, original_column_name,
+                                    (value if row[i].data_type == 's' else
+                                    (None if row[i].data_type == 'f' else str(value))))
                                 value = None
                             else:
                                 try:
                                     value = float(value)
                                 except Exception:
-                                    self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    self._appendRemarks(cutter_values, original_column_name,
+                                        (value if row[i].data_type == 's' else
+                                        (None if row[i].data_type == 'f' else str(value))))
                                     value = None
                         elif column_name in self._currency_columns:
                             if not self._isQuantity(row[i]):
@@ -2713,10 +2727,14 @@ class BatomMigrateBom(models.TransientModel):
                                         else:
                                             cutter_values[column_name + '_currency_id'] = currency_id;
                                     except Exception:
-                                        self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                        self._appendRemarks(cutter_values, original_column_name,
+                                            (value if row[i].data_type == 's' else
+                                            (None if row[i].data_type == 'f' else str(value))))
                                         value = None
                                 else:
-                                    self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    self._appendRemarks(cutter_values, original_column_name,
+                                        (value if row[i].data_type == 's' else
+                                        (None if row[i].data_type == 'f' else str(value))))
                                     value = None
                             else:
                                 try:
@@ -2728,28 +2746,39 @@ class BatomMigrateBom(models.TransientModel):
                                         else:
                                             cutter_values[column_name + '_currency_id'] = currency_id;
                                 except Exception:
-                                    self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                    self._appendRemarks(cutter_values, original_column_name,
+                                        (value if row[i].data_type == 's' else
+                                        (None if row[i].data_type == 'f' else str(value))))
                                     value = None
                         elif column_name in self._date_columns:
                             try:
                                 value = datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
                             except ValueError:
-                                self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                                self._appendRemarks(cutter_values, original_column_name,
+                                    (value if row[i].data_type == 's' else
+                                    (None if row[i].data_type == 'f' else str(value))))
                                 value = None
                         
                         if value:
                             if column_name == 'remarks':
                                 if 'remarks' in cutter_values:
-                                    cutter_values['remarks'] = (value if row[i].data_type == 's' else str(value)) + '\n' + cutter_values['remarks']
+                                    cutter_values['remarks'] = (
+                                        (value if row[i].data_type == 's' else
+                                        (None if row[i].data_type == 'f' else str(value)))
+                                        + '\n' + cutter_values['remarks'])
                                 else:
-                                    cutter_values['remarks'] = (value if row[i].data_type == 's' else str(value))
+                                    cutter_values['remarks'] = (
+                                        (value if row[i].data_type == 's' else
+                                        (None if row[i].data_type == 'f' else str(value))))
                             else:
                                 if column_name.find('model.') >= 0:
                                     model_values[column_name[6:]] = value;
                                 else:
                                     cutter_values[column_name] = value;
                     elif original_column_name and value:
-                        self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                        self._appendRemarks(cutter_values, original_column_name,
+                            (value if row[i].data_type == 's' else
+                            (None if row[i].data_type == 'f' else str(value))))
                     i += 1
                 if 'cutter_model_code' in model_values and 'batom_code' in cutter_values:
                     cutters = self.env['batom.cutter'].search([
