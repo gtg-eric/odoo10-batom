@@ -139,7 +139,7 @@
                     <field name="batom_code"/>
                     <field name="cutter_model_id"/>
                     <field name="product_code"/>
-                    <field name="supplier"/>
+                   <field name="status"/>
                     <field name="consigned_to"/>
                     <field name="storage"/>
                 </search>
