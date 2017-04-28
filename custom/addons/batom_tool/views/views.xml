@@ -47,7 +47,7 @@
                                 <field name="cutter_class"/>
                             </group>
                             <group>
-                                <field name="image_file_name" readonly="1" invisible="1"/>
+                                <field name="image_file_name" invisible="1"/>
                                 <field name="image_file" widget="binary" filename='image_file_name'/>
                                 <field name="notes"/>
                             </group>
@@ -74,7 +74,7 @@
                                     <tree editable="bottom">
                                         <field name="date"/>
                                         <field name="remarks"/>
-                                        <field name="attached_file_name" readonly="1" invisible="1"/>
+                                        <field name="attached_file_name" invisible="1"/>
                                         <field name="attached_file" widget="binary" filename='attached_file_name'/>
                                     </tree>
                                 </field>
@@ -125,7 +125,7 @@
                     <field name="batom_code"/>
                     <field name="cutter_model_id"/>
                     <field name="product_code"/>
-                    <field name="supplier"/>
+                    <field name="status"/>
                     <field name="consigned_to"/>
                     <field name="storage"/>
                 </tree>
@@ -207,7 +207,7 @@
                             <page string="History List">
                                 <group>
                                     <group>
-                                        <field name="history_file_name" readonly="1" invisible="1"/>
+                                        <field name="history_file_name" invisible="1"/>
                                         <field name="history_file" widget="binary" filename='history_file_name'/>
                                     </group>
                                 </group>
@@ -219,7 +219,7 @@
                                         <field name="processed_quantity"/>
                                         <field name="cost"/>
                                         <field name="remarks"/>
-                                        <field name="attached_file_name" readonly="1" invisible="1"/>
+                                        <field name="attached_file_name" invisible="1"/>
                                         <field name="attached_file" widget="binary" filename='attached_file_name'/>
                                     </tree>
                                 </field>
@@ -283,9 +283,9 @@
             <field name="groups_id" eval="[(4, ref('batom_tool.group_tool_management_user'))]"/>
             <field name="arch" type="xml">
                 <div name="button_box" position="inside">
-                    <button class="oe_stat_button" name="action_template_view_cutter_model" type="object"
+                    <button class="oe_stat_button" name="action_template_view_cutter" type="object"
                         attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-cog">
-                        <field string="Cutter Models" name="cutter_model_count" widget="statinfo" />
+                        <field string="Cutters" name="cutter_count" widget="statinfo" />
                     </button>
                 </div>
             </field>
@@ -298,9 +298,9 @@
             <field name="groups_id" eval="[(4, ref('batom_tool.group_tool_management_user'))]"/>
             <field name="arch" type="xml">
                 <div name="button_box" position="inside">
-                    <button class="oe_stat_button" name="action_view_cutter_model" type="object"
+                    <button class="oe_stat_button" name="action_view_cutter" type="object"
                         attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-cog">
-                        <field string="Cutter Models" name="cutter_model_count" widget="statinfo" />
+                        <field string="Cutters" name="cutter_count" widget="statinfo" />
                     </button>
                 </div>
             </field>

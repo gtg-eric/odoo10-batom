@@ -1392,7 +1392,7 @@ msgstr "內部類別"
 #: model:ir.model.fields,field_description:product.field_product_product_default_code
 #: model:ir.model.fields,field_description:product.field_product_template_default_code
 msgid "Internal Reference"
-msgstr "內部參考"
+msgstr "本土編號"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_barcode

@@ -26,11 +26,12 @@ class BatomCutterModel(models.Model):
     cutter_group_id = fields.Many2one('batom.cutter.group', string='Cutter Group')
     image_file = fields.Binary('Image File', attachment=True) # 圖面
     image_file_name = fields.Char('Image File Name')
+    cutter_ids =  fields.One2many('batom.cutter', 'cutter_model_id', 'Cutters')
     model_history_ids = fields.One2many('batom.cutter.model.history', 'cutter_model_id', 'History List') # 履歷表
     product_ids = fields.Many2many(
         comodel_name='product.product', relation='batom_cutter_model_product_rel',
         column1='cutter_model_id', column2='product_id', string='Used by Products')
-    product_code = fields.Char(string='Product code', compute='_compute_product_code', store=True)
+    product_code = fields.Char(string='Used by Products', compute='_compute_product_code', store=True)
     supplier = fields.Char('Cutter Supplier') # 刀具製造商
     supplier_ids = fields.Many2many(
         comodel_name='res.partner', relation='batom_cutter_model_supplier_rel',
@@ -93,9 +94,16 @@ class BatomCutter(models.Model):
         ('bought', u'進貨'),
         ('consigned', u'進貨-客供'),
         ('sold', u'進貨-轉賣'),
-        ('scrapped', u'報廢'),
         ],
         string='State',
+        index=True,
+        )
+    managing_department = fields.Selection([ # 管理單位
+        ('procurement', u'採購'),
+        ('production', u'生管'),
+        ],
+        string='Managing Department',
+        default='procurement',
         index=True,
         )
     cutter_model_id = fields.Many2one('batom.cutter.model', string='Cutter Model')
@@ -104,7 +112,7 @@ class BatomCutter(models.Model):
     history_file = fields.Binary('History File', attachment=True) # 圖面
     history_file_name = fields.Char('History File Name')
     inquiry_number = fields.Char('Inquiry/Order Number') # 詢/訂價編號
-    product_code = fields.Char('Product Code') # 工件編號
+    product_code = fields.Char('Used by Products') # 工件編號
     supplier = fields.Char('Cutter Supplier') # 刀具製造商
     price = fields.Float('Price') # 單價
     price_currency_id = fields.Many2one('res.currency', string='Price Currency')
@@ -135,7 +143,18 @@ class BatomCutter(models.Model):
     invoice_name = fields.Char('Invoice File Name')
     order_date = fields.Date('Order Date') # 訂購日期
     expected_delivery_date = fields.Date('Expected Delivery Date') # 期望交期
-    status = fields.Char('Status') # 現況
+    status = fields.Selection([ # 現況
+        ('available', u'可用'),
+        ('in-use', u'使用中'),
+        ('maintenance', u'修刀中'),
+        ('purchasing', u'採購中'),
+        ('scrapped', u'報廢'),
+        ('unknown', u'不明'),
+        ],
+        string='Status',
+        default='unknown',
+        index=True,
+        )
 
     _sql_constraints = [
         ('code_uniq', 'unique (batom_code)', 'The Batom cutter code must be unique.')
@@ -183,15 +202,19 @@ class BatomCutterModelHisory(models.Model):
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    cutter_model_count = fields.Integer('# Cutters', compute='_compute_cutter_model_count')
+    cutter_model_count = fields.Integer('# Cutter Models', compute='_compute_cutter_model_count')
+    cutter_count = fields.Integer('# Cutters', compute='_compute_cutter_count')
 
     def _compute_cutter_model_count(self):
         self.cutter_model_count = sum(self.mapped('product_variant_ids').mapped('cutter_model_count'))
+
+    def _compute_cutter_count(self):
+        self.cutter_count = sum(self.mapped('product_variant_ids').mapped('cutter_count'))
     
     @api.multi
     def action_template_view_cutter(self):
-        action = self.env.ref('batom_tool.template_open_cutter_model').read()[0]
-        action['domain'] = [('id', 'in', self.product_variant_ids.cutter_model_ids.ids)]
+        action = self.env.ref('batom_tool.template_open_cutter').read()[0]
+        action['domain'] = [('id', 'in', self.product_variant_ids.cutter_ids.ids)]
         return action
     
 class ProductProduct(models.Model):
@@ -199,17 +222,32 @@ class ProductProduct(models.Model):
 
     cutter_model_ids = fields.Many2many(
         comodel_name='batom.cutter.model', relation='batom_cutter_model_product_rel',
-        column1='product_id', column2='cutter_model_id', string='Using Cutters')
-    cutter_model_count = fields.Integer('# Cutters', compute='_compute_cutter_model_count')
+        column1='product_id', column2='cutter_model_id', string='Using Cutter Models')
+    cutter_model_count = fields.Integer('# Cutter Models', compute='_compute_cutter_model_count')
+    cutter_ids = fields.One2many('batom.cutter', compute='_compute_cutter_ids', string='Using Cutters')
+    cutter_count = fields.Integer('# Cutters', compute='_compute_cutter_count')
 
     def _compute_cutter_model_count(self):
         if self.cutter_model_ids:
             self.cutter_model_count = len(self.cutter_model_ids)
         else:
             self.cutter_model_count = 0
+            
+    def _compute_cutter_ids(self):
+        if self.cutter_model_ids:
+            cutter_ids = []
+            for cutter_model_id in self.cutter_model_ids:
+                cutter_ids.extend(cutter_model_id.cutter_ids.ids)
+            self.cutter_ids = cutter_ids
+
+    def _compute_cutter_count(self):
+        if self.cutter_ids:
+            self.cutter_count = len(self.cutter_ids)
+        else:
+            self.cutter_count = 0
     
     @api.multi
-    def action_view_cutter_model(self):
-        action = self.env.ref('batom_tool.product_open_cutter_model').read()[0]
-        action['domain'] = [('id', 'in', self.cutter_model_ids.ids)]
+    def action_view_cutter(self):
+        action = self.env.ref('batom_tool.product_open_cutter').read()[0]
+        action['domain'] = [('id', 'in', self.cutter_ids.ids)]
         return action

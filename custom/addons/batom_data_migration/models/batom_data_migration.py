@@ -13,6 +13,7 @@ import openpyxl
 from openpyxl import load_workbook
 from openpyxl.utils import coordinate_from_string, column_index_from_string
 from openpyxl.utils.cell import rows_from_range
+from openpyxl.styles import PatternFill
 import xlrd
 from odoo import models, fields, api,  _
 import odoo
@@ -2278,7 +2279,7 @@ class BatomMigrateBom(models.TransientModel):
         u'Invoice': 'invoice',
         u'訂購日期': 'order_date',
         u'期望交期': 'expected_delivery_date',
-        u'現況': 'status',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        # u'現況': 'status',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
         })
         
     def _getToolSheetFormatColumnName(self, sheet_title, column_title):
@@ -2615,13 +2616,28 @@ class BatomMigrateBom(models.TransientModel):
             if not sheet_format.special_format_name:
                 model_values = {'cutter_group_id': cutter_group.id}
                 cutter_values = {}
+                scrapped_color_count = 0
+                production_color_count = 0
+                under_purchase_color_count = 0
                 i = 0
                 while i < len(sheet_format.column_names):
+                    try:
+                        cell_color_index = str(row[i].fill.bgColor.index)
+                        if cell_color_index == '22':
+                            scrapped_color_count += 1
+                        elif cell_color_index == '50':
+                            production_color_count += 1
+                        elif cell_color_index == 'FFFFC000':
+                            under_purchase_color_count += 1
+                    except Exception:
+                        pass
                     column_name = sheet_format.column_names[i]
                     original_column_name = sheet_format.original_column_names[i]
                     value = row[i].value
-                    if column_name and value:
-                        if column_name == 'history_list':
+                    if value:
+                        if not column_name and original_column_name:
+                            self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
+                        elif column_name == 'history_list':
                             if row[i].hyperlink:
                                 value = row[i].hyperlink.target
                                 if value != u'連結':
@@ -2737,11 +2753,7 @@ class BatomMigrateBom(models.TransientModel):
                     elif original_column_name and value:
                         self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                     i += 1
-                if 'cutter_model_code' not in model_values:
-                    _logger.warning('No cutter model code:' + str(row[0]))
-                elif 'batom_code' not in cutter_values:
-                    _logger.warning('No batom code:' + str(row[0]))
-                else:
+                if 'cutter_model_code' in model_values and 'batom_code' in cutter_values:
                     cutters = self.env['batom.cutter'].search([
                         ('batom_code', '=', cutter_values['batom_code']),
                         ])
@@ -2750,6 +2762,14 @@ class BatomMigrateBom(models.TransientModel):
                         if not cutter_model:
                             _logger.warning('Cannot create cutter model: ' + model_values['cutter_model_code'])
                         else:
+                            if scrapped_color_count > 0 and scrapped_color_count >= under_purchase_color_count:
+                                cutter_values['status'] = 'scrapped'
+                            elif under_purchase_color_count > 0:
+                                cutter_values['status'] = 'purchasing'
+                            elif 'consigned_to' in cutter_values:
+                                cutter_values['status'] = 'in-use'
+                            if production_color_count > 0:
+                                cutter_values['managing_department'] = 'production'
                             cutter_values['cutter_model_id'] = cutter_model.id
                             cutter = self.env['batom.cutter'].create(cutter_values)
                             if cutter_histories:
