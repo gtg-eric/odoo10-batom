@@ -2762,6 +2762,7 @@ class BatomMigrateBom(models.TransientModel):
                         else:
                             if scrapped_color_count > 0 and scrapped_color_count >= under_purchase_color_count:
                                 cutter_values['status'] = 'scrapped'
+                                cutter_values['active'] = False
                             elif under_purchase_color_count > 0:
                                 cutter_values['status'] = 'purchasing'
                             elif 'consigned_to' in cutter_values:
