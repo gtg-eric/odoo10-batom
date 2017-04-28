@@ -89,6 +89,9 @@ class BatomCutter(models.Model):
     _inherits = {'batom.cutter.model': 'cutter_model_id'}
     
     name = fields.Char(string='Name', compute='_compute_name', store=True)
+    active = fields.Boolean(
+        'Active', default=True,
+        help="If unchecked, it will allow you to hide the cutter without removing it.")
     state = fields.Selection([ # 狀態
         ('material', u'物料'),
         ('bought', u'進貨'),

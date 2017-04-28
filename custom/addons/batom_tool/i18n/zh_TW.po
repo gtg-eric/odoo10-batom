@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-28 03:00+0000\n"
-"PO-Revision-Date: 2017-04-28 03:00+0000\n"
+"POT-Creation-Date: 2017-04-28 05:29+0000\n"
+"PO-Revision-Date: 2017-04-28 05:29+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -38,6 +38,11 @@ msgid "Action"
 msgstr "動作"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_active
+msgid "Active"
+msgstr "有效"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_allowed_sharpening
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_allowed_sharpening
 msgid "Allowed Sharpening"
@@ -48,6 +53,11 @@ msgstr "可磨刃長"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_allowed_sharpening_times
 msgid "Allowed Sharpening Times"
 msgstr "可磨次數"
+
+#. module: batom_tool
+#: model:ir.ui.view,arch_db:batom_tool.search_cutter_filter
+msgid "Archived"
+msgstr "已歸檔"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_attached_file
@@ -330,6 +340,11 @@ msgid "ID"
 msgstr "ID"
 
 #. module: batom_tool
+#: model:ir.model.fields,help:batom_tool.field_batom_cutter_active
+msgid "If unchecked, it will allow you to hide the cutter without removing it."
+msgstr "If unchecked, it will allow you to hide the cutter without removing it."
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_image_file
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_image_file
 msgid "Image File"
@@ -424,6 +439,11 @@ msgid "Managing Department"
 msgstr "Managing Department"
 
 #. module: batom_tool
+#: model:ir.ui.menu,name:batom_tool.menu_tool_management_master_data
+msgid "Master Data"
+msgstr "主數據"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_material
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_material
 msgid "Material"
@@ -449,7 +469,7 @@ msgstr "名字"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_notes
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_notes
 msgid "Notes"
-msgstr "注意事項"
+msgstr "備註"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_od
@@ -512,6 +532,12 @@ msgstr "產品"
 #: model:ir.model,name:batom_tool.model_product_template
 msgid "Product Template"
 msgstr "產品模板"
+
+#. module: batom_tool
+#: model:ir.actions.act_window,name:batom_tool.product_template_action
+#: model:ir.ui.menu,name:batom_tool.menu_tool_management_product_form
+msgid "Products"
+msgstr "產品"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_purchase_order
