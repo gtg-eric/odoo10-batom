@@ -45,10 +45,10 @@
                                 <field name="cutter_model_code"/>
                                 <field name="cutter_group_id"/>
                                 <field name="cutter_class"/>
-                            </group>
-                            <group>
                                 <field name="image_file_name" invisible="1"/>
                                 <field name="image_file" widget="binary" filename='image_file_name'/>
+                            </group>
+                            <group>
                                 <field name="notes"/>
                             </group>
                         </group>
@@ -164,17 +164,18 @@
                             <group name="data">
                                 <field name="batom_code"/>
                                 <field name="cutter_model_id"/>
-                                <field name="cutter_group_id"/>
-                                <field name="cutter_class"/>
                                 <field name="year"/>
                                 <field name="total"/>
-                            </group>
-                            <group>
                                 <field name="consigned_to"/>
                                 <field name="consigned_to_id"/>
                                 <field name="consigned_date"/>
                                 <field name="returned_date"/>
                                 <field name="storage"/>
+                            </group>
+                            <group>
+                                <field name="status"/>
+                                <field name="managing_department"/>
+                                <field name="notes" textarea_height="300"/>
                             </group>
                         </group>
                         <notebook>
@@ -197,12 +198,12 @@
                                         <field name="supplier"/>
                                     </group>
                                 </group>
-                                <!--field name="cutter_model_id.supplier_ids">
+                                <field name="supplier_ids">
                                     <tree editable="bottom">
                                         <field name="x_supplier_code"/>
                                         <field name="name"/>
                                     </tree>
-                                </field-->
+                                </field>
                             </page>
                             <page string="History List">
                                 <group>
@@ -263,9 +264,10 @@
                                         <field name="inquiry_number"/>
                                         <field name="order_date"/>
                                         <field name="expected_delivery_date"/>
-                                        <field name="status"/>
                                     </group>
                                     <group>
+                                        <field name="cutter_group_id"/>
+                                        <field name="cutter_class"/>
                                         <field name="remarks"/>
                                     </group>
                                 </group>

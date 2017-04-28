@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-27 14:15+0000\n"
-"PO-Revision-Date: 2017-04-27 14:15+0000\n"
+"POT-Creation-Date: 2017-04-28 03:00+0000\n"
+"PO-Revision-Date: 2017-04-28 03:00+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -416,7 +416,12 @@ msgstr "MOD"
 #. module: batom_tool
 #: model:res.groups,name:batom_tool.group_tool_management_manager
 msgid "Manager"
-msgstr "管理員"
+msgstr "經理"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_managing_department
+msgid "Managing Department"
+msgstr "Managing Department"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_material
@@ -444,7 +449,7 @@ msgstr "名字"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_notes
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_notes
 msgid "Notes"
-msgstr "備註"
+msgstr "注意事項"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_od
@@ -569,12 +574,12 @@ msgstr "標準研磨量"
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_state
 msgid "State"
-msgstr "狀態"
+msgstr "省/ 州"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_status
 msgid "Status"
-msgstr "現況"
+msgstr "狀態"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_supplier_ids

@@ -2622,7 +2622,7 @@ class BatomMigrateBom(models.TransientModel):
                 i = 0
                 while i < len(sheet_format.column_names):
                     try:
-                        cell_color_index = str(row[i].fill.bgColor.index)
+                        cell_color_index = str(row[i].fill.fgColor.index)
                         if cell_color_index == '22':
                             scrapped_color_count += 1
                         elif cell_color_index == '50':
@@ -2634,10 +2634,8 @@ class BatomMigrateBom(models.TransientModel):
                     column_name = sheet_format.column_names[i]
                     original_column_name = sheet_format.original_column_names[i]
                     value = row[i].value
-                    if value:
-                        if not column_name and original_column_name:
-                            self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
-                        elif column_name == 'history_list':
+                    if column_name and value:
+                        if column_name == 'history_list':
                             if row[i].hyperlink:
                                 value = row[i].hyperlink.target
                                 if value != u'連結':
