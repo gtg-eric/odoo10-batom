@@ -252,6 +252,28 @@
                                     </tree>
                                 </field>
                             </page>
+                            <page string="Parameters">
+                                <group>
+                                    <group>
+                                        <field name="material"/>
+                                        <field name="type"/>
+                                        <field name="mod"/>
+                                        <field name="dp"/>
+                                        <field name="pa"/>
+                                        <field name="teeth"/>
+                                        <field name="od"/>
+                                    </group>
+                                    <group>
+                                        <field name="length"/>
+                                        <field name="bore"/>
+                                        <field name="df"/>
+                                        <field name="dtr_sn"/>
+                                        <field name="allowed_sharpening"/>
+                                        <field name="standard_sharpening"/>
+                                        <field name="allowed_sharpening_times"/>
+                                    </group>
+                                </group>
+                            </page>
                             <page string="Documents">
                                 <group>
                                     <group>
@@ -288,6 +310,8 @@
                                 <group>
                                     <group>
                                         <field name="state"/>
+                                        <field name="cutter_group_id"/>
+                                        <field name="cutter_class"/>
                                         <field name="inquiry_number"/>
                                         <field name="order_date"/>
                                         <field name="expected_delivery_date"/>

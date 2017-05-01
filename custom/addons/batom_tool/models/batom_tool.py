@@ -193,6 +193,7 @@ class BatomCutterHistoryAction(models.Model):
 class BatomCutterHisory(models.Model):
     _name = "batom.cutter.history"
     _description = 'Cutter History'
+    _order = 'date desc'
     
     cutter_id = fields.Many2one('batom.cutter', 'Cutter', index=True)
     date = fields.Date('Date', required=False, default=lambda self: fields.datetime.now())
@@ -208,6 +209,7 @@ class BatomCutterHisory(models.Model):
 class BatomCutterModelHisory(models.Model):
     _name = "batom.cutter.model.history"
     _description = 'Cutter Model History'
+    _order = 'date desc'
     
     cutter_model_id = fields.Many2one('batom.cutter.model', 'Cutter Model', index=True)
     date = fields.Date('Date', required=False, default=lambda self: fields.datetime.now())
