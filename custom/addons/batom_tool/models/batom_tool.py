@@ -269,3 +269,70 @@ class ProductProduct(models.Model):
         action = self.env.ref('batom_tool.product_open_cutter').read()[0]
         action['domain'] = [('id', 'in', self.cutter_ids.ids)]
         return action
+    
+class ResPartner(models.Model):
+    _inherit = "res.partner"
+
+    supplier_cutter_model_ids = fields.Many2many(
+        comodel_name='batom.cutter.model', relation='batom_cutter_model_supplier_rel',
+        column1='partner_id', column2='cutter_model_id', string='Using Cutter Models')
+    supplier_cutter_model_count = fields.Integer('# Cutter Models', compute='_compute_supplier_cutter_model_count')
+    supplier_cutter_ids = fields.One2many('batom.cutter', compute='_compute_supplier_cutter_ids', string='Using Cutters')
+    supplier_cutter_count = fields.Integer('# Cutters', compute='_compute_supplier_cutter_count')
+
+    customer_product_ids = fields.Many2many(
+        comodel_name='product.product', relation='batom_customer_product_rel',
+        column1='partner_id', column2='product_id', string='Products for Customer')
+    customer_cutter_model_count = fields.Integer('# Cutter Models', compute='_compute_customer_cutter_model_count')
+    customer_cutter_ids = fields.One2many('batom.cutter', compute='_compute_customer_cutter_ids', string='Using Cutters')
+    customer_cutter_count = fields.Integer('# Cutters', compute='_compute_customer_cutter_count')
+
+    @api.one
+    def _compute_supplier_cutter_model_count(self):
+        if self.supplier_cutter_model_ids:
+            self.supplier_cutter_model_count = len(self.supplier_cutter_model_ids)
+        else:
+            self.supplier_cutter_model_count = 0
+            
+    @api.one
+    def _compute_supplier_cutter_ids(self):
+        if self.supplier_cutter_model_ids:
+            cutter_ids = []
+            for cutter_model_id in self.supplier_cutter_model_ids:
+                cutter_ids.extend(cutter_model_id.cutter_ids.ids)
+            self.supplier_cutter_ids = cutter_ids
+
+    @api.one
+    def _compute_supplier_cutter_count(self):
+        if self.supplier_cutter_ids:
+            self.supplier_cutter_count = len(self.supplier_cutter_ids)
+        else:
+            self.supplier_cutter_count = 0
+            
+    @api.one
+    def _compute_customer_cutter_ids(self):
+        if self.customer_product_ids:
+            cutter_ids = []
+            for product in self.customer_product_ids:
+                for cutter_model_id in product.cutter_model_ids:
+                    cutter_ids.extend(cutter_model_id.cutter_ids.ids)
+            self.customer_cutter_ids = cutter_ids
+
+    @api.one
+    def _compute_customer_cutter_count(self):
+        if self.customer_cutter_ids:
+            self.customer_cutter_count = len(self.customer_cutter_ids)
+        else:
+            self.customer_cutter_count = 0
+    
+    @api.multi
+    def action_supplier_view_cutter(self):
+        action = self.env.ref('batom_tool.partner_open_cutter').read()[0]
+        action['domain'] = [('id', 'in', self.supplier_cutter_ids.ids)]
+        return action
+    
+    @api.multi
+    def action_customer_view_cutter(self):
+        action = self.env.ref('batom_tool.partner_open_cutter').read()[0]
+        action['domain'] = [('id', 'in', self.customer_cutter_ids.ids)]
+        return action
