@@ -2869,21 +2869,28 @@ class BatomMigrateBom(models.TransientModel):
         
         return job.id if job else None
     
-    def _getOrCreateUserId(self, name, login):
+    def _getOrCreateUserId(self, employee_values):
         user = False
-        try:
-            users = self.env['res.users'].search([
-                ('login', '=', login)
-                ])
-            if users:
-                user = users[0]
-            else:
-                user = self.env['res.users'].create({
-                    'name': name,
-                    'login': login,
-                    })
-        except Exception:
-            pass
+        if 'code' in employee_values:
+            login = employee_values['code']
+            try:
+                users = self.env['res.users'].search([
+                    ('login', '=', login)
+                    ])
+                if users:
+                    user = users[0]
+                else:
+                    values = {'login': login}
+                    if 'name' in employee_values:
+                        values['name'] = employee_values['name']
+                    if 'address_home_id' in employee_values:
+                        values['partner_id'] = employee_values['address_home_id']
+                    else:
+                        values['employee'] = True
+                        values['customer'] = False
+                    user = self.env['res.users'].create(values)
+            except Exception:
+                pass
         
         return user.id if user else None
     
@@ -2944,7 +2951,6 @@ class BatomMigrateBom(models.TransientModel):
             if 'code' in employee_values and 'name' in employee_values:
                 if 'x_resignation_date' in employee_values:
                     employee_values['active'] = False
-                employee_values['user_id'] = self._getOrCreateUserId(employee_values['name'], employee_values['code'])
                 employees = self.env['hr.employee'].search([
                     ('code', '=', employee_values['code'])
                     ])
@@ -2962,6 +2968,7 @@ class BatomMigrateBom(models.TransientModel):
                     if address_home:
                         employee_values['address_home_id'] = address_home.id
                 if not employee:
+                    employee_values['user_id'] = self._getOrCreateUserId(employee_values)
                     employee = self.env['hr.employee'].create(employee_values)
                 else:
                     employee.write(employee_values)
