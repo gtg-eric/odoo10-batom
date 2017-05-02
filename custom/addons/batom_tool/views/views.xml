@@ -8,7 +8,7 @@
                 <tree string="Cutter Model">
                     <field name="cutter_model_code"/>
                     <field name="cutter_class"/>
-                    <field name="product_code"/>
+                    <field name="product_ids_code"/>
                     <field name="supplier_ids"/>
                 </tree>
             </field>
@@ -20,7 +20,7 @@
                 <search string="Cutter Model Filter">
                     <field name="cutter_model_code"/>
                     <field name="cutter_class"/>
-                    <field name="product_code"/>
+                    <field name="product_ids_code"/>
                     <field name="supplier_ids"/>
                 </search>
             </field>
@@ -134,7 +134,7 @@
                 <tree string="Cutter">
                     <field name="batom_code"/>
                     <field name="cutter_model_id"/>
-                    <field name="product_code"/>
+                    <field name="product_ids_code"/>
                     <field name="status"/>
                     <field name="consigned_to"/>
                     <field name="storage"/>
@@ -148,7 +148,7 @@
                 <search string="Cutter Filter">
                     <field name="batom_code"/>
                     <field name="cutter_model_id"/>
-                    <field name="product_code"/>
+                    <field name="product_ids_code"/>
                     <field name="status"/>
                     <field name="consigned_to"/>
                     <field name="storage"/>

@@ -32,7 +32,7 @@ class BatomCutterModel(models.Model):
     product_ids = fields.Many2many(
         comodel_name='product.product', relation='batom_cutter_model_product_rel',
         column1='cutter_model_id', column2='product_id', string='Used by Products')
-    product_code = fields.Char(string='Used by Products', compute='_compute_product_code', store=True)
+    product_ids_code = fields.Char(string='Used by Products', compute='_compute_product_code', store=True)
     supplier = fields.Char('Cutter Supplier') # 刀具製造商
     supplier_ids = fields.Many2many(
         comodel_name='res.partner', relation='batom_cutter_model_supplier_rel',
@@ -82,7 +82,7 @@ class BatomCutterModel(models.Model):
                 else:
                     product_code = ""
                 product_code += product.default_code
-        self.product_code = product_code
+        self.product_ids_code = product_code
 
     def _compute_cutter_count(self):
         if self.cutter_ids:
