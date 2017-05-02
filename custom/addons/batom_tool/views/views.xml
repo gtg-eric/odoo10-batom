@@ -386,7 +386,7 @@
                 <div name="button_box" position="inside">
                     <button class="oe_stat_button" name="action_supplier_view_cutter" type="object"
                         attrs="{'invisible': [('supplier', '=', False)]}" icon="fa-cog">
-                        <field string="Supplier Cutters" name="supplier_cutter_count" widget="statinfo" />
+                        <field string="Supplying Cutters" name="supplier_cutter_count" widget="statinfo" />
                     </button>
                 </div>
             </field>
@@ -401,7 +401,7 @@
                 <div name="button_box" position="inside">
                     <button class="oe_stat_button" name="action_customer_view_cutter" type="object"
                         attrs="{'invisible': [('customer', '=', False)]}" icon="fa-cog">
-                        <field string="Customer Cutters" name="customer_cutter_count" widget="statinfo" />
+                        <field string="Using Cutters" name="customer_cutter_count" widget="statinfo" />
                     </button>
                 </div>
             </field>

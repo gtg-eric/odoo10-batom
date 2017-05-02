@@ -16,5 +16,6 @@ access_batom_cutter_product_officer,batom.cutter.product.officer,product.model_p
 
 access_batom_cutter_product_template_user,batom.cutter.product.template.user,product.model_product_template,batom_tool.group_tool_management_user,1,0,0,0
 access_batom_cutter_supplier_user,batom.cutter.supplier.user,base.model_res_partner,batom_tool.group_tool_management_user,1,0,0,0
+access_batom_cutter_supplier_officer,batom.cutter.supplier.officer,base.model_res_partner,batom_tool.group_tool_management_officer,1,1,1,1
 access_batom_cutter_stock_move_user,batom.cutter.stock.move.user,stock.model_stock_move,batom_tool.group_tool_management_user,1,0,0,0
 access_batom_cutter_stock_warehouse_orderpoint_user,batom.cutter.stock.warehouse.orderpoint.user,stock.model_stock_warehouse_orderpoint,batom_tool.group_tool_management_user,1,0,0,0

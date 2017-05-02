@@ -167,6 +167,35 @@
             </field>
         </record>
 
+        <record id="batom_view_partner_form_inherit" model="ir.ui.view">
+            <field name="name">batom.res.partner.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position="before">
+                    <field name="display_name"/>
+                </xpath>
+                <xpath expr="//page[@name='sales_purchases']//group[@name='sale']/field[@name='customer']" position="after">
+                    <field name="x_customer_code" attrs="{'readonly': [('x_customer_code', '!=', False)]}"/>
+                </xpath>
+                <xpath expr="//page[@name='sales_purchases']//group[@name='purchase']/field[@name='supplier']" position="after">
+                    <field name="x_supplier_code" attrs="{'readonly': [('x_supplier_code', '!=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id="batom_view_account_form_inherit" model="ir.ui.view">
+            <field name="name">batom.account.account.form.inherit</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_type_id']" position="after">
+                    <field name="x_batom_type_id" widget="selection"/>
+                    <field name="x_batom_parent_id"/>
+                </xpath>
+            </field>
+        </record>
+        
         <menuitem id="menu_mrp_online_stock"
               name="Online Inventory"
               parent="mrp.menu_mrp_reporting"
