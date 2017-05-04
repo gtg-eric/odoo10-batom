@@ -45,3 +45,7 @@ msgstr "到職日"
 msgid "Resignation Date"
 msgstr "離職日"
 
+#. module: hr
+#: model:ir.ui.view,arch_db:hr.view_employee_form
+msgid "Contact Information"
+msgstr "聯絡資訊"

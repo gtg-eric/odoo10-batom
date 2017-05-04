@@ -222,14 +222,14 @@ msgstr "刀具管理"
 #: model:ir.ui.menu,name:batom_tool.menu_cutter_model
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_model_form
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_model_tree
-msgid "Cutter Model"
-msgstr "刀具型號"
+msgid "Cutter Model Management"
+msgstr "刀具圖號管理"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_cutter_model_code
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_cutter_model_code
 msgid "Cutter Model Code"
-msgstr "刀具型號"
+msgstr "刀具圖號"
 
 #. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.search_cutter_model_filter

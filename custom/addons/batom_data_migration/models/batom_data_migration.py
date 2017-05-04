@@ -2211,7 +2211,7 @@ class BatomMigrateBom(models.TransientModel):
             if connBatom:
                 connBatom.close()
     
-    _ignored_sheets = [u'Sheet1', u'刀具資料-舊不用', u'酉潤刀數據', u'回明細', u'刀具清單']
+    _ignored_sheets = [u'Sheet1', u'刀具資料-舊不用', u'酉潤刀數據', u'回明細', u'刀具清單', u'攻牙刀&軸承', u'Liebherr資料', 'SECO 車刀']
     
     def _get_or_add_cutter_group(self, group_name):
         cutter_group = False
@@ -2238,7 +2238,7 @@ class BatomMigrateBom(models.TransientModel):
         u'詢/訂價編號': 'inquiry_number',
         u'工件編號': 'product_code',
         u'刀具製造商': 'supplier',
-        u'刀具種類': 'model.cutter_class',
+        u'刀具種類': 'model.cutter_class_id',
         u'刀具編號': 'model.cutter_model_code',
         u'Material': 'model.material',
         u'TYPE': 'model.type',
@@ -2567,7 +2567,37 @@ class BatomMigrateBom(models.TransientModel):
         else:
             cutter_model = self.env['batom.cutter.model'].create(values)
         return cutter_model
-            
+    
+    _group_mapping = ({
+        u'滾刀HB':     '滾刀',
+        u'刨刀SA':     '刨刀',
+        u'刮刀SV':     '刮刀',
+        u'拉刀BR':     '拉刀',
+        u'轉造刀DS':   '轉造刀',
+        u'鑽石砂輪DG': '鑽石砂輪',
+        u'倒角刀CH':   '倒角刀',
+        u'銑刀MC':     '銑刀',
+        u'切齒刀RC':   '切齒刀',
+        u'其他EA':     '其他',
+        })
+        
+    def _getOrCreateCutterClass(self, class_name, group_name):
+        cutter_class = False
+        name = class_name.strip()
+        if not name and group_name in self._group_mapping:
+            name = self._group_mapping[group_name]
+        if name:
+            cutter_classes = self.env['batom.cutter.class'].search([
+                ('name', '=', name)
+                ])
+            if cutter_classes:
+                cutter_class = cutter_classes[0]
+            else:
+                cutter_class = self.env['batom.cutter.class'].create({
+                    'name': name,
+                    })
+        return cutter_class
+        
     _file_columns = ([
         'model.image_file',
         'inquiry_form',
@@ -2660,6 +2690,11 @@ class BatomMigrateBom(models.TransientModel):
                                             cutter_values[column_name + '_name'] = file_name
                             else:
                                 value = None
+                        elif column_name == 'model.cutter_class_id':
+                            cutter_class = self._getOrCreateCutterClass(value, cutter_group.name)
+                            if cutter_class:
+                                model_values['cutter_class_id'] = cutter_class.id
+                            value = None
                         elif column_name == 'state':
                             if value in self._state_mapping:
                                 value = self._state_mapping[value]
@@ -2674,7 +2709,7 @@ class BatomMigrateBom(models.TransientModel):
                         elif column_name == 'supplier':
                             supplier_id = self._getSupplierId(value if row[i].data_type == 's' else str(value))
                             if supplier_id:
-                                model_values['supplier_ids'] = [(4, [supplier_id])]
+                                model_values['supplier_id'] = supplier_id
                         elif column_name == 'model.cutter_model_code':
                             codeTokens = re.findall(r"[\w^-]+", value if row[i].data_type == 's' else str(value))
                             if codeTokens:
@@ -2807,8 +2842,9 @@ class BatomMigrateBom(models.TransientModel):
         try:
             wb = load_workbook(filename = xlsx_file)
             for ws in wb.worksheets:
-                self._addToolSheet(ws);
-                self.env.cr.commit()
+                if not ws.title in self._ignored_sheets:
+                    self._addToolSheet(ws);
+                    self.env.cr.commit()
         except Exception:
             _logger.warning('Exception in load_tool_sheet:', exc_info=True)
             import pdb; pdb.set_trace()
@@ -2824,7 +2860,7 @@ class BatomMigrateBom(models.TransientModel):
         u'職稱': 'job_id.name',
         u'生日': 'birthday',
         u'身分證字號': 'identification_id',
-        u'聯絡手機': 'mobile_phone',
+        u'聯絡手機': 'address_home_id.mobile',
         u'聯絡電話': 'address_home_id.phone',
         u'通訊地址': 'address_home_id.street',
         u'地區': 'address_home_id.city',

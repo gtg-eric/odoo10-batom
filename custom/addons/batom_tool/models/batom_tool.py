@@ -15,6 +15,12 @@ class BatomCutterGroup(models.Model):
     _description = 'Cutter Group'
     
     name = fields.Char('Cutter Group Name')
+
+class BatomCutterClass(models.Model):
+    _name = 'batom.cutter.class'
+    _description = 'Cutter Class'
+    
+    name = fields.Char('Cutter Class Name')
     
 class BatomCutterModel(models.Model):
     _name = "batom.cutter.model"
@@ -33,11 +39,9 @@ class BatomCutterModel(models.Model):
         comodel_name='product.product', relation='batom_cutter_model_product_rel',
         column1='cutter_model_id', column2='product_id', string='Used by Products')
     product_ids_code = fields.Char(string='Used by Products', compute='_compute_product_code', store=True)
-    supplier = fields.Char('Cutter Supplier') # 刀具製造商
-    supplier_ids = fields.Many2many(
-        comodel_name='res.partner', relation='batom_cutter_model_supplier_rel',
-        column1='cutter_model_id', column2='partner_id', string='Supplied by')
-    cutter_class = fields.Char('Cutter Class') # 刀具種類
+    supplier = fields.Char('Supplier Name in Excel') # 刀具製造商
+    supplier_id = fields.Many2one('res.partner', string='Supplied by')
+    cutter_class_id = fields.Many2one('batom.cutter.class', string='Cutter Class') # 刀具種類
     material = fields.Char('Material') # Material
     type = fields.Char('TYPE') # TYPE
     mod = fields.Float('MOD') # MOD
