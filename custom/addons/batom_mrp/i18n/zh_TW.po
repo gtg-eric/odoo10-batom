@@ -6,14 +6,29 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-06 06:15+0000\n"
-"PO-Revision-Date: 2017-03-06 06:15+0000\n"
+"POT-Creation-Date: 2017-05-05 06:36+0000\n"
+"PO-Revision-Date: 2017-05-05 06:36+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_account_account
+msgid "Account"
+msgstr "科目"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type_name
+msgid "Account Type"
+msgstr "科目類型"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type_code
+msgid "Account Type Code"
+msgstr "Account Type Code"
 
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
@@ -33,9 +48,20 @@ msgid "Automatic Receving Input Parts"
 msgstr "自動驗收"
 
 #. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_batom_account_type
+#: model:ir.model.fields,field_description:batom_mrp.field_account_account_x_batom_type_id
+msgid "Batom Account Type"
+msgstr "Batom Account Type"
+
+#. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_batom_mrp_inprocess_move
 msgid "Batom Custom Model MRP InProcess Move"
 msgstr "Batom Custom Model MRP InProcess Move"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_account_account_x_batom_parent_id
+msgid "Batom Parent Account"
+msgstr "Batom Parent Account"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_mrp_bom
@@ -74,6 +100,16 @@ msgid "Cancelled"
 msgstr "註銷"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_res_partner_category_x_category_code
+msgid "Category Code"
+msgstr "Category Code"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_res_partner_category_x_flag
+msgid "Category Flag"
+msgstr "Category Flag"
+
+#. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_change_production_qty
 msgid "Change Quantity of Products"
 msgstr "變更產品數量"
@@ -99,12 +135,14 @@ msgid "Continue Production"
 msgstr "繼續生產"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type_create_uid
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_create_uid
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_create_uid
 msgid "Created by"
 msgstr "創建人"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type_create_date
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_create_date
 msgid "Created on"
 msgstr "創建時間"
@@ -113,6 +151,11 @@ msgstr "創建時間"
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_create_date
 msgid "Creation Date"
 msgstr "創建日期"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_res_partner_x_customer_code
+msgid "Customer Code"
+msgstr "客戶編號"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_date
@@ -140,6 +183,7 @@ msgid "Destination Workorder"
 msgstr "目的工單"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type_display_name
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_display_name
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_display_name
 msgid "Display Name"
@@ -161,6 +205,7 @@ msgid "Group By"
 msgstr "分組"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type_id
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_id
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_id
 msgid "ID"
@@ -170,6 +215,11 @@ msgstr "ID"
 #: selection:batom.mrp.inprocess_move,state:0
 msgid "In Transport"
 msgstr "運送中"
+
+#. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_product_supplierinfo
+msgid "Information about a product vendor"
+msgstr "有關產品的供應商信息。"
 
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.view_record_production_wizard
@@ -188,23 +238,32 @@ msgid "Inspection Return"
 msgstr "檢驗退回"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_product_product_x_saved_code
+#: model:ir.model.fields,field_description:batom_mrp.field_product_template_x_saved_code
+msgid "Internal Reference with Variants"
+msgstr "Internal Reference with Variants"
+
+#. module: batom_mrp
 #: model:res.groups,name:batom_mrp.make_invisible
 msgid "Invisible"
 msgstr "Invisible"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type___last_update
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move___last_update
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production___last_update
 msgid "Last Modified on"
 msgstr "最後修改日"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type_write_uid
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_write_uid
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_write_uid
 msgid "Last Updated by"
 msgstr "最後更新人"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_batom_account_type_write_date
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_write_date
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_write_date
 msgid "Last Updated on"
@@ -218,9 +277,20 @@ msgid "Manufacturing Order"
 msgstr "製令單"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_product_product_x_is_process
+#: model:ir.model.fields,field_description:batom_mrp.field_product_template_x_is_process
+msgid "Manufacturing Process"
+msgstr ""製程"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_material_id
 msgid "Material"
 msgstr "原料"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_res_partner_category_x_memo
+msgid "Memo"
+msgstr "備忘錄"
 
 #. module: batom_mrp
 #: model:ir.model.fields,help:batom_mrp.field_batom_mrp_inprocess_move_date
@@ -250,9 +320,29 @@ msgid "Original Quantity To Produce"
 msgstr "Original Quantity To Produce"
 
 #. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_res_partner
+msgid "Partner"
+msgstr "合作夥伴"
+
+#. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_res_partner_category
+msgid "Partner Tags"
+msgstr "業務夥伴標籤"
+
+#. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
 msgid "Pause"
 msgstr "暫停"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_res_partner_x_phone2
+msgid "Phone 2"
+msgstr "Phone 2"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_res_partner_x_phone3
+msgid "Phone 3"
+msgstr "Phone 3"
 
 #. module: batom_mrp
 #: code:addons/batom_mrp/wizard/batom_mrp_production.py:142
@@ -304,6 +394,7 @@ msgid "Processed to New MO"
 msgstr "已完工轉子製令"
 
 #. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_product_product
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_product_id
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_product_id
 #: model:ir.ui.view,arch_db:batom_mrp.search_online_stock_filter
@@ -316,9 +407,19 @@ msgid "Product Lots Filter"
 msgstr "產品批次篩選"
 
 #. module: batom_mrp
+#: model:ir.model,name:batom_mrp.model_product_template
+msgid "Product Template"
+msgstr "產品模板"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_routing_x_product_id
 msgid "Product for Generated Routing"
 msgstr "自動生成的製程路徑的產品"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_product_supplierinfo_target_product_id
+msgid "Product to Process"
+msgstr "Product to Process"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_production_id
@@ -470,7 +571,7 @@ msgstr "重工"
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_mrp_routing
 msgid "Routings"
-msgstr "製程路徑"
+msgstr "工藝路線"
 
 #. module: batom_mrp
 #: model:ir.ui.view,arch_db:batom_mrp.batom_mrp_production_workcenter_form_view_inherit
@@ -496,7 +597,7 @@ msgstr "序號"
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_source_operation_id
 msgid "Source Operation"
-msgstr "Source Operation"
+msgstr "源製程"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_mrp_inprocess_move_source_partner_id
@@ -524,6 +625,11 @@ msgid "Supplier"
 msgstr "供應商"
 
 #. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_res_partner_x_supplier_code
+msgid "Supplier Code"
+msgstr "供應商編號"
+
+#. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_mrp_workcenter_x_supplier_id
 msgid "Supplier for Generated Work Center"
 msgstr "自動生成的製程路徑的供應商"
@@ -532,6 +638,11 @@ msgstr "自動生成的製程路徑的供應商"
 #: model:ir.model,name:batom_mrp.model_mrp_workcenter_productivity_loss
 msgid "TPM Big Losses"
 msgstr "TPM 大損失"
+
+#. module: batom_mrp
+#: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_workercenter_name
+msgid "Technical: used in views only."
+msgstr "技術: 僅用於檢視."
 
 #. module: batom_mrp
 #: model:ir.model.fields,help:batom_mrp.field_mrp_workorder_qty_qcok
@@ -734,6 +845,11 @@ msgstr "工作中心使用情況"
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_workorder_id
 msgid "Work Order"
 msgstr "工單"
+
+#. module: batom_mrp
+#: model:ir.model.fields,field_description:batom_mrp.field_mrp_workorder_workercenter_name
+msgid "Workcenter"
+msgstr "工作中心"
 
 #. module: batom_mrp
 #: model:ir.model,name:batom_mrp.model_batom_record_production
