@@ -34,12 +34,11 @@ class BatomCutterModel(models.Model):
     image_file_name = fields.Char('Image File Name')
     cutter_ids =  fields.One2many('batom.cutter', 'cutter_model_id', 'Cutters')
     cutter_count = fields.Integer('# Cutters', compute='_compute_cutter_count')
-    model_history_ids = fields.One2many('batom.cutter.model.history', 'cutter_model_id', 'History List') # 履歷表
+    model_history_ids = fields.One2many('batom.cutter.model.history', 'cutter_model_id', 'Model History List') # 履歷表
     product_ids = fields.Many2many(
         comodel_name='product.product', relation='batom_cutter_model_product_rel',
         column1='cutter_model_id', column2='product_id', string='Used by Products')
     product_ids_code = fields.Char(string='Used by Products', compute='_compute_product_code', store=True)
-    supplier = fields.Char('Supplier Name in Excel') # 刀具製造商
     supplier_id = fields.Many2one('res.partner', string='Supplied by')
     cutter_class_id = fields.Many2one('batom.cutter.class', string='Cutter Class') # 刀具種類
     material = fields.Char('Material') # Material
@@ -56,14 +55,15 @@ class BatomCutterModel(models.Model):
     coating = fields.Char('Coating') # coating
     dressing_cost = fields.Float('Dressing Cost') # 修刀費用
     dressing_cost_currency_id = fields.Many2one('res.currency', string='Dressing Cost Currency')
-    sharpening_cost = fields.Float('Dressing Cost') # 磨刀費
-    sharpening_cost_currency_id = fields.Many2one('res.currency', string='Dressing Cost Currency')
-    titanium_cost = fields.Float('Dressing Cost') # 鍍鈦費
-    titanium_cost_currency_id = fields.Many2one('res.currency', string='Dressing Cost Currency')
+    sharpening_cost = fields.Float('Sharpening Cost') # 磨刀費
+    sharpening_cost_currency_id = fields.Many2one('res.currency', string='Sharpening Cost Currency')
+    titanium_cost = fields.Float('Titanium Cost') # 鍍鈦費
+    titanium_cost_currency_id = fields.Many2one('res.currency', string='Titanium Cost Currency')
     allowed_sharpening = fields.Char('Allowed Sharpening') # 可磨刃長
     standard_sharpening = fields.Char('Standard Sharpening') # 標準研磨量
     allowed_sharpening_times = fields.Integer('Allowed Sharpening Times') # 可磨次數
-    notes = fields.Text('Notes') # 注意事項
+    model_notes = fields.Text('Model Notes') # 注意事項
+    model_remarks = fields.Text('Model Remarks')
 
     _sql_constraints = [
         ('code_uniq', 'unique (cutter_model_code)', 'The modle code must be unique.')
@@ -132,8 +132,8 @@ class BatomCutter(models.Model):
     history_file = fields.Binary('History File', attachment=True) # 圖面
     history_file_name = fields.Char('History File Name')
     inquiry_number = fields.Char('Inquiry/Order Number') # 詢/訂價編號
-    product_code = fields.Char('Used by Products') # 工件編號
-    supplier = fields.Char('Cutter Supplier') # 刀具製造商
+    product_code = fields.Char('Used by Products in Excel') # 工件編號
+    supplier = fields.Char('Supplier Name in Excel') # 刀具製造商
     price = fields.Float('Price') # 單價
     price_currency_id = fields.Many2one('res.currency', string='Price Currency')
     exchange_rate = fields.Float('Exchange Rate') # 匯率
@@ -143,7 +143,7 @@ class BatomCutter(models.Model):
     shipping_currency_id = fields.Many2one('res.currency', string='Shipping Cost Currency')
     year = fields.Date('Year') # 年份
     total = fields.Float('Quantity') # Total
-    consigned_to = fields.Char('Consigned To') # 保管廠商
+    consigned_to = fields.Char('Consigned To in Excel') # 保管廠商
     consigned_to_id = fields.Many2one('res.partner', string='Consigned To')
     consigned_date = fields.Char('Consigned Date') # 保管日期
     returned_date = fields.Char('Returned Date') # 歸還日期
@@ -175,6 +175,7 @@ class BatomCutter(models.Model):
         default='unknown',
         index=True,
         )
+    notes = fields.Text('Notes') # 注意事項
 
     _sql_constraints = [
         ('code_uniq', 'unique (batom_code)', 'The Batom cutter code must be unique.')

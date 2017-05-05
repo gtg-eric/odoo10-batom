@@ -2211,7 +2211,7 @@ class BatomMigrateBom(models.TransientModel):
             if connBatom:
                 connBatom.close()
     
-    _ignored_sheets = [u'Sheet1', u'刀具資料-舊不用', u'酉潤刀數據', u'回明細', u'刀具清單', u'攻牙刀&軸承', u'Liebherr資料', 'SECO 車刀']
+    _ignored_sheets = [u'Sheet1', u'刀具資料-舊不用', u'酉潤刀數據', u'回明細', u'刀具清單', u'攻牙刀&軸承', u'Liebherr資料', u'SECO 車刀']
     
     def _get_or_add_cutter_group(self, group_name):
         cutter_group = False
@@ -2324,6 +2324,8 @@ class BatomMigrateBom(models.TransientModel):
         return product_ids
     
     def _getSupplierId(self, supplier_name):
+        if supplier_name == u'三菱':
+            supplier_name = u'三菱重工'
         suppliers = self.env['res.partner'].search([
             ('supplier', '=', True),
             ('is_company', '=', True),
@@ -2569,16 +2571,16 @@ class BatomMigrateBom(models.TransientModel):
         return cutter_model
     
     _group_mapping = ({
-        u'滾刀HB':     '滾刀',
-        u'刨刀SA':     '刨刀',
-        u'刮刀SV':     '刮刀',
-        u'拉刀BR':     '拉刀',
-        u'轉造刀DS':   '轉造刀',
-        u'鑽石砂輪DG': '鑽石砂輪',
-        u'倒角刀CH':   '倒角刀',
-        u'銑刀MC':     '銑刀',
-        u'切齒刀RC':   '切齒刀',
-        u'其他EA':     '其他',
+        u'滾刀HB':     u'滾刀',
+        u'刨刀SA':     u'刨刀',
+        u'刮刀SV':     u'刮刀',
+        u'拉刀BR':     u'拉刀',
+        u'轉造刀DS':   u'轉造刀',
+        u'鑽石砂輪DG': u'鑽石砂輪',
+        u'倒角刀CH':   u'倒角刀',
+        u'銑刀MC':     u'銑刀',
+        u'切齒刀RC':   u'切齒刀',
+        u'其他EA':     u'其他',
         })
         
     def _getOrCreateCutterClass(self, class_name, group_name):
@@ -2787,6 +2789,10 @@ class BatomMigrateBom(models.TransientModel):
                         self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                     i += 1
                 if 'cutter_model_code' in model_values and 'batom_code' in cutter_values:
+                    if 'cutter_class_id' not in model_values:
+                        cutter_class = self._getOrCreateCutterClass('', cutter_group.name)
+                        if cutter_class:
+                            model_values['cutter_class_id'] = cutter_class.id
                     cutters = self.env['batom.cutter'].search([
                         ('batom_code', '=', cutter_values['batom_code']),
                         '|',
