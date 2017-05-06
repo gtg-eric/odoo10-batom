@@ -278,9 +278,8 @@ class ProductProduct(models.Model):
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    supplier_cutter_model_ids = fields.Many2many(
-        comodel_name='batom.cutter.model', relation='batom_cutter_model_supplier_rel',
-        column1='partner_id', column2='cutter_model_id', string='Supplying Cutter Models')
+    supplier_cutter_model_ids = fields.One2many(
+        'batom.cutter.model', 'supplier_id', string='Supplying Cutter Models')
     supplier_cutter_model_count = fields.Integer('# Cutter Models', compute='_compute_supplier_cutter_model_count')
     supplier_cutter_ids = fields.One2many('batom.cutter', compute='_compute_supplier_cutter_ids', string='Supplying Cutters')
     supplier_cutter_count = fields.Integer('# Cutters', compute='_compute_supplier_cutter_count')

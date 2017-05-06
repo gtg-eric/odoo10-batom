@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-05 06:07+0000\n"
-"PO-Revision-Date: 2017-05-05 06:07+0000\n"
+"POT-Creation-Date: 2017-05-05 10:47+0000\n"
+"PO-Revision-Date: 2017-05-05 10:47+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -138,8 +138,10 @@ msgstr "費用"
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_create_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_class_create_uid
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_create_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_create_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_create_uid
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_create_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_history_create_uid
 msgid "Created by"
 msgstr "創建人"
@@ -147,8 +149,10 @@ msgstr "創建人"
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_action_create_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_class_create_date
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_create_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_create_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_create_date
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_create_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_history_create_date
 msgid "Created on"
 msgstr "創建時間"
@@ -344,7 +348,9 @@ msgstr "履歷表"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_class_id
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_id
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_id
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_id
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_history_id
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_id
 msgid "ID"
 msgstr "ID"
 
@@ -386,11 +392,6 @@ msgid "Inquiry/Order Number"
 msgstr "詢/訂價編號"
 
 #. module: batom_tool
-#: model:ir.model.fields,field_description:batom_tool.field_product_product_x_saved_code
-msgid "Internal Reference with Variants"
-msgstr "Internal Reference with Variants"
-
-#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_invoice
 msgid "Invoice"
 msgstr "發票"
@@ -417,6 +418,8 @@ msgstr "最後修改日"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_write_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_write_uid
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_history_write_uid
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_write_uid
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_write_uid
 msgid "Last Updated by"
 msgstr "最後更新人"
 
@@ -426,6 +429,8 @@ msgstr "最後更新人"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_group_write_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_write_date
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_history_write_date
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_write_date
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_write_date
 msgid "Last Updated on"
 msgstr "最後更新時間"
 
@@ -450,11 +455,6 @@ msgstr "經理"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_managing_department
 msgid "Managing Department"
 msgstr "負責單位"
-
-#. module: batom_tool
-#: model:ir.model.fields,field_description:batom_tool.field_product_product_x_is_process
-msgid "Manufacturing Process"
-msgstr "產品製程"
 
 #. module: batom_tool
 #: model:ir.ui.menu,name:batom_tool.menu_tool_management_master_data
@@ -482,7 +482,7 @@ msgstr "圖號履歷表"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_model_notes
-#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_notes_6954
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_notes
 msgid "Model Notes"
 msgstr "圖號注意事項"
 
