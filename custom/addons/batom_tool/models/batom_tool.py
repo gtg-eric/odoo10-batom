@@ -7,6 +7,7 @@ import logging
 import math
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -53,12 +54,15 @@ class BatomCutterModel(models.Model):
     df = fields.Float('D+F (Workpiece)') # D+F(工件)
     dtr_sn = fields.Float('DTR s/n') # DTR s/n
     coating = fields.Char('Coating') # coating
-    dressing_cost = fields.Float('Dressing Cost') # 修刀費用
-    dressing_cost_currency_id = fields.Many2one('res.currency', string='Dressing Cost Currency')
-    sharpening_cost = fields.Float('Sharpening Cost') # 磨刀費
-    sharpening_cost_currency_id = fields.Many2one('res.currency', string='Sharpening Cost Currency')
-    titanium_cost = fields.Float('Titanium Cost') # 鍍鈦費
-    titanium_cost_currency_id = fields.Many2one('res.currency', string='Titanium Cost Currency')
+    dressing_cost = fields.Monetary('Dressing Cost', currency_field='dressing_cost_currency_id') # 修刀費用
+    dressing_cost_currency_id = fields.Many2one('res.currency', string='Dressing Cost Currency',
+        default=lambda self: self.env.user.company_id.currency_id)
+    sharpening_cost = fields.Monetary('Sharpening Cost', currency_field='sharpening_cost_currency_id') # 磨刀費
+    sharpening_cost_currency_id = fields.Many2one('res.currency', string='Sharpening Cost Currency',
+        default=lambda self: self.env.user.company_id.currency_id)
+    titanium_cost = fields.Monetary('Titanium Cost', currency_field='titanium_cost_currency_id') # 鍍鈦費
+    titanium_cost_currency_id = fields.Many2one('res.currency', string='Titanium Cost Currency',
+        default=lambda self: self.env.user.company_id.currency_id)
     allowed_sharpening = fields.Char('Allowed Sharpening') # 可磨刃長
     standard_sharpening = fields.Char('Standard Sharpening') # 標準研磨量
     allowed_sharpening_times = fields.Integer('Allowed Sharpening Times') # 可磨次數
@@ -66,8 +70,16 @@ class BatomCutterModel(models.Model):
     model_remarks = fields.Text('Model Remarks')
 
     _sql_constraints = [
-        ('code_uniq', 'unique (cutter_model_code)', 'The modle code must be unique.')
+        ('code_uniq', 'unique (cutter_model_code)', 'The model code must be unique.')
     ]
+
+    @api.multi
+    def copy(self, default=None):
+        self.ensure_one()
+        default = dict(default or {},
+                       cutter_model_code = _("%s (Copy)") % self.cutter_model_code,
+                       model_history_ids = None)
+        return super(BatomCutterModel, self).copy(default=default)
 
     @api.one
     @api.depends('cutter_model_code')
@@ -120,7 +132,7 @@ class BatomCutter(models.Model):
         )
     managing_department = fields.Selection([ # 管理單位
         ('procurement', u'採購'),
-        ('production', u'生管'),
+        ('production', u'生產'),
         ],
         string='Managing Department',
         default='procurement',
@@ -128,23 +140,27 @@ class BatomCutter(models.Model):
         )
     cutter_model_id = fields.Many2one('batom.cutter.model', string='Cutter Model')
     batom_code = fields.Char('Batom Code') # 本土編號
+    supplier_code = fields.Char('Supplier Code') # 廠商編號
     history_ids = fields.One2many('batom.cutter.history', 'cutter_id', 'History List') # 履歷表
     history_file = fields.Binary('History File', attachment=True) # 圖面
     history_file_name = fields.Char('History File Name')
     inquiry_number = fields.Char('Inquiry/Order Number') # 詢/訂價編號
     product_code = fields.Char('Used by Products in Excel') # 工件編號
     supplier = fields.Char('Supplier Name in Excel') # 刀具製造商
-    price = fields.Float('Price') # 單價
-    price_currency_id = fields.Many2one('res.currency', string='Price Currency')
+    price = fields.Monetary('Price', currency_field='price_currency_id') # 單價
+    price_currency_id = fields.Many2one('res.currency', string='Price Currency',
+        default=lambda self: self.env.user.company_id.currency_id)
     exchange_rate = fields.Float('Exchange Rate') # 匯率
-    tax = fields.Float('Tax') # 稅
-    tax_currency_id = fields.Many2one('res.currency', string='Tax Currency')
-    shipping = fields.Float('Shipping Cost') # 運費
-    shipping_currency_id = fields.Many2one('res.currency', string='Shipping Cost Currency')
+    tax = fields.Monetary('Tax', currency_field='tax_currency_id') # 稅
+    tax_currency_id = fields.Many2one('res.currency', string='Tax Currency',
+        default=lambda self: self.env.user.company_id.currency_id)
+    shipping = fields.Monetary('Shipping Cost', currency_field='shipping_currency_id') # 運費
+    shipping_currency_id = fields.Many2one('res.currency', string='Shipping Cost Currency',
+        default=lambda self: self.env.user.company_id.currency_id)
     year = fields.Date('Year') # 年份
-    total = fields.Float('Quantity') # Total
+    total = fields.Integer('Quantity') # Total
     consigned_to = fields.Char('Consigned To in Excel') # 保管廠商
-    consigned_to_id = fields.Many2one('res.partner', string='Consigned To')
+    consigned_to_id = fields.Many2one('res.partner', string='Consigned To', domain="[('is_company','=',True), ('supplier','=',True)]")
     consigned_date = fields.Char('Consigned Date') # 保管日期
     returned_date = fields.Char('Returned Date') # 歸還日期
     storage = fields.Char('Batom Storage') # 本土保管處
@@ -181,6 +197,55 @@ class BatomCutter(models.Model):
         ('code_uniq', 'unique (batom_code)', 'The Batom cutter code must be unique.')
     ]
 
+    @api.multi
+    def copy(self, default=None):
+        self.ensure_one()
+        default = dict(default or {},
+            active = self.active,
+            state = self.state,
+            managing_department = self.managing_department,
+            cutter_model_id = self.cutter_model_id.id,
+            batom_code = _("%s (Copy)") % self.batom_code,
+            total = 1,
+            year = datetime.today(),
+            status = 'unknown',
+            history_ids = None,
+            history_file = None,
+            history_file_name = None,
+            inquiry_number = None,
+            product_code = None,
+            supplier = None,
+            price = None,
+            price_currency_id = None,
+            exchange_rate = None,
+            tax = None,
+            tax_currency_id = None,
+            shipping = None,
+            shipping_currency_id = None,
+            consigned_to = None,
+            consigned_to_id = None,
+            consigned_date = None,
+            returned_date = None,
+            storage = None,
+            remarks = None,
+            inquiry_form = None,
+            inquiry_form_name = None,
+            supplier_quotation = None,
+            supplier_quotation_name = None,
+            purchase_request = None,
+            purchase_request_name = None,
+            purchase_order = None,
+            purchase_order_name = None,
+            order_confirmation = None,
+            order_confirmation_name = None,
+            invoice = None,
+            invoice_name = None,
+            order_date = None,
+            expected_delivery_date = None,
+            notes = None,
+            )
+        return super(BatomCutter, self).copy(default=default)
+
     @api.one
     @api.depends('batom_code')
     def _compute_name(self):
@@ -204,9 +269,11 @@ class BatomCutterHisory(models.Model):
     date = fields.Date('Date', required=False, default=lambda self: fields.datetime.now())
     action_id = fields.Many2one('batom.cutter.action', string='Action')
     sharpening_mm = fields.Float('Sharpening Amount (mm)')
-    processed_quantity = fields.Float('# Parts Processed')
-    cost = fields.Float('Cost')
-    cost_currency_id = fields.Many2one('res.currency', string='Cost Currency')
+    processed_quantity = fields.Integer('# Parts Processed')
+    cost = fields.Monetary('Cost', currency_field='cost_currency_id')
+    cost_currency_id = fields.Many2one('res.currency', string='Cost Currency',
+        default=lambda self: self.env.user.company_id.currency_id)
+    vendor_id = fields.Many2one('res.partner', string='Vendor')
     remarks = fields.Text('Remarks') # 備註
     attached_file = fields.Binary('Attached File', attachment=True)
     attached_file_name = fields.Char('Attached File Name')

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-05 10:47+0000\n"
-"PO-Revision-Date: 2017-05-05 10:47+0000\n"
+"POT-Creation-Date: 2017-05-09 05:00+0000\n"
+"PO-Revision-Date: 2017-05-09 05:00+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -127,7 +127,7 @@ msgstr "費用"
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_cost_currency_id
 msgid "Cost Currency"
-msgstr "Cost Currency"
+msgstr "費用幣別"
 
 #. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
@@ -324,7 +324,7 @@ msgstr "匯率"
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_expected_delivery_date
 msgid "Expected Delivery Date"
-msgstr "期望交期"
+msgstr "預計交貨日"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_file
@@ -447,6 +447,11 @@ msgid "MOD"
 msgstr "MOD"
 
 #. module: batom_tool
+#: model:ir.ui.view,arch_db:batom_tool.search_cutter_filter
+msgid "Maintenance"
+msgstr "修刀中"
+
+#. module: batom_tool
 #: model:res.groups,name:batom_tool.group_tool_management_manager
 msgid "Manager"
 msgstr "經理"
@@ -466,6 +471,11 @@ msgstr "主數據"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_material
 msgid "Material"
 msgstr "原料"
+
+#. module: batom_tool
+#: model:ir.ui.view,arch_db:batom_tool.search_cutter_filter
+msgid "Maybe Available"
+msgstr "或許可用"
 
 #. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
@@ -606,6 +616,11 @@ msgstr "採購申請單"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_purchase_request_name
 msgid "Purchase Request File Name"
 msgstr "採購申請單檔名"
+
+#. module: batom_tool
+#: model:ir.ui.view,arch_db:batom_tool.search_cutter_filter
+msgid "Purchasing"
+msgstr "採購中"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_total
@@ -762,12 +777,12 @@ msgstr "刀模具管理"
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_model_form
 msgid "Used by Products"
-msgstr "適用產品"
+msgstr "工件編號"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_product_code
 msgid "Used by Products in Excel"
-msgstr "適用產品 (Excel)"
+msgstr "工件編號 (Excel)"
 
 #. module: batom_tool
 #: model:res.groups,name:batom_tool.group_tool_management_user
@@ -785,6 +800,11 @@ msgstr "使用刀具圖號"
 #: model:ir.ui.view,arch_db:batom_tool.customer_form_view_cutter_button
 msgid "Using Cutters"
 msgstr "使用刀具"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_vendor_id
+msgid "Vendor"
+msgstr "廠商"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_year
