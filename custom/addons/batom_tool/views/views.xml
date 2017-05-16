@@ -377,19 +377,19 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="cutter_id" readonly="1"/>
-                                <field name="date" readonly="1"/>
-                                <field name="action_id" readonly="1"/>
-                                <field name="vendor_id" readonly="1"/>
-                                <field name="remarks" readonly="1"/>
+                                <field name="cutter_id"/>
+                                <field name="date"/>
+                                <field name="action_id"/>
+                                <field name="vendor_id"/>
+                                <field name="remarks"/>
                             </group>
                             <group>
-                                <field name="sharpening_mm" readonly="1"/>
-                                <field name="processed_quantity" readonly="1"/>
-                                <field name="cost_currency_id" readonly="1"/>
-                                <field name="cost" readonly="1"/>
-                                <field name="attached_file_name" readonly="1" invisible="1"/>
-                                <field name="attached_file" widget="binary" filename='attached_file_name' readonly="1"/>
+                                <field name="sharpening_mm"/>
+                                <field name="processed_quantity"/>
+                                <field name="cost_currency_id"/>
+                                <field name="cost"/>
+                                <field name="attached_file_name" invisible="1"/>
+                                <field name="attached_file" widget="binary" filename='attached_file_name'/>
                             </group>
                         </group>
                     </sheet>

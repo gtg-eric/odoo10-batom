@@ -265,7 +265,7 @@ class BatomCutterHisory(models.Model):
     _description = 'Cutter History'
     _order = 'date desc'
     
-    cutter_id = fields.Many2one('batom.cutter', 'Cutter', index=True)
+    cutter_id = fields.Many2one('batom.cutter', 'Cutter', required=True, index=True)
     date = fields.Date('Date', required=False, default=lambda self: fields.datetime.now())
     action_id = fields.Many2one('batom.cutter.action', string='Action')
     sharpening_mm = fields.Float('Sharpening Amount (mm)')
@@ -273,7 +273,7 @@ class BatomCutterHisory(models.Model):
     cost = fields.Monetary('Cost', currency_field='cost_currency_id')
     cost_currency_id = fields.Many2one('res.currency', string='Cost Currency',
         default=lambda self: self.env.user.company_id.currency_id)
-    vendor_id = fields.Many2one('res.partner', string='Vendor')
+    vendor_id = fields.Many2one('res.partner', string='Vendor',  domain="[('is_company','=',True), ('supplier','=',True)]")
     remarks = fields.Text('Remarks') # 備註
     attached_file = fields.Binary('Attached File', attachment=True)
     attached_file_name = fields.Char('Attached File Name')
