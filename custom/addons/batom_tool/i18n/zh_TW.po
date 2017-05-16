@@ -188,7 +188,7 @@ msgstr "刀具種類"
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_class_name
 msgid "Cutter Class Name"
-msgstr "Cutter Class Name"
+msgstr "刀具種類名稱"
 
 #. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.search_cutter_filter
