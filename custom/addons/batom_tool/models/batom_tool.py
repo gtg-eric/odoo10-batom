@@ -140,7 +140,7 @@ class BatomCutter(models.Model):
         )
     cutter_model_id = fields.Many2one('batom.cutter.model', string='Cutter Model')
     batom_code = fields.Char('Batom Code') # 本土編號
-    supplier_code = fields.Char('Supplier Code') # 廠商編號
+    supplier_code = fields.Char('Vendor Cutter Code') # 廠商刀具編號
     history_ids = fields.One2many('batom.cutter.history', 'cutter_id', 'History List') # 履歷表
     history_file = fields.Binary('History File', attachment=True) # 圖面
     history_file_name = fields.Char('History File Name')

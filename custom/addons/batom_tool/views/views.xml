@@ -147,6 +147,7 @@
                 </tree>
             </field>
         </record>
+
         <record model="ir.ui.view" id="search_cutter_filter">
             <field name="name">Cutter Filter</field>
             <field name="model">batom.cutter</field>
@@ -171,6 +172,7 @@
                 </search>
             </field>
         </record>
+
         <record id="action_cutter" model="ir.actions.act_window">
             <field name="name">Cutter Information</field>
             <field name="type">ir.actions.act_window</field>
@@ -331,6 +333,70 @@
             </field>
         </record>
 
+        <record id="view_cutter_history_tree" model="ir.ui.view">
+            <field name="name">Cutter History Tree</field>
+            <field name="model">batom.cutter.history</field>
+            <field name="arch" type="xml">
+                <tree string="Cutter History" default_order='cutter_id, date desc'>
+                    <field name="cutter_id"/>
+                    <field name="date"/>
+                    <field name="action_id"/>
+                    <field name="vendor_id"/>
+                    <field name="remarks"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="search_cutter_history_filter">
+            <field name="name">Cutter History Filter</field>
+            <field name="model">batom.cutter.history</field>
+            <field name="arch" type="xml">
+                <search string="Cutter Filter">
+                    <field name="cutter_id"/>
+                    <field name="action_id"/>
+                    <field name="vendor_id"/>
+                    <field name="remarks"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_cutter_history" model="ir.actions.act_window">
+            <field name="name">Cutter History Information</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.cutter.history</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_cutter_history_tree"/>
+            <field name="search_view_id" ref="search_cutter_history_filter"/>
+        </record>
+        
+        <record id="view_cutter_history_form" model="ir.ui.view">
+            <field name="name">batom.cutter.history.form</field>
+            <field name="model">batom.cutter.history</field>
+            <field name="arch" type="xml">
+                <form string="Cutter">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="cutter_id" readonly="1"/>
+                                <field name="date" readonly="1"/>
+                                <field name="action_id" readonly="1"/>
+                                <field name="vendor_id" readonly="1"/>
+                                <field name="remarks" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="sharpening_mm" readonly="1"/>
+                                <field name="processed_quantity" readonly="1"/>
+                                <field name="cost_currency_id" readonly="1"/>
+                                <field name="cost" readonly="1"/>
+                                <field name="attached_file_name" readonly="1" invisible="1"/>
+                                <field name="attached_file" widget="binary" filename='attached_file_name' readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <record id="batom_view_customer_form_inherit" model="ir.ui.view">
             <field name="name">batom.res.partner.customer.form.inherit</field>
             <field name="model">res.partner</field>
@@ -456,6 +522,11 @@
             parent="menu_cutter_management"
             action="action_cutter"
             sequence="20"/>
+        
+        <menuitem id="menu_cutter_history" name="Cutter History Information"
+            parent="menu_cutter_management"
+            action="action_cutter_history"
+            sequence="30"/>
 
         <record id="product_template_action" model="ir.actions.act_window">
             <field name="name">Products</field>
