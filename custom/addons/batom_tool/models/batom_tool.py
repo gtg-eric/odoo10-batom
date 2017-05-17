@@ -277,6 +277,20 @@ class BatomCutterHisory(models.Model):
     remarks = fields.Text('Remarks') # 備註
     attached_file = fields.Binary('Attached File', attachment=True)
     attached_file_name = fields.Char('Attached File Name')
+    managing_department = fields.Selection([ # 管理單位
+        ('procurement', u'採購'),
+        ('production', u'生產'),
+        ],
+        string='Managing Department',
+        default='procurement',
+        compute='_compute_managing_department',
+        )
+
+    @api.one
+    @api.depends('cutter_id')
+    def _compute_managing_department(self):
+        if self.cutter_id:
+            self.managing_department = self.cutter_id.managing_department
 
 class BatomCutterModelHisory(models.Model):
     _name = "batom.cutter.model.history"

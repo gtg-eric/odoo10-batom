@@ -139,8 +139,8 @@
                     <field name="batom_code"/>
                     <field name="supplier_code"/>
                     <field name="cutter_class_id"/>
-                    <field name="cutter_model_id"/>
                     <field name="product_ids_code"/>
+                    <field name="managing_department"/>
                     <field name="status"/>
                     <field name="consigned_to_id"/>
                     <field name="storage"/>
@@ -156,19 +156,19 @@
                     <field name="batom_code"/>
                     <field name="supplier_code"/>
                     <field name="cutter_class_id"/>
-                    <field name="cutter_model_id"/>
                     <field name="product_ids_code"/>
                     <field name="status"/>
                     <field name="consigned_to_id"/>
                     <field name="storage"/>
                     <separator/>
                     <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
-                    <filter string="Maybe Available" name="status" domain="['|',
-                        ('status','=','available'),
-                        ('status','=','unknown')
-                        ]"/>
-                    <filter string="Purchasing" name="status" domain="[('status','=','purchasing')]"/>
-                    <filter string="Maintenance" name="status" domain="[('status','=','maintenance')]"/>
+                    <filter string="Unknown" name="unknown" domain="[('status','=','unknown')]"/>
+                    <filter string="Available" name="available" domain="[('status','=','available')]"/>
+                    <filter string="Purchasing" name="purchasing" domain="[('status','=','purchasing')]"/>
+                    <filter string="Maintenance" name="maintenance" domain="[('status','=','maintenance')]"/>
+                    <separator/>
+                    <filter string="Managed by Procurement" name="by_procurement" domain="[('managing_department','=','procurement')]"/>
+                    <filter string="Managed by Production" name="by_production" domain="[('managing_department','=','production')]"/>
                 </search>
             </field>
         </record>
@@ -342,6 +342,7 @@
                     <field name="date"/>
                     <field name="action_id"/>
                     <field name="vendor_id"/>
+                    <field name="managing_department"/>
                     <field name="remarks"/>
                 </tree>
             </field>
@@ -381,6 +382,7 @@
                                 <field name="date"/>
                                 <field name="action_id"/>
                                 <field name="vendor_id"/>
+                                <field name="managing_department"/>
                                 <field name="remarks"/>
                             </group>
                             <group>
