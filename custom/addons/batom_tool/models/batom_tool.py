@@ -138,7 +138,7 @@ class BatomCutter(models.Model):
         default='procurement',
         index=True,
         )
-    cutter_model_id = fields.Many2one('batom.cutter.model', string='Cutter Model')
+    cutter_model_id = fields.Many2one('batom.cutter.model', string='Cutter Model', required=True, ondelete="cascade")
     batom_code = fields.Char('Batom Code') # 本土編號
     supplier_code = fields.Char('Vendor Cutter Code') # 廠商刀具編號
     history_ids = fields.One2many('batom.cutter.history', 'cutter_id', 'History List') # 履歷表
@@ -297,7 +297,7 @@ class BatomCutterModelHisory(models.Model):
     _description = 'Cutter Model History'
     _order = 'date desc'
     
-    cutter_model_id = fields.Many2one('batom.cutter.model', 'Cutter Model', index=True)
+    cutter_model_id = fields.Many2one('batom.cutter.model', 'Cutter Model', required=True, index=True)
     date = fields.Date('Date', required=False, default=lambda self: fields.datetime.now())
     remarks = fields.Text('Remarks') # 備註
     attached_file = fields.Binary('Attached File', attachment=True)
