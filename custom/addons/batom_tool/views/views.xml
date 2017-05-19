@@ -282,30 +282,30 @@
                             <page string="Parameters">
                                 <group>
                                     <group>
-                                        <field name="mod"/>
-                                        <field name="dp"/>
-                                        <field name="pa"/>
-                                        <field name="teeth"/>
-                                        <field name="od"/>
-                                        <field name="root_diameter"/>
-                                        <field name="semitopping_amount"/>
-                                        <field name="stock_removal"/>
-                                        <field name="df"/>
+                                        <field name="mod" readonly="1"/>
+                                        <field name="dp" readonly="1"/>
+                                        <field name="pa" readonly="1"/>
+                                        <field name="teeth" readonly="1"/>
+                                        <field name="od" readonly="1"/>
+                                        <field name="root_diameter" readonly="1"/>
+                                        <field name="semitopping_amount" readonly="1"/>
+                                        <field name="stock_removal" readonly="1"/>
+                                        <field name="df" readonly="1"/>
                                     </group>
                                     <group>
-                                        <field name="material"/>
-                                        <field name="coating"/>
-                                        <field name="type"/>
-                                        <field name="length"/>
-                                        <field name="bore"/>
-                                        <field name="protuberance"/>
-                                        <field name="number_threads"/>
-                                        <field name="gash_lead"/>
-                                        <field name="class_accuracy"/>
-                                        <field name="cutter_teeth"/>
-                                        <field name="allowed_sharpening"/>
-                                        <field name="standard_sharpening"/>
-                                        <field name="allowed_sharpening_times"/>
+                                        <field name="material" readonly="1"/>
+                                        <field name="coating" readonly="1"/>
+                                        <field name="type" readonly="1"/>
+                                        <field name="length" readonly="1"/>
+                                        <field name="bore" readonly="1"/>
+                                        <field name="protuberance" readonly="1"/>
+                                        <field name="number_threads" readonly="1"/>
+                                        <field name="gash_lead" readonly="1"/>
+                                        <field name="class_accuracy" readonly="1"/>
+                                        <field name="cutter_teeth" readonly="1"/>
+                                        <field name="allowed_sharpening" readonly="1"/>
+                                        <field name="standard_sharpening" readonly="1"/>
+                                        <field name="allowed_sharpening_times" readonly="1"/>
                                     </group>
                                 </group>
                             </page>
