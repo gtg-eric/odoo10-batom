@@ -2252,7 +2252,6 @@ class BatomMigrateBom(models.TransientModel):
         u'Bore': 'model.bore',
         u'D+F': 'model.df',
         u'D+F(工件)': 'model.df',
-        u'DTR s/n': 'model.dtr_sn',
         u'coating': 'model.coating',
         u'單價': 'price',
         u'匯率': 'exchange_rate',
@@ -2623,7 +2622,6 @@ class BatomMigrateBom(models.TransientModel):
         'model.length',
         'model.bore',
         'model.df',
-        'model.dtr_sn',
         'exchange_rate',
         'total',
         ])

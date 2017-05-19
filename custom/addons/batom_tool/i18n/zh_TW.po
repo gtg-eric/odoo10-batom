@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-17 08:38+0000\n"
-"PO-Revision-Date: 2017-05-17 08:38+0000\n"
+"POT-Creation-Date: 2017-05-18 10:31+0000\n"
+"PO-Revision-Date: 2017-05-18 10:31+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -39,8 +39,8 @@ msgid "# Parts Processed"
 msgstr "加工數量"
 
 #. module: batom_tool
-#: code:addons/batom_tool/models/batom_tool.py:80
-#: code:addons/batom_tool/models/batom_tool.py:208
+#: code:addons/batom_tool/models/batom_tool.py:88
+#: code:addons/batom_tool/models/batom_tool.py:216
 #, python-format
 msgid "%s (Copy)"
 msgstr "%s (Copy)"
@@ -103,13 +103,19 @@ msgstr "本土保管處"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_bore
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_bore
 msgid "Bore"
-msgstr "Bore"
+msgstr "孔徑 (Bore)"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_class_accuracy
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_class_accuracy
+msgid "Class of Accuracy"
+msgstr "精度 (Class of Accuracy)"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_coating
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_coating
 msgid "Coating"
-msgstr "Coating"
+msgstr "鍍層 (Coating)"
 
 #. module: batom_tool
 #: model:ir.ui.menu,name:batom_tool.menu_tool_configuration
@@ -294,13 +300,13 @@ msgstr "刀具"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_df
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_df
 msgid "D+F (Workpiece)"
-msgstr "D+F(工件)"
+msgstr "工件齒全高 (D+F)"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_dp
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_dp
 msgid "DP"
-msgstr "DP"
+msgstr "徑節 (DP)"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_dtr_sn
@@ -346,6 +352,12 @@ msgstr "匯率"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_expected_delivery_date
 msgid "Expected Delivery Date"
 msgstr "預計交貨日"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_gash_lead
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_gash_lead
+msgid "Gash Lead"
+msgstr "刃溝槽導程 (Gash Lead)"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_file
@@ -459,13 +471,13 @@ msgstr "最後更新時間"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_length
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_length
 msgid "Length"
-msgstr "Length"
+msgstr "全長 (Length)"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_mod
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_mod
 msgid "MOD"
-msgstr "MOD"
+msgstr "模數 (MOD)"
 
 #. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.search_cutter_filter
@@ -546,10 +558,16 @@ msgid "Notes"
 msgstr "注意事項"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_number_threads
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_number_threads
+msgid "Number of Threads"
+msgstr "牙口數 (Threads)"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_od
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_od
 msgid "OD"
-msgstr "OD"
+msgstr "外徑 (OD)"
 
 #. module: batom_tool
 #: model:res.groups,name:batom_tool.group_tool_management_officer
@@ -580,7 +598,7 @@ msgstr "出庫動作"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_pa
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_pa
 msgid "PA"
-msgstr "PA"
+msgstr "壓力角 (PA)"
 
 #. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_form
@@ -625,6 +643,12 @@ msgid "Products for Customer"
 msgstr "客戶產品"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_protuberance
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_protuberance
+msgid "Protuberance"
+msgstr "瘤頭 (Protuberance)"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_purchase_order
 msgid "Purchase Order"
 msgstr "採購訂單"
@@ -665,6 +689,18 @@ msgstr "備註"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_returned_date
 msgid "Returned Date"
 msgstr "歸還日期"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_root_diameter
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_root_diameter
+msgid "Root Diameter"
+msgstr "齒底俓 (Root Diameter)"
+
+#. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_semitopping_amount
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_semitopping_amount
+msgid "Semitopping Amount"
+msgstr "齒頂倒角 (Semitopping)"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_sharpening_mm
@@ -710,6 +746,12 @@ msgid "Status"
 msgstr "狀態"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_stock_removal
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_stock_removal
+msgid "Stock Removal"
+msgstr "刮磨留量 (Stock Removal)"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_supplier_id
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_supplier_id
 msgid "Supplied by"
@@ -750,7 +792,7 @@ msgstr "供應刀具"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_type
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_type
 msgid "TYPE"
-msgstr "TYPE"
+msgstr "樣式 (TYPE)"
 
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_tax
@@ -763,10 +805,16 @@ msgid "Tax Currency"
 msgstr "稅金幣別"
 
 #. module: batom_tool
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_cutter_teeth
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_cutter_teeth
+msgid "Teeth (Cutter)"
+msgstr "刀具齒數 (Teeth)"
+
+#. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_teeth
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_teeth
 msgid "Teeth (Workpiece)"
-msgstr "Teeth (工件)"
+msgstr "工件齒數 (Teeth)"
 
 #. module: batom_tool
 #: sql_constraint:batom.cutter:0

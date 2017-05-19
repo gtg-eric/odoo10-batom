@@ -52,7 +52,6 @@ class BatomCutterModel(models.Model):
     length = fields.Float('Length') # Length
     bore = fields.Float('Bore') # Bore
     df = fields.Float('D+F (Workpiece)') # D+F(工件)
-    dtr_sn = fields.Float('DTR s/n') # DTR s/n
     coating = fields.Char('Coating') # coating
     dressing_cost = fields.Monetary('Dressing Cost', currency_field='dressing_cost_currency_id') # 修刀費用
     dressing_cost_currency_id = fields.Many2one('res.currency', string='Dressing Cost Currency',
@@ -68,6 +67,14 @@ class BatomCutterModel(models.Model):
     allowed_sharpening_times = fields.Integer('Allowed Sharpening Times') # 可磨次數
     model_notes = fields.Text('Model Notes') # 注意事項
     model_remarks = fields.Text('Model Remarks')
+    protuberance = fields.Float('Protuberance') # 瘤頭
+    root_diameter = fields.Char('Root Diameter') # 齒底俓
+    semitopping_amount = fields.Char('Semitopping Amount') # 齒頂倒角
+    stock_removal = fields.Float('Stock Removal') # 刮磨留量
+    number_threads = fields.Char('Number of Threads') # 牙口數
+    gash_lead = fields.Char('Gash Lead') # 刃溝槽導程
+    class_accuracy = fields.Char('Class of Accuracy') # 精度
+    cutter_teeth = fields.Char('Teeth (Cutter)') # Teeth (刀具)
 
     _sql_constraints = [
         ('code_uniq', 'unique (cutter_model_code)', 'The model code must be unique.')
