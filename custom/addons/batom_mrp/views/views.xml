@@ -184,18 +184,6 @@
             </field>
         </record>
         
-        <record id="batom_view_account_form_inherit" model="ir.ui.view">
-            <field name="name">batom.account.account.form.inherit</field>
-            <field name="model">account.account</field>
-            <field name="inherit_id" ref="account.view_account_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='user_type_id']" position="after">
-                    <field name="x_batom_type_id" widget="selection"/>
-                    <field name="x_batom_parent_id"/>
-                </xpath>
-            </field>
-        </record>
-        
         <menuitem id="menu_mrp_online_stock"
               name="Online Inventory"
               parent="mrp.menu_mrp_reporting"

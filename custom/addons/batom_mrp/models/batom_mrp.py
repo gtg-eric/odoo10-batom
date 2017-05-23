@@ -27,20 +27,6 @@ class batom_partner_category(models.Model):
     x_category_code = fields.Char('Category Code', required=False, size=6)
     x_memo = fields.Char('Memo', required=False)
 
-class BatomAccountType(models.Model):
-    _name = "batom.account.type"
-    _description = "Batom Account Type"
-
-    code = fields.Char(string='Account Type Code', required=True)
-    name = fields.Char(string='Account Type', required=True)
-
-class BatomAccountAccount(models.Model):
-    #_name = 'batom.account.account'
-    _inherit = 'account.account'
-
-    x_batom_type_id = fields.Many2one('batom.account.type', string='Batom Account Type')
-    x_batom_parent_id = fields.Many2one('account.account', string='Batom Parent Account')
-
 
 class BatomProductProduct(models.Model):
     #_name = 'batom.product.product'

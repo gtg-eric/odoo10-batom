@@ -116,28 +116,6 @@
             <field name="target">new</field>
         </record>
 
-        <record id="view_migrate_chart_of_account" model="ir.ui.view">
-            <field name="name">Migrate Chart of Account</field>
-            <field name="model">batom.migrate_chart_of_account</field>
-            <field name="arch" type="xml">
-                <form string="Migrate Chart of Account">
-                    <footer>
-                        <button name="migrate_chart_of_account" string="Migrate" type="object" class="btn-primary"/>
-                        <button special="cancel" string="Cancel" class="btn-default"/>
-                    </footer>
-                </form>
-           </field>
-        </record>
-
-        <record id="action_migrate_chart_of_account" model="ir.actions.act_window">
-            <field name="name">Migrate Chart of Account</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">batom.migrate_chart_of_account</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">form</field>
-            <field name="target">new</field>
-        </record>
-
         <record id="view_migrate_product" model="ir.ui.view">
             <field name="name">Migrate Products</field>
             <field name="model">batom.migrate_product</field>
@@ -186,7 +164,6 @@
             <menuitem name="Refresh/Apply Partner" id="menu_partner_migration_refresh" parent="menu_data_migration" action="action_view_partner_migration_refresh"/>
             <menuitem name="Partner" id="menu_partner_migration" parent="menu_data_migration" action="action_partner_migration"/>
             <menuitem name="Create Supplier Warehouses" id="menu_create_supplier_warehouse" parent="menu_data_migration" action="action_create_supplier_warehouse"/>
-            <menuitem name="Migrate Chart of Account" id="menu_migrate_chart_of_account" parent="menu_data_migration" action="action_migrate_chart_of_account"/>
             <menuitem name="Migrate Products" id="menu_migrate_product" parent="menu_data_migration" action="action_migrate_product"/>
             <menuitem name="Migrate BoM" id="menu_migrate_bom" parent="menu_data_migration" action="action_migrate_bom"/>
     </data>

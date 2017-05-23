@@ -1,0 +1,339 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="view_parts_in_tree" model="ir.ui.view">
+            <field name="name">Parts In Tree</field>
+            <field name="model">batom.parts_in</field>
+            <field name="arch" type="xml">
+                <tree string="Parts In">
+                    <field name="pdate"/>
+                    <field name="supplier"/>
+                    <field name="prodid"/>
+                    <field name="processid"/>
+                    <field name="inqty"/>
+                    <field name="priority"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_parts_in_filter">
+            <field name="name">Parts In Filter</field>
+            <field name="model">batom.parts_in</field>
+            <field name="arch" type="xml">
+                <search string="Parts In Filter">
+                    <field name="supplier"/>
+                    <field name="prodid"/>
+                    <field name="processid"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <filter string="All" name="all" domain="['|', ('active','=',False), ('active','=',True)]"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_parts_in" model="ir.actions.act_window">
+            <field name="name">Parts In</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.parts_in</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_parts_in_tree"/>
+            <field name="search_view_id" ref="search_parts_in_filter"/>
+        </record>
+        <record id="view_parts_in_form" model="ir.ui.view">
+            <field name="name">batom.parts_in.form</field>
+            <field name="model">batom.parts_in</field>
+            <field name="arch" type="xml">
+                <form string="Parts In">
+                    <sheet>
+                        <group>
+                            <group name="data">
+                                <field name="pdate"/>
+                                <field name="supplier" domain="[('supplier','=',True)]" context="{'search_default_supplier':1}"/>
+                                <field name="prodid"/>
+                                <field name="processid"/>
+                                <field name="nextprocessid" domain="[('supplier','=',True)]" context="{'search_default_supplier':1}"/>
+                            </group>
+                            <group>
+                                <field name="inqty"/>
+                                <field name="location"/>
+                                <field name="urgency"/>
+                                <field name="creator"/>
+                                <field name="wreport"/>
+                                <field name="finish"/>
+                                <field name="lastdate"/>
+                                <field name="lastperson"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Parts In Quantity">
+                                <field name="parts_in_qty_ids">
+                                    <tree editable="bottom">
+                                        <field name="mvtype"/>
+                                        <field name="inqty"/>
+                                        <field name="mkordid"/>
+                                        <field name="mkordser"/>
+                                        <field name="batch"/>
+                                        <field name="memo"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="QA Page">
+                                <group>
+                                    <group>
+                                        <field name="qprogress"/>
+                                        <field name="toqcqty" readonly="1"/>
+                                        <field name="waitca"/>
+                                        <field name="waitgt"/>
+                                        <field name="qdate"/>
+                                        <field name="iqcqty"/>
+                                    </group>
+                                    <group>
+                                        <field name="report"/>
+                                        <field name="result"/>
+                                        <field name="ngtype"/>
+                                        <field name="ngroot"/>
+                                        <field name="ngaction"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Parts In QC">
+                                <field name="parts_in_qc_ids">
+                                    <tree editable="bottom">
+                                        <field name="inspector"/>
+                                        <field name="stime"/>
+                                        <field name="etime"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Miscellaneous">
+                                <group>
+                                    <group>
+                                        <field name="memo"/>
+                                        <field name="rptpath"/>
+                                    </group>
+                                    <group>
+                                        <field name="ntags"/>
+                                        <field name="remarks"/>
+                                        <field name="transfer"/>
+                                        <field name="transtime"/>
+                                        <field name="forengdept"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_shop_in_tree" model="ir.ui.view">
+            <field name="name">Shop In Tree</field>
+            <field name="model">batom.shop_in</field>
+            <field name="arch" type="xml">
+                <tree string="Shop In">
+                    <field name="pdate"/>
+                    <field name="supplier"/>
+                    <field name="customer"/>
+                    <field name="prodid"/>
+                    <field name="processid"/>
+                    <field name="inqty"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_shop_in_filter">
+            <field name="name">Shop In Filter</field>
+            <field name="model">batom.shop_in</field>
+            <field name="arch" type="xml">
+                <search string="Shop In Filter">
+                    <field name="pdate"/>
+                    <field name="supplier"/>
+                    <field name="customer"/>
+                    <field name="prodid"/>
+                    <field name="processid"/>
+                    <field name="inqty"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <filter string="All" name="all" domain="['|', ('active','=',False), ('active','=',True)]"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_shop_in" model="ir.actions.act_window">
+            <field name="name">Shop In</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.shop_in</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_shop_in_tree"/>
+            <field name="search_view_id" ref="search_shop_in_filter"/>
+        </record>
+        <record id="view_shop_in_form" model="ir.ui.view">
+            <field name="name">batom.shop_in.form</field>
+            <field name="model">batom.shop_in</field>
+            <field name="arch" type="xml">
+                <form string="Shop In">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="pdate"/>
+                                <field name="supplier" domain="[('supplier','=',True)]" context="{'search_default_supplier':1}"/>
+                                <field name="customer"/>
+                                <field name="prodid"/>
+                                <field name="processid"/>
+                                <field name="process"/>
+                                <field name="inqty"/>
+                                <field name="nextprcs"/>
+                                <field name="batch"/>
+                            </group>
+                            <group>
+                                <field name="mkordid"/>
+                                <field name="creator"/>
+                                <field name="urgency"/>
+                                <field name="location"/>
+                                <field name="pnote"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Factory">
+                                <group>
+                                    <group>
+                                        <field name="sprogress"/>
+                                        <field name="printerdata"/>
+                                        <field name="sdate"/>
+                                        <field name="outqty"/>
+                                        <field name="ngqty"/>
+                                        <field name="mfbatch"/>
+                                    </group>
+                                    <group>
+                                        <field name="receiver"/>
+                                        <field name="snote"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Miscellaneous">
+                                <group>
+                                    <group>
+                                        <field name="parts_in_id"/>
+                                        <field name="indate"/>
+                                        <field name="qrinfo"/>
+                                        <field name="finish"/>
+                                        <field name="transfer"/>
+                                        <field name="transtime"/>
+                                    </group>
+                                    <group>
+                                        <field name="origin_id"/>
+                                        <field name="lastdate"/>
+                                        <field name="lastperson"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_parts_out_tree" model="ir.ui.view">
+            <field name="name">Parts Out Tree</field>
+            <field name="model">batom.parts_out</field>
+            <field name="arch" type="xml">
+                <tree string="Parts Out">
+                    <field name="pdate"/>
+                    <field name="supplier"/>
+                    <field name="company"/>
+                    <field name="mvtype"/>
+                    <field name="urgency"/>
+                    <field name="memo"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_parts_out_filter">
+            <field name="name">Parts Out Filter</field>
+            <field name="model">batom.parts_out</field>
+            <field name="arch" type="xml">
+                <search string="Parts Out Filter">
+                    <field name="pdate"/>
+                    <field name="supplier"/>
+                    <field name="company"/>
+                    <field name="mvtype"/>
+                    <field name="urgency"/>
+                    <field name="memo"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <filter string="All" name="all" domain="['|', ('active','=',False), ('active','=',True)]"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_parts_out" model="ir.actions.act_window">
+            <field name="name">Parts Out</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.parts_out</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_parts_out_tree"/>
+            <field name="search_view_id" ref="search_parts_out_filter"/>
+        </record>
+        <record id="view_parts_out_form" model="ir.ui.view">
+            <field name="name">batom.parts_out.form</field>
+            <field name="model">batom.parts_out</field>
+            <field name="arch" type="xml">
+                <form string="Parts Out">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="pdate"/>
+                                <field name="supplier" domain="[('supplier','=',True)]" context="{'search_default_supplier':1}"/>
+                                <field name="company"/>
+                                <field name="mvtype"/>
+                                <field name="urgency"/>
+                                <field name="creator"/>
+                                <field name="finish"/>
+                            </group>
+                            <group>
+                                <field name="memo"/>
+                                <field name="lastdate"/>
+                                <field name="lastperson"/>
+                                <field name="origin_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Parts Out Quantity">
+                                <field name="parts_out_qty_ids">
+                                    <tree editable="bottom">
+                                        <field name="prodid"/>
+                                        <field name="processid"/>
+                                        <field name="outqty"/>
+                                        <field name="mkordid"/>
+                                        <field name="mkordser"/>
+                                        <field name="batch"/>
+                                        <field name="remark"/>
+                                        <field name="location"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <menuitem id="menu_parts_in_system_root"
+            name="Parts In System"
+            icon="fa-industry"
+            sequence="39"/>
+        
+        <menuitem id="menu_parts_in_system" name="Parts In System"
+            parent="menu_parts_in_system_root"
+            sequence="10"/>
+        
+        <menuitem id="menu_parts_in" name="Parts In"
+            parent="menu_parts_in_system"
+            action="action_parts_in"
+            sequence="10"/>
+        
+        <menuitem id="menu_parts_shop_in" name="Shop In"
+            parent="menu_parts_in_system"
+            action="action_shop_in"
+            sequence="20"/>
+        
+        <menuitem id="menu_parts_out" name="Parts Out"
+            parent="menu_parts_in_system"
+            action="action_parts_out"
+            sequence="30"/>
+    </data>
+</odoo>
