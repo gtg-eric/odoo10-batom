@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-25 06:46+0000\n"
-"PO-Revision-Date: 2017-05-25 06:46+0000\n"
+"POT-Creation-Date: 2017-05-25 07:20+0000\n"
+"PO-Revision-Date: 2017-05-25 07:20+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -39,8 +39,8 @@ msgid "# Parts Processed"
 msgstr "加工數量"
 
 #. module: batom_tool
-#: code:addons/batom_tool/models/batom_tool.py:87
-#: code:addons/batom_tool/models/batom_tool.py:215
+#: code:addons/batom_tool/models/batom_tool.py:90
+#: code:addons/batom_tool/models/batom_tool.py:218
 #, python-format
 msgid "%s (Copy)"
 msgstr "%s (Copy)"
@@ -53,6 +53,8 @@ msgstr "動作"
 #. module: batom_tool
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_active
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_history_active
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_active
+#: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_history_active
 msgid "Active"
 msgstr "有效"
 
@@ -71,6 +73,8 @@ msgstr "可磨次數"
 #. module: batom_tool
 #: model:ir.ui.view,arch_db:batom_tool.search_cutter_filter
 #: model:ir.ui.view,arch_db:batom_tool.search_cutter_history_filter
+#: model:ir.ui.view,arch_db:batom_tool.search_cutter_model_filter
+#: model:ir.ui.view,arch_db:batom_tool.search_cutter_model_history_filter
 msgid "Archived"
 msgstr "已歸檔"
 
@@ -227,6 +231,7 @@ msgstr "刀具群組名稱"
 
 #. module: batom_tool
 #: model:ir.model,name:batom_tool.model_batom_cutter_history
+#: model:ir.ui.view,arch_db:batom_tool.view_cutter_history_form
 #: model:ir.ui.view,arch_db:batom_tool.view_cutter_history_tree
 msgid "Cutter History"
 msgstr "刀具履歷"
@@ -240,6 +245,7 @@ msgstr "刀具履歷動作"
 #. module: batom_tool
 #: model:ir.actions.act_window,name:batom_tool.action_cutter_history
 #: model:ir.ui.menu,name:batom_tool.menu_cutter_history
+#: model:ir.ui.menu,name:batom_tool.menu_cutter_model_history
 msgid "Cutter History Information"
 msgstr "刀具履歷資訊"
 
@@ -277,8 +283,20 @@ msgstr "Cutter Model Filter"
 
 #. module: batom_tool
 #: model:ir.model,name:batom_tool.model_batom_cutter_model_history
+#: model:ir.ui.view,arch_db:batom_tool.view_cutter_model_history_form
+#: model:ir.ui.view,arch_db:batom_tool.view_cutter_model_history_tree
 msgid "Cutter Model History"
 msgstr "刀具圖號履歷"
+
+#. module: batom_tool
+#: model:ir.ui.view,arch_db:batom_tool.search_cutter_model_history_filter
+msgid "Cutter Model History Filter"
+msgstr "Cutter Model History Filter"
+
+#. module: batom_tool
+#: model:ir.actions.act_window,name:batom_tool.action_cutter_model_history
+msgid "Cutter Model History Information"
+msgstr "刀具圖號履歷資訊"
 
 #. module: batom_tool
 #: model:ir.actions.act_window,name:batom_tool.action_cutter_model
@@ -382,6 +400,11 @@ msgstr "履歷表"
 #: model:ir.model.fields,field_description:batom_tool.field_batom_cutter_model_id
 msgid "ID"
 msgstr "ID"
+
+#. module: batom_tool
+#: model:ir.model.fields,help:batom_tool.field_batom_cutter_model_active
+msgid "If unchecked, it will allow you to hide the cutter model without removing it."
+msgstr "If unchecked, it will allow you to hide the cutter model without removing it."
 
 #. module: batom_tool
 #: model:ir.model.fields,help:batom_tool.field_batom_cutter_active
