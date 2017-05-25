@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-23 07:36+0000\n"
-"PO-Revision-Date: 2017-05-23 07:36+0000\n"
+"POT-Creation-Date: 2017-05-25 03:20+0000\n"
+"PO-Revision-Date: 2017-05-25 03:20+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -330,6 +330,7 @@ msgstr "數量"
 #: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_parts_in_id
 #: model:ir.ui.menu,name:batom_partsin.menu_parts_in
 #: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_form
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_qty_tree
 #: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_tree
 msgid "Parts In"
 msgstr "入料檢驗"
@@ -354,13 +355,21 @@ msgstr "檢驗頁"
 #. module: batom_partsin
 #: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_parts_in_qty_ids
 msgid "Parts In Quantities"
-msgstr "入料明細"
+msgstr "入料檢驗明細"
 
 #. module: batom_partsin
+#: model:ir.actions.act_window,name:batom_partsin.action_parts_in_qty
 #: model:ir.model,name:batom_partsin.model_batom_parts_in_qty
+#: model:ir.ui.menu,name:batom_partsin.menu_parts_in_qty
 #: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_form
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_qty_form
 msgid "Parts In Quantity"
-msgstr "Parts In Quantity"
+msgstr "入料檢驗明細"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.search_parts_in_qty_filter
+msgid "Parts In Quantity Filter"
+msgstr "Parts In Quantity Filter"
 
 #. module: batom_partsin
 #: model:ir.ui.menu,name:batom_partsin.menu_parts_in_system
@@ -389,10 +398,19 @@ msgid "Parts Out Quantities"
 msgstr "委外明細"
 
 #. module: batom_partsin
+#: model:ir.actions.act_window,name:batom_partsin.action_parts_out_qty
 #: model:ir.model,name:batom_partsin.model_batom_parts_out_qty
+#: model:ir.ui.menu,name:batom_partsin.menu_parts_out_qty
 #: model:ir.ui.view,arch_db:batom_partsin.view_parts_out_form
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_out_qty_form
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_out_qty_tree
 msgid "Parts Out Quantity"
-msgstr "Parts Out Quantity"
+msgstr "委外明細"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.search_parts_out_qty_filter
+msgid "Parts Out Quantity Filter"
+msgstr "Parts Out Quantity Filter"
 
 #. module: batom_partsin
 #: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_origin_id
@@ -432,6 +450,11 @@ msgstr "產品"
 #: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_pnote
 msgid "Production Note"
 msgstr "生管備註"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_sprogress
+msgid "Progress"
+msgstr "進度"
 
 #. module: batom_partsin
 #: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_form
@@ -474,6 +497,11 @@ msgid "Remarks"
 msgstr "備註"
 
 #. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_wreport
+msgid "Report Attached"
+msgstr "附報告"
+
+#. module: batom_partsin
 #: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_report
 msgid "Report Number"
 msgstr "報告編號"
@@ -506,11 +534,6 @@ msgstr "Shop In Filter"
 #: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_origin_id
 msgid "Shop Work Order"
 msgstr "Shop Work Order"
-
-#. module: batom_partsin
-#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_sprogress
-msgid "Progress"
-msgstr "進度"
 
 #. module: batom_partsin
 #: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_stime
@@ -571,9 +594,4 @@ msgstr "待CA"
 #: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_waitgt
 msgid "Waitint GT"
 msgstr "待GT"
-
-#. module: batom_partsin
-#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_wreport
-msgid "Report Attached"
-msgstr "附報告"
 

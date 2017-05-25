@@ -22,6 +22,8 @@
                     <field name="cutter_class_id"/>
                     <field name="product_ids_code"/>
                     <field name="supplier_id"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                 </search>
             </field>
         </record>
@@ -40,6 +42,13 @@
             <field name="arch" type="xml">
                 <form string="Cutter Model">
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" name="action_view_cutter" type="object"
                                 icon="fa-cog">
@@ -347,11 +356,67 @@
             </field>
         </record>
 
+        <record id="view_cutter_model_history_tree" model="ir.ui.view">
+            <field name="name">Cutter History Model Tree</field>
+            <field name="model">batom.cutter.model.history</field>
+            <field name="arch" type="xml">
+                <tree string="Cutter Model History" default_order='date desc'>
+                    <field name="cutter_model_id"/>
+                    <field name="date"/>
+                    <field name="remarks"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="search_cutter_model_history_filter">
+            <field name="name">Cutter Model History Filter</field>
+            <field name="model">batom.cutter.model.history</field>
+            <field name="arch" type="xml">
+                <search string="Cutter Model History Filter">
+                    <field name="cutter_model_id"/>
+                    <field name="remarks"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_cutter_model_history" model="ir.actions.act_window">
+            <field name="name">Cutter Model History Information</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.cutter.model.history</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_cutter_model_history_tree"/>
+            <field name="search_view_id" ref="search_cutter_model_history_filter"/>
+        </record>
+        
+        <record id="view_cutter_model_history_form" model="ir.ui.view">
+            <field name="name">batom.cutter.model.history.form</field>
+            <field name="model">batom.cutter.model.history</field>
+            <field name="arch" type="xml">
+                <form string="Cutter Model History">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="cutter_model_id"/>
+                                <field name="date"/>
+                                <field name="remarks"/>
+                            </group>
+                            <group>
+                                <field name="attached_file_name" invisible="1"/>
+                                <field name="attached_file" widget="binary" filename='attached_file_name'/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <record id="view_cutter_history_tree" model="ir.ui.view">
             <field name="name">Cutter History Tree</field>
             <field name="model">batom.cutter.history</field>
             <field name="arch" type="xml">
-                <tree string="Cutter History" default_order='cutter_id, date desc'>
+                <tree string="Cutter History" default_order='date desc'>
                     <field name="cutter_id"/>
                     <field name="date"/>
                     <field name="action_id"/>
@@ -371,6 +436,8 @@
                     <field name="action_id"/>
                     <field name="vendor_id"/>
                     <field name="remarks"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                 </search>
             </field>
         </record>
@@ -388,7 +455,7 @@
             <field name="name">batom.cutter.history.form</field>
             <field name="model">batom.cutter.history</field>
             <field name="arch" type="xml">
-                <form string="Cutter">
+                <form string="Cutter History">
                     <sheet>
                         <group>
                             <group>
@@ -533,6 +600,11 @@
             parent="menu_cutter_management"
             action="action_cutter_model"
             sequence="10"/>
+        
+        <menuitem id="menu_cutter_model_history" name="Cutter History Information"
+            parent="menu_cutter_management"
+            action="action_cutter_model_history"
+            sequence="15"/>
         
         <menuitem id="menu_cutter" name="Cutter Information"
             parent="menu_cutter_management"

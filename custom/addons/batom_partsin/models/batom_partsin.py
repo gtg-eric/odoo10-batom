@@ -112,8 +112,10 @@ class BatomPartsInQty(models.Model):
     _description = 'Parts In Quantity'
     _order = 'origin_id, mkordid, mkordser'
     
+    active = fields.Boolean(
+        'Active', compute='_compute_active', store=True)
     origin_id = fields.Integer('Original Parts In Quantity ID') # PID
-    parts_in_id = fields.Many2one('batom.parts_in', string='Parts In') # ID
+    parts_in_id = fields.Many2one('batom.parts_in', string='Parts In', required=True) # ID
     mvtype = fields.Selection([
         ('10', u'正常品'),
         ('20', u'HT試片'),
@@ -127,6 +129,14 @@ class BatomPartsInQty(models.Model):
     batch = fields.Char('Batch #') # Batch
     memo = fields.Text('Memo') # Memo
     inqty = fields.Integer('Quantity') # InQty
+
+    @api.one
+    @api.depends('parts_in_id', 'parts_in_id.active')
+    def _compute_active(self):
+        if self.parts_in_id.active:
+            self.active = True
+        else:
+            self.active = False
 
 class BatomPartsInQc(models.Model):
     _name = 'batom.parts_in.qc'
@@ -247,7 +257,9 @@ class BatomPartsOutQty(models.Model):
     _description = 'Parts Out Quantity'
     _order = 'origin_id'
 
-    parts_out_id = fields.Many2one('batom.parts_out', string='Parts Out') # ID
+    active = fields.Boolean(
+        'Active', compute='_compute_active', store=True)
+    parts_out_id = fields.Many2one('batom.parts_out', string='Parts Out', required=True) # ID
     origin_id = fields.Integer('Original Parts Out Quantity ID') # PID
     prodid = fields.Many2one('product.product', string='Product') # ProdID
     processid = fields.Many2one('product.product', string='Process') # ProcessID
@@ -257,6 +269,14 @@ class BatomPartsOutQty(models.Model):
     batch = fields.Char('Batch #') # Batch
     remark = fields.Char('Remark') # Remark
     location = fields.Char('Location') # Location
+
+    @api.one
+    @api.depends('parts_out_id', 'parts_out_id.active')
+    def _compute_active(self):
+        if self.parts_out_id.active:
+            self.active = True
+        else:
+            self.active = False
 
 class BatomMigratePartsIn(models.TransientModel):
     _name = "batom.migrate_parts_in"

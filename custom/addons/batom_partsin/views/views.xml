@@ -150,6 +150,9 @@
                     <field name="mkordser"/>
                     <field name="batch"/>
                     <field name="memo"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <filter string="All" name="all" domain="['|', ('active','=',False), ('active','=',True)]"/>
                 </search>
             </field>
         </record>
@@ -401,6 +404,9 @@
                     <field name="batch"/>
                     <field name="remark"/>
                     <field name="location"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <filter string="All" name="all" domain="['|', ('active','=',False), ('active','=',True)]"/>
                 </search>
             </field>
         </record>

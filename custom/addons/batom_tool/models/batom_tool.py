@@ -29,6 +29,9 @@ class BatomCutterModel(models.Model):
     _order = 'cutter_group_id, cutter_model_code'
     
     name = fields.Char(string='Name', compute='_compute_name', store=True)
+    active = fields.Boolean(
+        'Active', default=True,
+        help="If unchecked, it will allow you to hide the cutter model without removing it.")
     cutter_model_code = fields.Char('Cutter Model Code', ) # 刀具型號
     cutter_group_id = fields.Many2one('batom.cutter.group', string='Cutter Group')
     image_file = fields.Binary('Image File', attachment=True) # 圖面
@@ -67,7 +70,7 @@ class BatomCutterModel(models.Model):
     allowed_sharpening_times = fields.Integer('Allowed Sharpening Times') # 可磨次數
     model_notes = fields.Text('Model Notes') # 注意事項
     model_remarks = fields.Text('Model Remarks')
-    protuberance = fields.Float('Protuberance') # 瘤頭
+    protuberance = fields.Float('Protuberance', digits=(12,3)) # 瘤頭
     root_diameter = fields.Char('Root Diameter') # 齒底俓
     semitopping_amount = fields.Char('Semitopping Amount') # 齒頂倒角
     stock_removal = fields.Float('Stock Removal') # 刮磨留量
@@ -272,6 +275,8 @@ class BatomCutterHisory(models.Model):
     _description = 'Cutter History'
     _order = 'date desc'
     
+    active = fields.Boolean(
+        'Active', compute='_compute_active', store=True)
     cutter_id = fields.Many2one('batom.cutter', 'Cutter', required=True, index=True)
     date = fields.Date('Date', required=False, default=lambda self: fields.datetime.now())
     action_id = fields.Many2one('batom.cutter.action', string='Action')
@@ -299,16 +304,34 @@ class BatomCutterHisory(models.Model):
         if self.cutter_id:
             self.managing_department = self.cutter_id.managing_department
 
+    @api.one
+    @api.depends('cutter_id', 'cutter_id.active')
+    def _compute_active(self):
+        if self.cutter_id.active:
+            self.active = True
+        else:
+            self.active = False
+
 class BatomCutterModelHisory(models.Model):
     _name = "batom.cutter.model.history"
     _description = 'Cutter Model History'
     _order = 'date desc'
     
+    active = fields.Boolean(
+        'Active', compute='_compute_active', store=True)
     cutter_model_id = fields.Many2one('batom.cutter.model', 'Cutter Model', required=True, index=True)
     date = fields.Date('Date', required=False, default=lambda self: fields.datetime.now())
     remarks = fields.Text('Remarks') # 備註
     attached_file = fields.Binary('Attached File', attachment=True)
     attached_file_name = fields.Char('Attached File Name')
+
+    @api.one
+    @api.depends('cutter_model_id', 'cutter_model_id.active')
+    def _compute_active(self):
+        if self.cutter_model_id.active:
+            self.active = True
+        else:
+            self.active = False
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
