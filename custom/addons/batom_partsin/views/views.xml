@@ -124,6 +124,65 @@
             </field>
         </record>
 
+        <record id="view_parts_in_qty_tree" model="ir.ui.view">
+            <field name="name">Parts In Quantity Tree</field>
+            <field name="model">batom.parts_in.qty</field>
+            <field name="arch" type="xml">
+                <tree string="Parts In">
+                    <field name="parts_in_id"/>
+                    <field name="mvtype"/>
+                    <field name="inqty"/>
+                    <field name="mkordid"/>
+                    <field name="mkordser"/>
+                    <field name="batch"/>
+                    <field name="memo"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_parts_in_qty_filter">
+            <field name="name">Parts In Quantity Filter</field>
+            <field name="model">batom.parts_in.qty</field>
+            <field name="arch" type="xml">
+                <search string="Parts In Quantity Filter">
+                    <field name="mkordid"/>
+                    <field name="mvtype"/>
+                    <field name="inqty"/>
+                    <field name="mkordser"/>
+                    <field name="batch"/>
+                    <field name="memo"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_parts_in_qty" model="ir.actions.act_window">
+            <field name="name">Parts In Quantity</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.parts_in.qty</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_parts_in_qty_tree"/>
+            <field name="search_view_id" ref="search_parts_in_qty_filter"/>
+        </record>
+        <record id="view_parts_in_qty_form" model="ir.ui.view">
+            <field name="name">batom.parts_in.qty.form</field>
+            <field name="model">batom.parts_in.qty</field>
+            <field name="arch" type="xml">
+                <form string="Parts In Quantity">
+                    <sheet>
+                        <group>
+                            <group name="data">
+                                <field name="parts_in_id"/>
+                                <field name="mvtype"/>
+                                <field name="inqty"/>
+                                <field name="mkordid"/>
+                                <field name="mkordser"/>
+                                <field name="batch"/>
+                                <field name="memo"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <record id="view_shop_in_tree" model="ir.ui.view">
             <field name="name">Shop In Tree</field>
             <field name="model">batom.shop_in</field>
@@ -312,6 +371,71 @@
             </field>
         </record>
 
+        <record id="view_parts_out_qty_tree" model="ir.ui.view">
+            <field name="name">Parts Out Quantity Tree</field>
+            <field name="model">batom.parts_out.qty</field>
+            <field name="arch" type="xml">
+                <tree string="Parts Out Quantity">
+                    <field name="parts_out_id"/>
+                    <field name="prodid"/>
+                    <field name="processid"/>
+                    <field name="outqty"/>
+                    <field name="mkordid"/>
+                    <field name="mkordser"/>
+                    <field name="batch"/>
+                    <field name="remark"/>
+                    <field name="location"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_parts_out_qty_filter">
+            <field name="name">Parts Out Quantity Filter</field>
+            <field name="model">batom.parts_out.qty</field>
+            <field name="arch" type="xml">
+                <search string="Parts Out Quantity Filter">
+                    <field name="mkordid"/>
+                    <field name="prodid"/>
+                    <field name="processid"/>
+                    <field name="outqty"/>
+                    <field name="mkordser"/>
+                    <field name="batch"/>
+                    <field name="remark"/>
+                    <field name="location"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_parts_out_qty" model="ir.actions.act_window">
+            <field name="name">Parts Out Quantity</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.parts_out.qty</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_parts_out_qty_tree"/>
+            <field name="search_view_id" ref="search_parts_out_qty_filter"/>
+        </record>
+        <record id="view_parts_out_qty_form" model="ir.ui.view">
+            <field name="name">batom.parts_out.qty.form</field>
+            <field name="model">batom.parts_out.qty</field>
+            <field name="arch" type="xml">
+                <form string="Parts Out Quantity">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="parts_out_id"/>
+                                <field name="prodid"/>
+                                <field name="processid"/>
+                                <field name="outqty"/>
+                                <field name="mkordid"/>
+                                <field name="mkordser"/>
+                                <field name="batch"/>
+                                <field name="remark"/>
+                                <field name="location"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <menuitem id="menu_parts_in_system_root"
             name="Parts In System"
             icon="fa-industry"
@@ -326,6 +450,11 @@
             action="action_parts_in"
             sequence="10"/>
         
+        <menuitem id="menu_parts_in_qty" name="Parts In Quantity"
+            parent="menu_parts_in_system"
+            action="action_parts_in_qty"
+            sequence="15"/>
+        
         <menuitem id="menu_parts_shop_in" name="Shop In"
             parent="menu_parts_in_system"
             action="action_shop_in"
@@ -334,6 +463,11 @@
         <menuitem id="menu_parts_out" name="Parts Out"
             parent="menu_parts_in_system"
             action="action_parts_out"
+            sequence="30"/>
+        
+        <menuitem id="menu_parts_out_qty" name="Parts Out Quantity"
+            parent="menu_parts_in_system"
+            action="action_parts_out_qty"
             sequence="30"/>
     </data>
 </odoo>

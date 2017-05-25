@@ -24,7 +24,7 @@ class BatomPartsIn(models.Model):
     supplier = fields.Many2one('res.partner', string='Supplier') # Supplier
     prodid = fields.Many2one('product.product', string='Product') # ProdID
     processid = fields.Many2one('product.product', string='Process') # ProcessID
-    wreport = fields.Boolean('') # wReport
+    wreport = fields.Boolean('Report Attached') # wReport
     urgency = fields.Selection([
         ('10', u'一般件'),
         ('20', u'下班前'),
@@ -183,7 +183,7 @@ class BatomShopIn(models.Model):
         ('30', u'作業中'),
         ('40', u'完工'),
         ('50', u'退回'),
-        ]) # SProgress
+        ], string='Progress') # SProgress
     snote = fields.Char('Factory Note') # SNote
     receiver = fields.Char('Responsible') # Receiver
     finish = fields.Boolean('Finished') # Finish
@@ -311,6 +311,9 @@ class BatomMigratePartsIn(models.TransientModel):
             for key, value in partsIn.iteritems():
                 key = key.lower()
                 if value:
+                    if isinstance(value, basestring):
+                        value = value.strip()
+                        
                     if key in ['supplier', 'nextprocessid']:
                         value = self._getSupplierIdByCode(value)
                     elif key in ['prodid', 'processid']:
@@ -361,6 +364,9 @@ class BatomMigratePartsIn(models.TransientModel):
                 for key, value in partsInQtyDict.iteritems():
                     key = key.lower()
                     if value:
+                        if isinstance(value, basestring):
+                            value = value.strip()
+                        
                         if key == 'mvtype':
                             value = str(value)
                         elif key == 'pid':
@@ -394,6 +400,9 @@ class BatomMigratePartsIn(models.TransientModel):
                 for key, value in partsInQcDict.iteritems():
                     key = key.lower()
                     if value:
+                        if isinstance(value, basestring):
+                            value = value.strip()
+                        
                         if key == 'inspector':
                             value = self._getUserIdByLoginName(value)
                         elif key == 'pid':
@@ -430,12 +439,13 @@ class BatomMigratePartsIn(models.TransientModel):
             cursorBatom = connBatom.cursor()
             
             sql = (
-                "SELECT ID, SID, PDate, Supplier, Customer, ProdID, ProcessID, "
+                "SELECT ShopIn.ID AS ID, SID, PDate, Supplier, Customer, ProdID, ShopProcess.ProcessID AS ProcessID, "
                 "Process, InQty, NextPrcs, Creator, Urgency, Location, MkOrdID, "
                 "Batch, PNote, SDate, OutQty, NGQty, SProgress, SNote, Receiver, "
                 "Finish, Transfer, TransTime, LastDate, LastPerson, PrinterData, "
                 "MfBatch, InDate, QrInfo "
                 "FROM ShopIn "
+                "LEFT JOIN ShopProcess ON (ShopProcess.ID = ShopIn.ProcessID) "
                 "WHERE PDate BETWEEN '" + dateStart + "' AND '" + dateEnd + "'")
             
             shopIns = cursorBatom.execute(sql).fetchall()
@@ -463,6 +473,9 @@ class BatomMigratePartsIn(models.TransientModel):
             for key, value in shopIn.iteritems():
                 key = key.lower()
                 if value:
+                    if isinstance(value, basestring):
+                        value = value.strip()
+                        
                     if key == 'supplier':
                         value = self._getSupplierIdByCode(value)
                     elif key == 'customer':
@@ -478,8 +491,6 @@ class BatomMigratePartsIn(models.TransientModel):
                     elif key == 'sid':
                         key = 'parts_in_id'
                         value = self._getPartsInIdByOriginId(value)
-                    elif key == 'location':
-                        value = value.strip()
                     elif isinstance(value, datetime):
                         value = value - timedelta(hours=8) # from UTC+8 to UTC
                     if value:
@@ -545,6 +556,9 @@ class BatomMigratePartsIn(models.TransientModel):
             for key, value in partsOut.iteritems():
                 key = key.lower()
                 if value:
+                    if isinstance(value, basestring):
+                        value = value.strip()
+                        
                     if key == 'supplier':
                         value = self._getSupplierIdByCode(value)
                     elif key in ['creator', 'lastperson']:
@@ -590,6 +604,9 @@ class BatomMigratePartsIn(models.TransientModel):
                 for key, value in partsOutQtyDict.iteritems():
                     key = key.lower()
                     if value:
+                        if isinstance(value, basestring):
+                            value = value.strip()
+                        
                         if key in ['prodid', 'processid']:
                             value = self._getProductIdByCode(value)
                         elif key == 'pid':

@@ -1,0 +1,579 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* batom_partsin
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-05-23 07:36+0000\n"
+"PO-Revision-Date: 2017-05-23 07:36+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_ntags
+msgid "# Tags"
+msgstr "標籤張數"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_active
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_active
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_active
+msgid "Active"
+msgstr "有效"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.search_parts_in_filter
+#: model:ir.ui.view,arch_db:batom_partsin.search_parts_out_filter
+#: model:ir.ui.view,arch_db:batom_partsin.search_shop_in_filter
+msgid "All"
+msgstr "全部"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.search_parts_in_filter
+#: model:ir.ui.view,arch_db:batom_partsin.search_parts_out_filter
+#: model:ir.ui.view,arch_db:batom_partsin.search_shop_in_filter
+msgid "Archived"
+msgstr "已歸檔"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_batch
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_batch
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_batch
+msgid "Batch #"
+msgstr "批號"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_company
+msgid "Company"
+msgstr "公司"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_creator
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_creator
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_creator
+msgid "Created By"
+msgstr "建立者"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_migrate_parts_in_create_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_create_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_create_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_create_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_create_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_create_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_create_uid
+msgid "Created by"
+msgstr "建立者"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_migrate_parts_in_create_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_create_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_create_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_create_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_create_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_create_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_create_date
+msgid "Created on"
+msgstr "創建時間"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_pdate
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_pdate
+msgid "Creation Date"
+msgstr "創建日期"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_customer
+msgid "Customer"
+msgstr "客戶"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_migrate_parts_in_display_name
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_display_name
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_display_name
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_display_name
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_display_name
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_display_name
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_display_name
+msgid "Display Name"
+msgstr "顯示名稱"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_etime
+msgid "End Time"
+msgstr "結束時間"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.view_shop_in_form
+msgid "Factory"
+msgstr "現場"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_sdate
+msgid "Factory Completion Date"
+msgstr "現場完成日"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_snote
+msgid "Factory Note"
+msgstr "現場備註"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_finish
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_finish
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_finish
+msgid "Finished"
+msgstr "結案"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_forengdept
+msgid "For Engineering Department"
+msgstr "工程部專用"
+
+#. module: batom_partsin
+#: selection:batom.parts_in.qty,mvtype:0
+msgid "HT試片"
+msgstr "HT試片"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_migrate_parts_in_id
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_id
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_id
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_id
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_id
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_id
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_id
+msgid "ID"
+msgstr "ID"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_iqcqty
+msgid "IQC Quantity"
+msgstr "檢驗數量"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_result
+msgid "IQC Result"
+msgstr "判定結果"
+
+#. module: batom_partsin
+#: model:ir.model.fields,help:batom_partsin.field_batom_parts_in_active
+#: model:ir.model.fields,help:batom_partsin.field_batom_parts_out_active
+#: model:ir.model.fields,help:batom_partsin.field_batom_shop_in_active
+msgid "If unchecked, it will allow you to hide the record without removing it."
+msgstr "If unchecked, it will allow you to hide the record without removing it."
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_indate
+msgid "In Date"
+msgstr "入料日期"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_inqty
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_inqty
+msgid "In Quantity"
+msgstr "入料總數"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_mvtype
+msgid "In Type"
+msgstr "入庫類型"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_inspector
+msgid "Inspector"
+msgstr "檢驗員"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_migrate_parts_in___last_update
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in___last_update
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc___last_update
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty___last_update
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out___last_update
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty___last_update
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in___last_update
+msgid "Last Modified on"
+msgstr "最後修改日"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_migrate_parts_in_write_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_write_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_write_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_write_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_write_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_write_uid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_write_uid
+msgid "Last Updated by"
+msgstr "最後更新人"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_migrate_parts_in_write_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_write_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_write_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_write_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_write_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_write_date
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_write_date
+msgid "Last Updated on"
+msgstr "最後更新時間"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_location
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_location
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_location
+msgid "Location"
+msgstr "地點"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_mkordid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_mkordid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_mkordid
+msgid "MO ID"
+msgstr "工單號碼"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_mkordser
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_mkordser
+msgid "MO Sequence"
+msgstr "工單順序"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_mfbatch
+msgid "Manufacture Batch"
+msgstr "生產批號"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_memo
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_memo
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_memo
+msgid "Memo"
+msgstr "備忘錄"
+
+#. module: batom_partsin
+#: model:ir.model,name:batom_partsin.model_batom_migrate_parts_in
+msgid "Migrate PartsIn"
+msgstr "Migrate PartsIn"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_form
+#: model:ir.ui.view,arch_db:batom_partsin.view_shop_in_form
+msgid "Miscellaneous"
+msgstr "其他"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_ngaction
+msgid "NG Action"
+msgstr "矯正措施"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_ngqty
+msgid "NG Quantity"
+msgstr "異常數量"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_ngroot
+msgid "NG Root Cause"
+msgstr "不良原因"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_ngtype
+msgid "NG Type"
+msgstr "不良類型"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_nextprocessid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_nextprcs
+msgid "Next Process"
+msgstr "下製程廠商"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_origin_id
+msgid "Original Parts In ID"
+msgstr "Original Parts In ID"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_origin_id
+msgid "Original Parts In QC ID"
+msgstr "Original Parts In QC ID"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_origin_id
+msgid "Original Parts In Quantity ID"
+msgstr "Original Parts In Quantity ID"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_origin_id
+msgid "Original Parts Out Quantity ID"
+msgstr "Original Parts Out Quantity ID"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_parts_in_id
+msgid "Originated Parts In"
+msgstr "來源入料檢驗單"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_outqty
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_outqty
+msgid "Out Quantity"
+msgstr "數量"
+
+#. module: batom_partsin
+#: model:ir.actions.act_window,name:batom_partsin.action_parts_in
+#: model:ir.model,name:batom_partsin.model_batom_parts_in
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_parts_in_id
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_parts_in_id
+#: model:ir.ui.menu,name:batom_partsin.menu_parts_in
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_form
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_tree
+msgid "Parts In"
+msgstr "入料檢驗"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_pdate
+msgid "Parts In Date"
+msgstr "入料日期"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.search_parts_in_filter
+msgid "Parts In Filter"
+msgstr "Parts In Filter"
+
+#. module: batom_partsin
+#: model:ir.model,name:batom_partsin.model_batom_parts_in_qc
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_parts_in_qc_ids
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_form
+msgid "Parts In QC"
+msgstr "檢驗頁"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_parts_in_qty_ids
+msgid "Parts In Quantities"
+msgstr "入料明細"
+
+#. module: batom_partsin
+#: model:ir.model,name:batom_partsin.model_batom_parts_in_qty
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_form
+msgid "Parts In Quantity"
+msgstr "Parts In Quantity"
+
+#. module: batom_partsin
+#: model:ir.ui.menu,name:batom_partsin.menu_parts_in_system
+#: model:ir.ui.menu,name:batom_partsin.menu_parts_in_system_root
+msgid "Parts In System"
+msgstr "入料電子化"
+
+#. module: batom_partsin
+#: model:ir.actions.act_window,name:batom_partsin.action_parts_out
+#: model:ir.model,name:batom_partsin.model_batom_parts_out
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_parts_out_id
+#: model:ir.ui.menu,name:batom_partsin.menu_parts_out
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_out_form
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_out_tree
+msgid "Parts Out"
+msgstr "委外加工/送貨/退貨單"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.search_parts_out_filter
+msgid "Parts Out Filter"
+msgstr "Parts Out Filter"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_parts_out_qty_ids
+msgid "Parts Out Quantities"
+msgstr "委外明細"
+
+#. module: batom_partsin
+#: model:ir.model,name:batom_partsin.model_batom_parts_out_qty
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_out_form
+msgid "Parts Out Quantity"
+msgstr "Parts Out Quantity"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_origin_id
+msgid "Parts Out Work Order"
+msgstr "Parts Out Work Order"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_printerdata
+msgid "Printout Date"
+msgstr "印單日期"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_priority
+msgid "Priority"
+msgstr "優先級"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_processid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_processid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_processid
+msgid "Process"
+msgstr "製程"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_process
+msgid "Process Note"
+msgstr "製程說明"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_prodid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_prodid
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_prodid
+msgid "Product"
+msgstr "產品"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_pnote
+msgid "Production Note"
+msgstr "生管備註"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.view_parts_in_form
+msgid "QA Page"
+msgstr "品管頁"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qdate
+msgid "QC Date"
+msgstr "檢驗日期"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qprogress
+msgid "QC Progress"
+msgstr "檢驗進度"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_qrinfo
+msgid "QR Info"
+msgstr "QR Info"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qty_inqty
+msgid "Quantity"
+msgstr "數量"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_toqcqty
+msgid "Quantity to QC"
+msgstr "應驗數量"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_qty_remark
+msgid "Remark"
+msgstr "備註"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_remarks
+msgid "Remarks"
+msgstr "備註"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_report
+msgid "Report Number"
+msgstr "報告編號"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_rptpath
+msgid "Report Path"
+msgstr "報告路徑"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_receiver
+msgid "Responsible"
+msgstr "責任者"
+
+#. module: batom_partsin
+#: model:ir.actions.act_window,name:batom_partsin.action_shop_in
+#: model:ir.model,name:batom_partsin.model_batom_shop_in
+#: model:ir.ui.menu,name:batom_partsin.menu_parts_shop_in
+#: model:ir.ui.view,arch_db:batom_partsin.view_shop_in_form
+#: model:ir.ui.view,arch_db:batom_partsin.view_shop_in_tree
+msgid "Shop In"
+msgstr "廠內派工"
+
+#. module: batom_partsin
+#: model:ir.ui.view,arch_db:batom_partsin.search_shop_in_filter
+msgid "Shop In Filter"
+msgstr "Shop In Filter"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_origin_id
+msgid "Shop Work Order"
+msgstr "Shop Work Order"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_sprogress
+msgid "Progress"
+msgstr "進度"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_qc_stime
+msgid "Start Time"
+msgstr "開始時間"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_supplier
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_supplier
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_supplier
+msgid "Supplier"
+msgstr "供應商"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_transtime
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_transtime
+msgid "Time Transferred"
+msgstr "Time Transferred"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_transfer
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_transfer
+msgid "Transferred"
+msgstr "已轉單"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_mvtype
+msgid "Type"
+msgstr "類型"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_lastdate
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_lastdate
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_lastdate
+msgid "Updated At"
+msgstr "上次修改時間"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_lastperson
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_lastperson
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_lastperson
+msgid "Updated By"
+msgstr "修改者"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_urgency
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_out_urgency
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_shop_in_urgency
+msgid "Urgency"
+msgstr "緊急性"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_waitca
+msgid "Waiting CA"
+msgstr "待CA"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_waitgt
+msgid "Waitint GT"
+msgstr "待GT"
+
+#. module: batom_partsin
+#: model:ir.model.fields,field_description:batom_partsin.field_batom_parts_in_wreport
+msgid "Report Attached"
+msgstr "附報告"
+
