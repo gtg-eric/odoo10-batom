@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-25 07:20+0000\n"
-"PO-Revision-Date: 2017-05-25 07:20+0000\n"
+"POT-Creation-Date: 2017-05-25 08:28+0000\n"
+"PO-Revision-Date: 2017-05-25 08:28+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -245,7 +245,6 @@ msgstr "刀具履歷動作"
 #. module: batom_tool
 #: model:ir.actions.act_window,name:batom_tool.action_cutter_history
 #: model:ir.ui.menu,name:batom_tool.menu_cutter_history
-#: model:ir.ui.menu,name:batom_tool.menu_cutter_model_history
 msgid "Cutter History Information"
 msgstr "刀具履歷資訊"
 
@@ -295,6 +294,7 @@ msgstr "Cutter Model History Filter"
 
 #. module: batom_tool
 #: model:ir.actions.act_window,name:batom_tool.action_cutter_model_history
+#: model:ir.ui.menu,name:batom_tool.menu_cutter_model_history
 msgid "Cutter Model History Information"
 msgstr "刀具圖號履歷資訊"
 

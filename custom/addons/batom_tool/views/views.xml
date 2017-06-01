@@ -601,7 +601,7 @@
             action="action_cutter_model"
             sequence="10"/>
         
-        <menuitem id="menu_cutter_model_history" name="Cutter History Information"
+        <menuitem id="menu_cutter_model_history" name="Cutter Model History Information"
             parent="menu_cutter_management"
             action="action_cutter_model_history"
             sequence="15"/>
