@@ -10,6 +10,28 @@
             </xpath>
         </field>
     </record>
+    
+    <record id="my_view_employee_tree_inherit" model="ir.ui.view">
+        <field name="name">batom.employee.tree.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="code"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="my_vview_employee_filter_inherit" model="ir.ui.view">
+        <field name="name">batom.employee.filter.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="code"/>
+            </xpath>
+        </field>
+    </record>
 
     <record id="my_view_employee_form_inherit" model="ir.ui.view">
         <field name="name">batom.employee.form.inherit</field>
