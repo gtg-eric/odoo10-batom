@@ -52,14 +52,13 @@ class BatomCompanyLDAP(models.Model):
                 try:
                     if login_attr in result[1]:
                         mail = result[1]['mail'][0].strip() if 'mail' in result[1] else None
-                        
-                        user_id = self.get_or_create_user(conf, result[1][login_attr][0], result)
-                        if result[1][login_attr][0] == '335':
-                            import pdb; pdb.set_trace()
-                        displayName = re.sub(r'[\x00-\x1F]', '', result[1]['displayName'][0]) if 'displayName' in result[1] else 'NoName'                     
-                        departmentName = re.sub(r'[\x00-\x1F]', '', result[1]['department'][0]) if 'department' in result[1] else 'NoName'
-                        departmentId = self.getDepartmentId(re.sub(r'[\x00-\x1F]', '', departmentName))
-                        self.get_or_create_employee(user_id, result[1][login_attr][0], mail, displayName, departmentId)
+                        if mail:
+                            user_id = self.get_or_create_user(conf, result[1][login_attr][0], result)
+                            displayName = re.sub(r'[\x00-\x1F]', '', result[1]['displayName'][0]) if 'displayName' in result[1] else 'NoName'                     
+                            departmentName = re.sub(r'[\x00-\x1F]', '', result[1]['department'][0]) if 'department' in result[1] else 'NoName'
+                            departmentId = self.getDepartmentId(re.sub(r'[\x00-\x1F]', '', departmentName))
+                            self.get_or_create_employee(user_id, result[1][login_attr][0], mail, displayName, departmentId)
+                            
                 except Exception:
                     _logger.warning('Exception in get_or_create_employee:', exc_info=True)
 
