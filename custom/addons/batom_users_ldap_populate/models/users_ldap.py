@@ -54,7 +54,13 @@ class BatomCompanyLDAP(models.Model):
                         mail = result[1]['mail'][0].strip() if 'mail' in result[1] else None
                         if mail:
                             user_id = self.get_or_create_user(conf, result[1][login_attr][0], result)
-                            displayName = re.sub(r'[\x00-\x1F]', '', result[1]['displayName'][0]) if 'displayName' in result[1] else 'NoName'                     
+                            displayName = re.sub(r'[\x00-\x1F]', '', result[1]['displayName'][0]) if 'displayName' in result[1] else 'NoName' 
+                            
+                            # 搜尋 "res.users" table(users結果為list)，如果存在則寫入真實姓名
+                            users = self.env['res.users'].search([('id', '=', user_id)])
+                            if users:
+                                users[0].write({'name': displayName})   
+                                
                             departmentName = re.sub(r'[\x00-\x1F]', '', result[1]['department'][0]) if 'department' in result[1] else 'NoName'
                             departmentId = self.getDepartmentId(re.sub(r'[\x00-\x1F]', '', departmentName))
                             self.get_or_create_employee(user_id, result[1][login_attr][0], mail, displayName, departmentId)
@@ -84,10 +90,12 @@ class BatomCompanyLDAP(models.Model):
                 ])
             if employees:
                 employee = employees[0]
+                # 檢查人事資料並補齊
+                self.submitEmployeeInfo(employee, employee_values)
             else:
                 employee = self.env['hr.employee'].create(employee_values)
-                self.env.cr.commit()  
-
+                  
+            self.env.cr.commit()
         except Exception:
             _logger.warning('Exception in get_or_create_employee:', exc_info=True)
         return employee
@@ -104,3 +112,9 @@ class BatomCompanyLDAP(models.Model):
             pass
         
         return department.id if department else None
+        
+    # 補齊人事資料
+    def submitEmployeeInfo(self, employee, employee_values):
+        if not employee.work_email:
+            employee.write({'work_email': employee_values['work_email']}) 
+        return True
