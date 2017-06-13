@@ -69,7 +69,7 @@
                                 <field name="image_file" widget="binary" filename='image_file_name'/>
                             </group>
                             <group>
-                                <field name="model_notes"/>
+                                <field name="model_notes" style="color:Red;"/>
                             </group>
                         </group>
                         <notebook>
@@ -224,7 +224,7 @@
                         </div>
                         <group>
                             <group name="data">
-                                <field name="notes"/>
+                                <field name="notes" style="color:Red;"/>
                                 <field name="managing_department"/>
                                 <field name="total"/>
                                 <field name="cutter_model_id"/>
@@ -235,7 +235,7 @@
                                 <field name="storage"/>
                             </group>
                             <group>
-                                <field name="model_notes" readonly="1"/>
+                                <field name="model_notes" style="color:Red;" readonly="1"/>
                                 <field name="cutter_class_id" readonly="1"/>
                                 <field name="supplier_id" readonly="1"/>
                                 <field name="supplier_code"/>
