@@ -73,7 +73,7 @@ class BatomPartsIn(models.Model):
     creator = fields.Many2one('res.users', string='Created By') # Creator
     lastdate = fields.Datetime('Updated At') # LastDate
     lastperson = fields.Many2one('res.users', string='Updated By') # LastPerson
-    parts_in_qty_ids = fields.One2many('batom.parts_in.qty', 'parts_in_id', string='Parts In Quantities')
+    parts_in_qty_ids = fields.One2many('batom.parts_in.qty', 'parts_in_id', domain=['|',('active','=',False),('active','=',True)], string='Parts In Quantities')
     parts_in_qc_ids = fields.One2many('batom.parts_in.qc', 'parts_in_id', string='Parts In QC')
 
     @api.one
@@ -242,7 +242,7 @@ class BatomPartsOut(models.Model):
     lastperson = fields.Many2one('res.users', string='Updated By') # LastPerson
     memo = fields.Text('Memo') # Memo
     finish = fields.Boolean('Finished') # Finish
-    parts_out_qty_ids = fields.One2many('batom.parts_out.qty', 'parts_out_id', string='Parts Out Quantities')
+    parts_out_qty_ids = fields.One2many('batom.parts_out.qty', 'parts_out_id', domain=['|',('active','=',False),('active','=',True)], string='Parts Out Quantities')
 
     @api.one
     @api.depends('finish')
@@ -350,8 +350,7 @@ class BatomMigratePartsIn(models.TransientModel):
                         value = value - timedelta(hours=8) # from UTC+8 to UTC
                     if value:
                         values[key] = value
-            odooPartsIns = False if 'origin_id' not in values else self.env['batom.parts_in'].search([
-                '|', ('active', '=', True), ('active', '=', False),
+            odooPartsIns = False if 'origin_id' not in values else self.env['batom.parts_in'].with_context(active_test=False).search([
                 ('origin_id', '=', values['origin_id']),
                 ])
             if odooPartsIns:
@@ -393,7 +392,7 @@ class BatomMigratePartsIn(models.TransientModel):
                             key = 'origin_id'
                         if value:
                             values[key] = value
-                odooPartsInQtys = False if 'origin_id' not in values else self.env['batom.parts_in.qty'].search([
+                odooPartsInQtys = False if 'origin_id' not in values else self.env['batom.parts_in.qty'].with_context(active_test=False).search([
                     ('origin_id', '=', values['origin_id']),
                     ])
                 if odooPartsInQtys:
@@ -635,7 +634,7 @@ class BatomMigratePartsIn(models.TransientModel):
                             value = value.strip()
                         if value:
                             values[key] = value
-                odooPartsOutQtys = False if 'origin_id' not in values else self.env['batom.parts_out.qty'].search([
+                odooPartsOutQtys = False if 'origin_id' not in values else self.env['batom.parts_out.qty'].with_context(active_test=False).search([
                     ('origin_id', '=', values['origin_id']),
                     ])
                 if odooPartsOutQtys:

@@ -38,7 +38,7 @@ class BatomCutterModel(models.Model):
     image_file_name = fields.Char('Image File Name')
     cutter_ids =  fields.One2many('batom.cutter', 'cutter_model_id', 'Cutters')
     cutter_count = fields.Integer('# Cutters', compute='_compute_cutter_count')
-    model_history_ids = fields.One2many('batom.cutter.model.history', 'cutter_model_id', 'Model History List') # 履歷表
+    model_history_ids = fields.One2many('batom.cutter.model.history', 'cutter_model_id', domain=['|',('active','=',False),('active','=',True)], 'Model History List') # 履歷表
     product_ids = fields.Many2many(
         comodel_name='product.product', relation='batom_cutter_model_product_rel',
         column1='cutter_model_id', column2='product_id', string='Used by Products')
@@ -153,7 +153,7 @@ class BatomCutter(models.Model):
     cutter_model_id = fields.Many2one('batom.cutter.model', string='Cutter Model', required=True, ondelete="cascade")
     batom_code = fields.Char('Batom Code') # 本土編號
     supplier_code = fields.Char('Vendor Cutter Code') # 廠商刀具編號
-    history_ids = fields.One2many('batom.cutter.history', 'cutter_id', 'History List') # 履歷表
+    history_ids = fields.One2many('batom.cutter.history', 'cutter_id', domain=['|',('active','=',False),('active','=',True)], 'History List') # 履歷表
     history_file = fields.Binary('History File', attachment=True) # 圖面
     history_file_name = fields.Char('History File Name')
     inquiry_number = fields.Char('Inquiry/Order Number') # 詢/訂價編號
