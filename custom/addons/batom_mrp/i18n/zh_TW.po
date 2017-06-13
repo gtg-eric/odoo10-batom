@@ -280,7 +280,7 @@ msgstr "製令單"
 #: model:ir.model.fields,field_description:batom_mrp.field_product_product_x_is_process
 #: model:ir.model.fields,field_description:batom_mrp.field_product_template_x_is_process
 msgid "Manufacturing Process"
-msgstr ""製程"
+msgstr "製程"
 
 #. module: batom_mrp
 #: model:ir.model.fields,field_description:batom_mrp.field_batom_record_production_material_id

@@ -160,11 +160,160 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem name="Data Migration" id="menu_data_migration" parent="base.menu_custom"/>
-            <menuitem name="Refresh/Apply Partner" id="menu_partner_migration_refresh" parent="menu_data_migration" action="action_view_partner_migration_refresh"/>
-            <menuitem name="Partner" id="menu_partner_migration" parent="menu_data_migration" action="action_partner_migration"/>
-            <menuitem name="Create Supplier Warehouses" id="menu_create_supplier_warehouse" parent="menu_data_migration" action="action_create_supplier_warehouse"/>
-            <menuitem name="Migrate Products" id="menu_migrate_product" parent="menu_data_migration" action="action_migrate_product"/>
-            <menuitem name="Migrate BoM" id="menu_migrate_bom" parent="menu_data_migration" action="action_migrate_bom"/>
+        <record id="view_data_source_table_tree" model="ir.ui.view">
+            <field name="name">Table Tree</field>
+            <field name="model">batom.data_source_table</field>
+            <field name="arch" type="xml">
+                <tree string="Table">
+                    <field name="name"/>
+                    <field name="record_count"/>
+                    <field name="mapping"/>
+                    <field name="remarks"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_data_source_table_filter">
+            <field name="name">Table Filter</field>
+            <field name="model">batom.data_source_table</field>
+            <field name="arch" type="xml">
+                <search string="Cutter Model Filter">
+                    <field name="name"/>
+                    <field name="mapping"/>
+                    <field name="remarks"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_data_source_table" model="ir.actions.act_window">
+            <field name="name">Table</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.data_source_table</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_data_source_table_tree"/>
+            <field name="search_view_id" ref="search_data_source_table_filter"/>
+        </record>
+        
+        <record id="view_data_source_table_form" model="ir.ui.view">
+            <field name="name">batom.data_source_table.form</field>
+            <field name="model">batom.data_source_table</field>
+            <field name="arch" type="xml">
+                <form string="Table">
+                    <sheet>
+                        <group>
+                            <group name="data">
+                                <field name="name"/>
+                                <field name="dbsource"/>
+                                <field name="table"/>
+                                <field name="record_count"/>
+                            </group>
+                            <group name="data">
+                                <field name="mapping"/>
+                                <field name="remarks"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Columns">
+                                <field name="column_ids">
+                                    <tree editable="bottom">
+                                        <field name="column"/>
+                                        <field name="data_type"/>
+                                        <field name="mapping"/>
+                                        <field name="remarks"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_data_source_column_tree" model="ir.ui.view">
+            <field name="name">Table Tree</field>
+            <field name="model">batom.data_source_column</field>
+            <field name="arch" type="xml">
+                <tree string="Table">
+                    <field name="name"/>
+                    <field name="data_type"/>
+                    <field name="mapping"/>
+                    <field name="remarks"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="search_data_source_column_filter">
+            <field name="name">Table Filter</field>
+            <field name="model">batom.data_source_column</field>
+            <field name="arch" type="xml">
+                <search string="Cutter Model Filter">
+                    <field name="name"/>
+                    <field name="data_type"/>
+                    <field name="mapping"/>
+                    <field name="remarks"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_data_source_column" model="ir.actions.act_window">
+            <field name="name">Table</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">batom.data_source_column</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_data_source_column_tree"/>
+            <field name="search_view_id" ref="search_data_source_column_filter"/>
+        </record>
+        
+        <record id="view_data_source_column_form" model="ir.ui.view">
+            <field name="name">batom.data_source_column.form</field>
+            <field name="model">batom.data_source_column</field>
+            <field name="arch" type="xml">
+                <form string="Table">
+                    <sheet>
+                        <group>
+                            <group name="data">
+                                <field name="name"/>
+                                <field name="table_id"/>
+                                <field name="column"/>
+                                <field name="data_type"/>
+                            </group>
+                            <group name="data">
+                                <field name="mapping"/>
+                                <field name="remarks"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <menuitem id="menu_data_migration"
+            name="Data Migration"
+            sequence="950"/>
+        
+        <menuitem id="menu_data_source"
+            name="Data Source"
+            parent="menu_data_migration"
+            sequence="10"/>
+        <menuitem id="menu_data_source_table"
+            name="Tables"
+            action="action_data_source_table"
+            parent="menu_data_source"
+            sequence="10"/>
+        <menuitem id="menu_data_source_column"
+            name="Columns"
+            action="action_data_source_column"
+            parent="menu_data_source"
+            sequence="20"/>
+        
+        <menuitem id="menu_data_migration_procedure"
+            name="Data Migration Procedure" 
+            parent="menu_data_migration"
+            sequence="20"/>
+        <menuitem name="Refresh/Apply Partner" id="menu_partner_migration_refresh" parent="menu_data_migration_procedure" action="action_view_partner_migration_refresh"/>
+        <menuitem name="Partner" id="menu_partner_migration" parent="menu_data_migration_procedure" action="action_partner_migration"/>
+        <menuitem name="Create Supplier Warehouses" id="menu_create_supplier_warehouse" parent="menu_data_migration_procedure" action="action_create_supplier_warehouse"/>
+        <menuitem name="Migrate Products" id="menu_migrate_product" parent="menu_data_migration_procedure" action="action_migrate_product"/>
+        <menuitem name="Migrate BoM" id="menu_migrate_bom" parent="menu_data_migration_procedure" action="action_migrate_bom"/>
     </data>
 </odoo>

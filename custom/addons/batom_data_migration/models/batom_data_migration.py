@@ -2973,3 +2973,139 @@ class BatomMaterialAssignment(models.Model):
     used_by_production_ids = fields.Many2many(
         comodel_name='mrp.production', relation='batom_material_assignment_production_rel',
         column1='material_assignment_id', column2='production_id', string='Used by')
+    
+class BatomDataSourceTable(models.Model):
+    _name = 'batom.data_source_table'
+    _description = 'Data Source Table'
+    
+    name = fields.Char(string='Name', compute='_compute_name', store=True)
+    dbsource = fields.Selection([
+        ('Batom', u'入料電子化'),
+        ('CHIComp01', u'正航'),
+        ],
+        string='Data Source',
+        index=True,
+        required=True
+        )
+    table = fields.Char(string='Table', required=True, index=True)
+    record_count = fields.Integer('Record Count')
+    mapping = fields.Char(string='Mapping Rule')
+    remarks = fields.Text('Remarks')
+    active = fields.Boolean(default=True)
+    column_ids = fields.One2many('batom.data_source_column', 'table_id', 'Columns')
+    
+    @api.one
+    @api.depends('dbsource', 'table')
+    def _compute_name(self):
+        self.name = self.dbsource + ':' + self.table
+    
+class BatomDataSourceColumn(models.Model):
+    _name = 'batom.data_source_column'
+    _description = 'Data Source Column'
+    _order = 'column, name'
+    
+    name = fields.Char(string='Name', compute='_compute_name', store=True)
+    table_id = fields.Many2one('batom.data_source_table', 'Table', required=True, index=True)
+    column = fields.Char(string='Column', required=True, index=True)
+    data_type = fields.Char(string='Data Type')
+    mapping = fields.Char(string='Mapping Rule')
+    remarks = fields.Text('Remarks')
+    active = fields.Boolean(default=True)
+
+    @api.one
+    @api.depends('table_id', 'table_id.name', 'column')
+    def _compute_name(self):
+        if self.table_id:
+            self.name = self.table_id.name + '.' + self.column
+
+class BatomDataSourceSchemaMigration(models.TransientModel):
+    _name = "batom.data_source_migration"
+    _description = "Data Source Migration"
+            
+    @api.multi
+    def import_schema(self):
+        self.ensure_one()
+
+        self._importSchema('CHIComp01')
+        self._importSchema('Batom')
+
+    def _importSchema(self, dataSourceName):
+        try:
+            db = self.env['base.external.dbsource'].search([('name', '=', dataSourceName)])
+            conn = db.conn_open()
+            cursor = conn.cursor()
+            
+            cursor.execute(
+                'CREATE TABLE #counts (' +
+                '   table_name varchar(255), ' +
+                '   row_count int ' +
+                ')'
+                )
+            cursor.execute(
+                "EXEC sp_MSForEachTable @command1='INSERT #counts (table_name, row_count) SELECT ''?'', COUNT(*) FROM ?'"
+                )
+            tables = cursor.execute(
+                'SELECT table_name, row_count FROM #counts where row_count > 0 ORDER BY table_name'
+                ).fetchall()
+            cursor.execute(
+                'DROP TABLE #counts'
+                )
+            for table in tables:
+                table_name = table.table_name
+                if table_name[:7] == '[dbo].[':
+                    table_name = table_name[7:]
+                    table_name = table_name[0:-1]
+                table_id = self._addDataSourceTable(dataSourceName, table_name, table.row_count)
+                if table_id:
+                    columns = cursor.execute(
+                        "SELECT column_name, data_type FROM information_schema.columns where table_name='" + table_name + "'"
+                        ).fetchall()
+                    for column in columns:
+                        column_name = column.column_name
+                        self._addDataSourceColumn(table_id, column_name, column.data_type)
+            
+            self.env.cr.commit()
+            conn.close()
+        except Exception:
+            _logger.warning('Exception in _importSchema', exc_info=True)
+            if conn:
+                conn.close()
+
+    def _addDataSourceTable(self, dbsource, table_name, record_count):
+        table = None
+        try:
+            tables = self.env['batom.data_source_table'].search([
+                ('dbsource', '=', dbsource),
+                ('table', '=', table_name),
+                ])
+            if tables:
+                table = tables[0]
+                table.write({
+                    'record_count': record_count,
+                    })
+            else:
+                table = self.env['batom.data_source_table'].create({
+                    'dbsource': dbsource,
+                    'table': table_name,
+                    'record_count': record_count,
+                    })
+        except Exception:
+            _logger.warning('Exception in _addDataSourceTable', exc_info=True)
+            
+        return table.id if table else None
+
+    def _addDataSourceColumn(self, table_id, column_name, data_type):
+        try:
+            columns = self.env['batom.data_source_column'].search([
+                ('table_id', '=', table_id),
+                ('column', '=', column_name),
+                ])
+            if not columns:
+                self.env['batom.data_source_column'].create({
+                    'table_id': table_id,
+                    'column': column_name,
+                    'data_type': data_type,
+                    })
+        except Exception:
+            _logger.warning('Exception in _addDataSourceColumn', exc_info=True)
+        
