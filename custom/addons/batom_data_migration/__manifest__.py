@@ -20,6 +20,7 @@
         'product',
         'batom_mrp',
         'batom_tool',
+        'batom_partsin',
     ],
     'data': [
         'views/batom_data_migration.xml',

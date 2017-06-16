@@ -167,6 +167,7 @@
                 <tree string="Table">
                     <field name="name"/>
                     <field name="record_count"/>
+                    <field name="timestamp_last_import"/>
                     <field name="mapping"/>
                     <field name="remarks"/>
                 </tree>
@@ -206,6 +207,7 @@
                                 <field name="dbsource"/>
                                 <field name="table"/>
                                 <field name="record_count"/>
+                                <field name="timestamp_last_import"/>
                             </group>
                             <group name="data">
                                 <field name="mapping"/>
@@ -289,7 +291,7 @@
 
         <menuitem id="menu_data_migration"
             name="Data Migration"
-            sequence="950"/>
+            sequence="200"/>
         
         <menuitem id="menu_data_source"
             name="Data Source"
@@ -305,15 +307,12 @@
             action="action_data_source_column"
             parent="menu_data_source"
             sequence="20"/>
-        
-        <menuitem id="menu_data_migration_procedure"
-            name="Data Migration Procedure" 
-            parent="menu_data_migration"
-            sequence="20"/>
+        <!--
         <menuitem name="Refresh/Apply Partner" id="menu_partner_migration_refresh" parent="menu_data_migration_procedure" action="action_view_partner_migration_refresh"/>
         <menuitem name="Partner" id="menu_partner_migration" parent="menu_data_migration_procedure" action="action_partner_migration"/>
         <menuitem name="Create Supplier Warehouses" id="menu_create_supplier_warehouse" parent="menu_data_migration_procedure" action="action_create_supplier_warehouse"/>
         <menuitem name="Migrate Products" id="menu_migrate_product" parent="menu_data_migration_procedure" action="action_migrate_product"/>
         <menuitem name="Migrate BoM" id="menu_migrate_bom" parent="menu_data_migration_procedure" action="action_migrate_bom"/>
+        -->
     </data>
 </odoo>

@@ -184,84 +184,88 @@ def _getWorkcenter(self, processCode, supplierCode, createIfNotExist):
             workcenter = workcenterModel.create(workcenterValues);
     except Exception:
         _logger.warning('Exception in migrate_bom:', exc_info=True)
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
 
     return workcenter
 
-def _createOdooProduct(self, cursorChi, productId):
-    odooProduct = False
-    chiProduct = cursorChi.execute(u"SELECT ProdId, ClassId, ProdForm, Unit, ProdName, EngName, ProdDesc, "
-        u"CurrId, CAvgCost, SuggestPrice, NWeight, NUnit "
-        u"FROM comProduct "
-        u"WHERE ProdId = '" + productId.decode('utf-8') + u"'"
-        ).fetchone()
-    if chiProduct != None:
-        if chiProduct.ProdName and chiProduct.ProdName.strip():
-            name = chiProduct.ProdName
-        else:
-            name = chiProduct.ProdId
-        currency_id = _currencyIdConversion(self, chiProduct.CurrId)
-        uom_id = _uomIdConversion(self, chiProduct.Unit.decode('utf-8'))
-        # ProdForm: 1-物料，2半成品，3-成品，4-採購件，5-組合品，6-非庫存品，7-非庫存品(管成本)，8-易耗品
-        # ClassId ClassName
-        # --------------
-        # *	特殊科目
-        # 1	運費
-        # 2	雜項支出
-        # 3	包裝費
-        # 4	樣品費
-        # 5	製-包裝費
-        # 6	進料
-        # 7	製-模具費
-        # A	原料
-        # B	半成品
-        # C	成品
-        # D	零配件
-        # E	物料
-        # F	模治具
-        # G	紙箱
-        # H	開發件
-        # I	商品
-        sale_ok = False
-        purchase_ok = False
-        type = 'consu' # 'consu', 'service', 'product'
-        tracking = 'none'
-        if chiProduct.ProdForm == 3 or chiProduct.ClassId == 'C' or chiProduct.ClassId == 'I':
-            sale_ok = True
-        if chiProduct.ProdForm in [1, 2, 4]:
-            purchase_ok = True
-        if chiProduct.ProdForm <= 5:
-            type = 'product'
-            tracking = 'lot'
-        productValues = ({
-            'name': name,
-            'default_code': chiProduct.ProdId,
-            'x_saved_code': chiProduct.ProdId,
-            'type': type,
-            'tracking': tracking,
-            'description': chiProduct.ProdDesc,
-            'sale_ok': sale_ok,
-            'purchase_ok': purchase_ok,
-            'currency_id': currency_id,
-            'standard_price': chiProduct.CAvgCost,
-            'price': chiProduct.SuggestPrice,
-            'uom_id': uom_id,
-            'uom_po_id': uom_id,
-            'weight': chiProduct.NWeight,
-            # warehouse_id, location_id, routes_id,
-            })
-        
-        productModel = self.env['product.product']
-        odooProducts = productModel.search([('default_code', '=', chiProduct.ProdId)])
-        if len(odooProducts) == 0:
-            odooProduct = productModel.create(productValues)
-        else:
-            odooProduct = odooProducts[0]
-            odooProduct.write(productValues)
-        if chiProduct.EngName and chiProduct.EngName.strip():
-            engName = chiProduct.EngName
-            _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
-    return odooProduct
+def _addOdooProduct(self, cursorChi, productId, updateIfExists = False):
+    odooProduct = None
+    timestamp = None
+    productModel = self.env['product.product']
+    odooProducts = productModel.search([('default_code', '=', productId)])
+    if odooProducts:
+        odooProduct = odooProducts[0]
+    if not odooProduct or updateIfExists:
+        chiProduct = cursorChi.execute(u"SELECT ProdId, ClassId, ProdForm, Unit, ProdName, EngName, ProdDesc, "
+            u"CurrId, CAvgCost, SuggestPrice, NWeight, NUnit, write_time "
+            u"FROM comProduct "
+            u"WHERE ProdId = '" + productId.decode('utf-8') + u"'"
+            ).fetchone()
+        if chiProduct:
+            timestamp = chiProduct.write_time
+            if chiProduct.ProdName and chiProduct.ProdName.strip():
+                name = chiProduct.ProdName
+            else:
+                name = chiProduct.ProdId
+            currency_id = _currencyIdConversion(self, chiProduct.CurrId)
+            uom_id = _uomIdConversion(self, chiProduct.Unit.decode('utf-8'))
+            # ProdForm: 1-物料，2半成品，3-成品，4-採購件，5-組合品，6-非庫存品，7-非庫存品(管成本)，8-易耗品
+            # ClassId ClassName
+            # --------------
+            # *	特殊科目
+            # 1	運費
+            # 2	雜項支出
+            # 3	包裝費
+            # 4	樣品費
+            # 5	製-包裝費
+            # 6	進料
+            # 7	製-模具費
+            # A	原料
+            # B	半成品
+            # C	成品
+            # D	零配件
+            # E	物料
+            # F	模治具
+            # G	紙箱
+            # H	開發件
+            # I	商品
+            sale_ok = False
+            purchase_ok = False
+            type = 'consu' # 'consu', 'service', 'product'
+            tracking = 'none'
+            if chiProduct.ProdForm == 3 or chiProduct.ClassId == 'C' or chiProduct.ClassId == 'I':
+                sale_ok = True
+            if chiProduct.ProdForm in [1, 2, 4]:
+                purchase_ok = True
+            if chiProduct.ProdForm <= 5:
+                type = 'product'
+                tracking = 'lot'
+            productValues = ({
+                'name': name,
+                'default_code': chiProduct.ProdId,
+                'x_saved_code': chiProduct.ProdId,
+                'type': type,
+                'tracking': tracking,
+                'description': chiProduct.ProdDesc,
+                'sale_ok': sale_ok,
+                'purchase_ok': purchase_ok,
+                'currency_id': currency_id,
+                'standard_price': chiProduct.CAvgCost,
+                'price': chiProduct.SuggestPrice,
+                'uom_id': uom_id,
+                'uom_po_id': uom_id,
+                'weight': chiProduct.NWeight,
+                # warehouse_id, location_id, routes_id,
+                })
+            
+            if not odooProduct:
+                odooProduct = productModel.create(productValues)
+            else:
+                odooProduct.write(productValues)
+            if chiProduct.EngName and chiProduct.EngName.strip():
+                engName = chiProduct.EngName
+                _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
+    return odooProduct, timestamp
 
 def _createOdooBom(self, cursorChi, chiBom, itemNo, active):
     bomModel = self.env['mrp.bom']
@@ -300,6 +304,23 @@ def _createOdooBom(self, cursorChi, chiBom, itemNo, active):
         odooBom.write(bomValues)
     self._createBomLines(odooBom, odooRouting, chiBom, chiBomMaterials, chiBomProcesses)
 
+def _max_timestamp(time1, time2):
+    if not isinstance(time1, datetime):
+        time1 = None
+    if not isinstance(time2, datetime):
+        time2 = None
+    if time1 and time2:
+        maxTime = time1 if time1 > time2 else time2
+    else:
+        maxTime = time1 if time1 else time2
+    return maxTime
+    
+def _format_timestamp(t):
+    if isinstance(t, datetime):
+        return datetime.strftime(t, '%Y-%m-%d %H:%M:%S.%f')
+    else:
+        return ''
+        
 class _partner_migration:
     def __init__(self, id, shortName, fullName):
         self.id = id
@@ -384,7 +405,7 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             name = companyName
         return name
     
-    def _createPartnerContact(self, type, parentPartner, address):
+    def _addPartnerContact(self, type, parentPartner, address):
         partnerModel = self.env['res.partner']
         if address.mobile and address.mobile.strip():
             mobile = address.mobile
@@ -394,25 +415,49 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
             email = address.email
         else:
             email = parentPartner.email
-        newPartner = partnerModel.create({
-            'parent_id': parentPartner.id,
-            'type': type,
-            'email': email,
-            'fax': address.fax,
-            'name': address.contactName,
-            'commercial_company_name': parentPartner.commercial_company_name,
-            'mobile': mobile,
-            'phone': address.phone,
-            'is_company': 0, # 1 if (type != 'contact') else 0,
-            'customer': parentPartner.customer,
-            'supplier': parentPartner.supplier,
-            'zip': address.zip,
-            'city': address.city,
-            'state_id': address.state_id,
-            'street': address.street,
-            'street2': address.street2,
-            'comment': address.memo,
-            })
+        partnerContacts = partnerModel.search([
+            ('parent_id', '=', parentPartner.id),
+            ('type', '=', type),
+            ])
+        if partnerContacts:
+            newPartner = partnerContacts[0]
+            newPartner.write({
+                'email': email,
+                'fax': address.fax,
+                'name': address.contactName,
+                'commercial_company_name': parentPartner.commercial_company_name,
+                'mobile': mobile,
+                'phone': address.phone,
+                'is_company': 0, # 1 if (type != 'contact') else 0,
+                'customer': parentPartner.customer,
+                'supplier': parentPartner.supplier,
+                'zip': address.zip,
+                'city': address.city,
+                'state_id': address.state_id,
+                'street': address.street,
+                'street2': address.street2,
+                'comment': address.memo,
+                })
+        else:
+            newPartner = partnerModel.create({
+                'parent_id': parentPartner.id,
+                'type': type,
+                'email': email,
+                'fax': address.fax,
+                'name': address.contactName,
+                'commercial_company_name': parentPartner.commercial_company_name,
+                'mobile': mobile,
+                'phone': address.phone,
+                'is_company': 0, # 1 if (type != 'contact') else 0,
+                'customer': parentPartner.customer,
+                'supplier': parentPartner.supplier,
+                'zip': address.zip,
+                'city': address.city,
+                'state_id': address.state_id,
+                'street': address.street,
+                'street2': address.street2,
+                'comment': address.memo,
+                })
         newPartner.write({'display_name': self._contactDisplayName(type, parentPartner.display_name, address.contactName)})
      
     @api.multi
@@ -564,29 +609,46 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
         except Exception:
             _logger.warning('Exception in refresh_partner_data:', exc_info=True)
             
-        return {
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'batom.partner_migration',
-            'target': 'current',
-            'res_id': 'view_partner_migration_tree',
-            'type': 'ir.actions.act_window'
-        }
+        #return {
+        #    'view_type': 'form',
+        #    'view_mode': 'tree,form',
+        #    'res_model': 'batom.partner_migration',
+        #    'target': 'current',
+        #    'res_id': 'view_partner_migration_tree',
+        #    'type': 'ir.actions.act_window'
+        #}
     
-    @api.multi
-    def apply_partner_data(self):
+    @api.model
+    def migrate_partner_data(self):
+        # import CHI partners first
+        self._migrate_chi_partner_data()
+        # import partners added in partsin
+        self._migrate_in_partner_data(1)
+        self._migrate_in_partner_data(2)
+        
+    def _migrate_chi_partner_data(self):
         try:
-            self.ensure_one()
-            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
             dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
-            odooPartnerMigration = self.env['batom.partner_migration'].search([('odoo_id', '=', None)])
+            connChi = dbChi.conn_open()
+            cursorChi = connChi.cursor()
+            chiPartnerSourceTable = self.env['batom.data_source_table'].get_dbsource_table('CHIComp01', 'comCustomer')
+            chiPartnerImportTimestamp = chiPartnerSourceTable.get_import_timestamp()
             partnerModel = self.env['res.partner']
             
-            nCount = len(odooPartnerMigration)
+            sql = 'SELECT Id, Flag, write_time FROM comCustomer '
+            if chiPartnerImportTimestamp:
+                sql += "WHERE write_time > ? "
+            sql += 'ORDER BY write_time'
+            if chiPartnerImportTimestamp:
+                chiPartnerIds = cursorChi.execute(sql, chiPartnerImportTimestamp).fetchall()
+            else:
+                chiPartnerIds = cursorChi.execute(sql).fetchall()
+            nCount = len(chiPartnerIds)
             nDone = 0
-            for migration in odooPartnerMigration:
+            for chiPartnerId in chiPartnerIds:
                 try:
-                    if migration.type == 1:
+                    chiPartnerImportTimestamp = _max_timestamp(chiPartnerImportTimestamp, chiPartnerId.write_time)
+                    if chiPartnerId.Flag == 1:
                         codeColumnName = 'x_customer_code'
                         customerValue = 1
                         supplierValue = 0
@@ -594,17 +656,23 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                         codeColumnName = 'x_supplier_code'
                         customerValue = 0
                         supplierValue = 1
-                    if migration.chi_id != None and migration.chi_id and migration.chi_id.strip():
+                    chi_id = None if not chiPartnerId.Id else chiPartnerId.Id.strip()
+                    if chi_id:
                         sql = (
                             "SELECT Id, ShortName, FullName, LinkMan, LinkManProf, "
                             "AreaId, ClassId, CurrencyId, Email, FaxNo, InvoiceHead, TaxNo, "
                             "MobileTel, Telephone1, Telephone2, Telephone3, WebAddress "
                             "FROM comCustomer "
-                            "WHERE Flag=" + str(migration.type) + " AND Id='" + migration.chi_id + "'"
+                            "WHERE Flag=" + str(chiPartnerId.Flag) + " AND Id='" + chi_id + "'"
                             )
-                        chiPartner = dbChi.execute(sql).pop(0)
+                        chiPartner = cursorChi.execute(sql).fetchone()
                         
-                        if chiPartner != None:
+                        if chiPartner:
+                            addresses = None
+                            address = None
+                            addressShipping = None
+                            addressInvoice = None
+                            addressOther = None
                             sql = ("SELECT AddrOfInvo, "
                                 "A1.ZipCode AS ZipCode1, A1.Address AS Address1, A1.LinkMan AS LinkMan1, A1.LinkManProf AS LinkManProf1, A1.Telephone AS Telephone1, A1.FaxNo AS FaxNo1, A1.Memo AS Memo1, "
                                 "A2.ZipCode AS ZipCode2, A2.Address AS Address2, A2.LinkMan AS LinkMan2, A2.LinkManProf AS LinkManProf2, A2.Telephone AS Telephone2, A2.FaxNo AS FaxNo2, A2.Memo AS Memo2, "
@@ -613,13 +681,13 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                 "LEFT JOIN comCustAddress A1 ON (A1.Flag = C.Flag AND A1.Id = C.Id AND A1.AddrId = C.DeliverAddrId) "
                                 "LEFT JOIN comCustAddress A2 ON (A2.Flag = C.Flag AND A2.Id = C.Id AND A2.AddrId = C.AddrId) "
                                 "LEFT JOIN comCustAddress A3 ON (A3.Flag = C.Flag AND A3.Id = C.Id AND A3.AddrId = C.EngAddrId) "
-                                "WHERE C.Flag=" + str(migration.type) + " AND C.Id='" + migration.chi_id + "'"
+                                "WHERE C.Flag=" + str(chiPartnerId.Flag) + " AND C.Id='" + chi_id + "'"
                                 )
-                            addresses = dbChi.execute(sql).pop(0)
-                            address = None
-                            addressShipping = None
-                            addressInvoice = None
-                            addressOther = None
+                            if chiPartnerImportTimestamp:
+                                sql += " AND write_time > ? "
+                                addresses = cursorChi.execute(sql, chiPartnerImportTimestamp).fetchone()
+                            else:
+                                addresses = cursorChi.execute(sql).fetchone()
                             if addresses != None:
                                 if addresses.Address1 != None:
                                     addressShipping = _partner_address(addresses.ZipCode1, addresses.Address1, addresses.LinkMan1, addresses.LinkManProf1, addresses.Telephone1, None, addresses.FaxNo1, None, addresses.Memo1)
@@ -633,93 +701,166 @@ class BatomPartnerMigrationRefresh(models.TransientModel):
                                     if address == None:
                                         address = addressOther
                             
-                            categoryId = self._partnerCategoryConversion(migration.type, chiPartner.ClassId)
-                            newPartner = partnerModel.create({
-                                codeColumnName: chiPartner.Id,
-                                'country_id': self._countryIdConversion(chiPartner.AreaId),
-                                'category_id': [(4, categoryId)] if (categoryId != None) else None,
-                                'property_purchase_currency_id': _currencyIdConversion(self, chiPartner.CurrencyId),
-                                'email': chiPartner.Email,
-                                'fax': chiPartner.FaxNo if (chiPartner.FaxNo != None and chiPartner.FaxNo and chiPartner.FaxNo.strip()) else (
-                                    address.fax if (address != None) else None),
-                                'name': chiPartner.ShortName,
-                                'commercial_company_name': chiPartner.InvoiceHead if chiPartner.InvoiceHead else chiPartner.FullName,
-                                'mobile': chiPartner.MobileTel,
-                                'vat': chiPartner.TaxNo,
-                                'phone': chiPartner.Telephone1 if (chiPartner.Telephone1 != None and chiPartner.Telephone1 and chiPartner.Telephone1.strip()) else (
-                                    address.phone if address != None else None),
-                                'x_phone2': chiPartner.Telephone2,
-                                'x_phone3': chiPartner.Telephone3,
-                                'website': None if not chiPartner.WebAddress else chiPartner.WebAddress,
-                                'is_company': 1,
-                                'customer': customerValue,
-                                'supplier': supplierValue,
-                                'zip': address.zip if address != None else None,
-                                'city': address.city if address != None else None,
-                                'state_id': address.state_id if address != None else None,
-                                'street': address.street if address != None else None,
-                                'street2': address.street2 if address != None else None,
-                                })
-                            #newPartner.write({'display_name': chiPartner.ShortName})
+                            categoryId = self._partnerCategoryConversion(chiPartnerId.Flag, chiPartner.ClassId)
+                            partnerValues = ({
+                                    codeColumnName: chi_id,
+                                    'country_id': self._countryIdConversion(chiPartner.AreaId),
+                                    'category_id': [(4, categoryId)] if (categoryId != None) else None,
+                                    'property_purchase_currency_id': _currencyIdConversion(self, chiPartner.CurrencyId),
+                                    'email': chiPartner.Email,
+                                    'fax': chiPartner.FaxNo if (chiPartner.FaxNo != None and chiPartner.FaxNo and chiPartner.FaxNo.strip()) else (
+                                        address.fax if (address != None) else None),
+                                    'name': chiPartner.ShortName,
+                                    'commercial_company_name': chiPartner.InvoiceHead if chiPartner.InvoiceHead else chiPartner.FullName,
+                                    'mobile': chiPartner.MobileTel,
+                                    'vat': chiPartner.TaxNo,
+                                    'phone': chiPartner.Telephone1 if (chiPartner.Telephone1 != None and chiPartner.Telephone1 and chiPartner.Telephone1.strip()) else (
+                                        address.phone if address != None else None),
+                                    'x_phone2': chiPartner.Telephone2,
+                                    'x_phone3': chiPartner.Telephone3,
+                                    'website': None if not chiPartner.WebAddress else chiPartner.WebAddress,
+                                    'is_company': 1,
+                                    'customer': customerValue,
+                                    'supplier': supplierValue,
+                                    'zip': address.zip if address != None else None,
+                                    'city': address.city if address != None else None,
+                                    'state_id': address.state_id if address != None else None,
+                                    'street': address.street if address != None else None,
+                                    'street2': address.street2 if address != None else None,
+                                    })
+                            odooPartners = partnerModel.search([
+                                (codeColumnName, '=', chi_id),
+                                ])
+                            if odooPartners:
+                                newPartner = odooPartners[0]
+                                partnerValues['category_id'] = [(6, 0, [IDs])] if (categoryId != None) else None
+                                newPartner.write(partnerValues)
+                            else:
+                                newPartner = partnerModel.create(partnerValues)
                             
                             if chiPartner.LinkMan != None and chiPartner.LinkMan and chiPartner.LinkMan.strip():
                                 contact = _partner_address(None, None, chiPartner.LinkMan, chiPartner.LinkManProf, newPartner.phone, None, newPartner.fax, None, None)
-                                self._createPartnerContact('contact', newPartner, contact)
+                                self._addPartnerContact('contact', newPartner, contact)
                             if addressShipping != None:
-                                self._createPartnerContact('delivery', newPartner, addressShipping)
+                                self._addPartnerContact('delivery', newPartner, addressShipping)
                             if addressInvoice != None:
-                                self._createPartnerContact('invoice', newPartner, addressInvoice)
+                                self._addPartnerContact('invoice', newPartner, addressInvoice)
                             if addressOther != None:
-                               self._createPartnerContact('other', newPartner, addressOther)
+                               self._addPartnerContact('other', newPartner, addressOther)
                             linkMans = dbChi.execute(
                                 "SELECT PersonName, ProfTitle, Telephone, Mobile, Email, FaxNo, Memo "
                                 "FROM comLinkMan "
-                                "WHERE Flag=" + str(migration.type) + " AND CustomId='" + chiPartner.Id + "'"
+                                "WHERE Flag=" + str(chiPartnerId.Flag) + " AND CustomId='" + chiPartner.Id + "'"
                                 )
                             if len(linkMans) > 0:
                                 for linkMan in linkMans:
                                     contact = _partner_address(None, None, linkMan.PersonName, linkMan.ProfTitle, linkMan.Telephone, linkMan.Mobile, linkMan.FaxNo, linkMan.Email, linkMan.Memo)
-                                    self._createPartnerContact('contact', newPartner, contact)
-                    elif migration.in_id != None and migration.in_id and migration.in_id.strip():
-                        if migration.type == 1:
-                            inPartner = dbBatom.execute(
-                                "select Id, ShortName, FullName "
-                                "from Customer where Id='" + migration.in_id + "'"
-                                ).pop(0)
-                        else:
-                            inPartner = dbBatom.execute(
-                                "select Id, ShortName, FullName "
-                                "from Supplier where Id='" + migration.in_id + "'"
-                                ).pop(0)
-                        if inPartner != None:
-                            newPartner = partnerModel.create({
-                                codeColumnName: inPartner.Id,
-                                'name': inPartner.FullName,
-                                'is_company': 1,
-                                'customer': customerValue,
-                                'supplier': supplierValue,
-                                })
+                                    self._addPartnerContact('contact', newPartner, contact)
+                    nDone += 1
+                    if nDone % 10 == 0:
+                        self.env.cr.commit()
+                        chiPartnerSourceTable.set_import_timestamp(chiPartnerImportTimestamp)
+                except Exception:
+                    _logger.warning('Exception in _migrate_chi_partner_data:', exc_info=True)
+                    continue
+            self.env.cr.commit()
+            chiPartnerSourceTable.set_import_timestamp(chiPartnerImportTimestamp)
+            connChi.close()
+        except Exception:
+            _logger.warning('Exception in _migrate_chi_partner_data:', exc_info=True)
+            if connChi:
+                connChi.close()
+        
+        try:
+            _logger.info('_migrate_chi_partner_data - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
+        
+    def _migrate_in_partner_data(self, flag):
+        _logger.info('_migrate_in_partner_data')
+        connBatom = None
+        try:
+            if flag == 1:
+                partnerTableName = "Customer"
+                codeColumnName = 'x_customer_code'
+                customerValue = 1
+                supplierValue = 0
+            else:
+                partnerTableName = "Supplier"
+                codeColumnName = 'x_supplier_code'
+                customerValue = 0
+                supplierValue = 1
+            dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
+            connBatom = dbBatom.conn_open()
+            cursorBatom = connBatom.cursor()
+            inPartnerSourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', partnerTableName)
+            inPartnerImportTimestamp = inPartnerSourceTable.get_import_timestamp()
+            partnerModel = self.env['res.partner']
+            
+            sql = "select Id, ShortName, FullName, write_time from " + partnerTableName + " "
+            if inPartnerImportTimestamp:
+                sql += "WHERE write_time > ? "
+            sql += 'ORDER BY write_time'
+            if inPartnerImportTimestamp:
+                inPartners = cursorBatom.execute(sql, inPartnerImportTimestamp).fetchall()
+            else:
+                inPartners = cursorBatom.execute(sql).fetchall()
+            nCount = len(inPartners)
+            nDone = 0
+            for inPartner in inPartners:
+                try:
+                    inPartnerImportTimestamp = _max_timestamp(inPartnerImportTimestamp, inPartner.write_time)
+                    in_id = None if not inPartner.Id else inPartner.Id.strip()
+                    if in_id:
+                        partnerValues = ({
+                            codeColumnName: in_id,
+                            'name': inPartner.FullName,
+                            'is_company': 1,
+                            'customer': customerValue,
+                            'supplier': supplierValue,
+                            })
+                        odooPartners = partnerModel.search([
+                            (codeColumnName, '=', in_id),
+                            ])
+                        # no need to update partner data if already exists
+                        if not odooPartners:
+                            newPartner = partnerModel.create(partnerValues)
                             newPartner.write({'display_name': inPartner.ShortName})
                     nDone += 1
                     if nDone % 10 == 0:
-                        print str(nDone) + '/' + str(nCount)
                         self.env.cr.commit()
+                        inPartnerSourceTable.set_import_timestamp(inPartnerImportTimestamp)
                 except Exception:
-                    _logger.warning('Exception in apply_partner_data:', exc_info=True)
+                    _logger.warning('Exception in _migrate_in_partner_data:', exc_info=True)
                     continue
-            self.env.cr.commit()            
+            self.env.cr.commit()
+            inPartnerSourceTable.set_import_timestamp(inPartnerImportTimestamp)
+            connBatom.close()
         except Exception:
-            _logger.warning('Exception in apply_partner_data:', exc_info=True)
-            
-        self.refresh_partner_data()
-        return {
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'batom.partner_migration',
-            'target': 'current',
-            'res_id': 'view_partner_migration_tree',
-            'type': 'ir.actions.act_window'
-        }
+            _logger.warning('Exception in _migrate_in_partner_data:', exc_info=True)
+            if connBatom:
+                connBatom.close()
+        
+        try:
+            _logger.info('_migrate_chi_partner_data - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
+    
+class BatomDataMigration(models.TransientModel):
+    _name = "batom.data_migration"
+    _description = "Daily Data Migration"
+
+    @api.multi
+    def migrate_data(self):
+        _logger.info('data migration')
+        try:
+            self.env['batom.partner_migration_refresh'].migrate_partner_data()
+            self.env['batom.migrate_product'].migrate_product()
+            self.env['batom.migrate_parts_in'].migrate_parts_in_by_date('20160101')
+            self.env['batom.migrate_parts_in'].migrate_shop_in_by_date('20160101')
+            self.env['batom.migrate_parts_in'].migrate_parts_out_by_date('20160101')
+        except Exception:
+            _logger.warning('Exception in migrate_data:', exc_info=True)
     
 class BatomCreatSupplierWarehouses(models.TransientModel):
     _name = "batom.create_supplier_warehouses"
@@ -767,182 +908,272 @@ class BatomMigrateProduct(models.TransientModel):
     _description = "Migrate Products"
         
     def _migrate_chiProduct(self, cursorChi):
-        # base_external_dbsource seems to have size limit of the query result
-        # query the values directly may not returns all qualified records
-        chiProductIds = cursorChi.execute('SELECT ProdId FROM comProduct ORDER BY ProdId').fetchall()
-        productIds = []
-        for chiProductId in chiProductIds:
-            productIds.append(chiProductId.ProdId)
-            
-        nCount = len(productIds)
-        nDone = 0
-        for productId in productIds:
-            try:
-                _createOdooProduct(self, cursorChi, productId)
-            except Exception:
-                _logger.warning('Exception in migrate_product:', exc_info=True)
-                import pdb; pdb.set_trace()
-                continue
-            nDone += 1
-            if nDone % 10 == 0:
-                print str(nDone) + '/' + str(nCount)
-                self.env.cr.commit()
-        self.env.cr.commit()
+        try:
+            chiProductSourceTable = self.env['batom.data_source_table'].get_dbsource_table('CHIComp01', 'comProduct')
+            chiProductImportTimestamp = chiProductSourceTable.get_import_timestamp()
+            # base_external_dbsource seems to have size limit of the query result
+            # query the values directly may not returns all qualified records
+            sql = 'SELECT ProdId FROM comProduct '
+            if chiProductImportTimestamp:
+                sql += "WHERE write_time > ? "
+            sql += 'ORDER BY write_time'
+            if chiProductImportTimestamp:
+                chiProductIds = cursorChi.execute(sql, chiProductImportTimestamp).fetchall()
+            else:
+                chiProductIds = cursorChi.execute(sql).fetchall()
+            productIds = []
+            for chiProductId in chiProductIds:
+                productIds.append(chiProductId.ProdId)
+                
+            nCount = len(productIds)
+            _logger.info('_migrate_inProduct - ' + str(nCount))
+            nDone = 0
+            for productId in productIds:
+                try:
+                    odooProduct, newTimestamp = _addOdooProduct(self, cursorChi, productId, True)
+                    chiProductImportTimestamp = _max_timestamp(newTimestamp, chiProductImportTimestamp)
+                except Exception:
+                    _logger.warning('Exception in _migrate_chiProduct:', exc_info=True)
+                    #import pdb; pdb.set_trace()
+                    continue
+                nDone += 1
+                if nDone % 10 == 0:
+                    self.env.cr.commit()
+                    chiProductSourceTable.set_import_timestamp(chiProductImportTimestamp)
+            self.env.cr.commit()
+            chiProductSourceTable.set_import_timestamp(chiProductImportTimestamp)
+        except Exception:
+            _logger.warning('Exception in _migrate_chiProduct:', exc_info=True)
+        
+        try:
+            _logger.info('_migrate_chiProduct - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
         
     def _migrate_inProduct(self, cursorBatom):
-        inProducts = cursorBatom.execute('SELECT ProdId, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdId').fetchall()
-        productModel = self.env['product.product']
-        nCount = len(inProducts)
-        nDone = 0
-        for inProduct in inProducts:
-            try:
-                odooProducts = productModel.search([('default_code', '=', inProduct.ProdId)])
-                if len(odooProducts) == 0:
-                    if inProduct.ProdName and inProduct.ProdName.strip():
-                        name = inProduct.ProdName
-                    else:
-                        name = inProduct.ProdId
-                    uom_id = _uomIdConversion(self, inProduct.Unit.decode('utf-8'))
-                    sale_ok = False
-                    purchase_ok = False
-                    type = 'product'
-                    tracking = 'lot'
-                    productValues = ({
-                        'name': name,
-                        'default_code': inProduct.ProdId,
-                        'x_saved_code': inProduct.ProdId,
-                        'type': type,
-                        'tracking': tracking,
-                        'sale_ok': sale_ok,
-                        'purchase_ok': purchase_ok,
-                        'description': inProduct.Remark,
-                        'uom_id': uom_id,
-                        'uom_po_id': uom_id,
-                        })
-                    
-                    odooProduct = productModel.create(productValues)
-                    if inProduct.EngName and inProduct.EngName.strip():
-                        engName = inProduct.EngName
-                        _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
-            except Exception:
-                _logger.warning('Exception in migrate_product:', exc_info=True)
-                continue
-            nDone += 1
-            if nDone % 10 == 0:
-                print str(nDone) + '/' + str(nCount)
-                self.env.cr.commit()
-        self.env.cr.commit()
+        try:
+            inProductSourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'Product')
+            inProductImportTimestamp = inProductSourceTable.get_import_timestamp()
+            sql = 'SELECT ProdId, ProdName, EngName, Remark, Unit, write_time FROM Product '
+            if inProductImportTimestamp:
+                sql += "WHERE write_time > ? "
+            sql += 'ORDER BY write_time'
+            if inProductImportTimestamp:
+                inProducts = cursorBatom.execute(sql, inProductImportTimestamp).fetchall()
+            else:
+                inProducts = cursorBatom.execute(sql).fetchall()
+            productModel = self.env['product.product']
+            nCount = len(inProducts)
+            nDone = 0
+            for inProduct in inProducts:
+                try:
+                    inProductImportTimestamp = _max_timestamp(inProductImportTimestamp, inProduct.write_time)
+                    odooProducts = productModel.search([('default_code', '=', inProduct.ProdId)])
+                    if len(odooProducts) == 0:
+                        if inProduct.ProdName and inProduct.ProdName.strip():
+                            name = inProduct.ProdName
+                        else:
+                            name = inProduct.ProdId
+                        uom_id = _uomIdConversion(self, inProduct.Unit.decode('utf-8'))
+                        sale_ok = False
+                        purchase_ok = False
+                        type = 'product'
+                        tracking = 'lot'
+                        productValues = ({
+                            'name': name,
+                            'default_code': inProduct.ProdId,
+                            'x_saved_code': inProduct.ProdId,
+                            'type': type,
+                            'tracking': tracking,
+                            'sale_ok': sale_ok,
+                            'purchase_ok': purchase_ok,
+                            'description': inProduct.Remark,
+                            'uom_id': uom_id,
+                            'uom_po_id': uom_id,
+                            })
+                        
+                        odooProduct = productModel.create(productValues)
+                        if inProduct.EngName and inProduct.EngName.strip():
+                            engName = inProduct.EngName
+                            _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
+                    nDone += 1
+                    if nDone % 10 == 0:
+                        self.env.cr.commit()
+                        inProductSourceTable.set_import_timestamp(inProductImportTimestamp)
+                except Exception:
+                    _logger.warning('Exception in _migrate_inProduct:', exc_info=True)
+                    continue
+            self.env.cr.commit()
+            inProductSourceTable.set_import_timestamp(inProductImportTimestamp)
+        except Exception:
+            _logger.warning('Exception in _migrate_inProduct:', exc_info=True)
+        
+        try:
+            _logger.info('_migrate_inProduct - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
         
     def _migrate_chiProcess(self, cursorChi):
-        processes = cursorChi.execute('SELECT ProgramId, ProgramName, Remark FROM prdMakeProgram ORDER BY ProgramId').fetchall()
-        productModel = self.env['product.product']
-        nCount = len(processes)
-        nDone = 0
-        for process in processes:
-            try:
-                name = process.ProgramName
-                sale_ok = False
-                purchase_ok = True
-                type = 'service'
-                productValues = ({
-                    'name': name,
-                    'default_code': process.ProgramId,
-                    'x_saved_code': process.ProgramId,
-                    'type': type,
-                    'sale_ok': sale_ok,
-                    'purchase_ok': purchase_ok,
-                    'x_is_process': True,
-                    })
-                
-                odooProducts = productModel.search([('default_code', '=', process.ProgramId)])
-                if len(odooProducts) == 0:
-                    odooProduct = productModel.create(productValues)
-                else:
-                    odooProduct = odooProducts[0]
-                    odooProduct.write(productValues)
-                if process.Remark and process.Remark.strip():
-                    engName = process.Remark
-                    _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
-            except Exception:
-                _logger.warning('Exception in migrate_product:', exc_info=True)
-                continue
-            nDone += 1
-            if nDone % 10 == 0:
-                print str(nDone) + '/' + str(nCount)
-                self.env.cr.commit()
-        self.env.cr.commit()
+        try:
+            chiProcessSourceTable = self.env['batom.data_source_table'].get_dbsource_table('CHIComp01', 'prdMakeProgram')
+            chiProcessImportTimestamp = chiProcessSourceTable.get_import_timestamp()
+            sql = 'SELECT ProgramId, ProgramName, Remark, write_time FROM prdMakeProgram '
+            if chiProcessImportTimestamp:
+                sql += "WHERE write_time > ? "
+            sql += 'ORDER BY write_time'
+            if chiProcessImportTimestamp:
+                processes = cursorChi.execute(sql, chiProcessImportTimestamp).fetchall()
+            else:
+                processes = cursorChi.execute(sql).fetchall()
+            productModel = self.env['product.product']
+            nCount = len(processes)
+            nDone = 0
+            for process in processes:
+                try:
+                    chiProcessImportTimestamp = _max_timestamp(chiProcessImportTimestamp, process.write_time)
+                    name = process.ProgramName
+                    sale_ok = False
+                    purchase_ok = True
+                    type = 'service'
+                    productValues = ({
+                        'name': name,
+                        'default_code': process.ProgramId,
+                        'x_saved_code': process.ProgramId,
+                        'type': type,
+                        'sale_ok': sale_ok,
+                        'purchase_ok': purchase_ok,
+                        'x_is_process': True,
+                        })
+                    
+                    odooProducts = productModel.search([('default_code', '=', process.ProgramId)])
+                    if len(odooProducts) == 0:
+                        odooProduct = productModel.create(productValues)
+                    else:
+                        odooProduct = odooProducts[0]
+                        odooProduct.write(productValues)
+                    if process.Remark and process.Remark.strip():
+                        engName = process.Remark
+                        _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
+                    nDone += 1
+                    if nDone % 10 == 0:
+                        self.env.cr.commit()
+                        chiProcessSourceTable.set_import_timestamp(chiProcessImportTimestamp)
+                except Exception:
+                    _logger.warning('Exception in _migrate_chiProcess:', exc_info=True)
+                    continue
+            self.env.cr.commit()
+            chiProcessSourceTable.set_import_timestamp(chiProcessImportTimestamp)
+        except Exception:
+            _logger.warning('Exception in _migrate_chiProcess:', exc_info=True)
+        
+        try:
+            _logger.info('_migrate_chiProcess - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
         
     def _migrate_inProcess(self, cursorBatom):
-        processes = cursorBatom.execute('SELECT ProcessId, ProcessName, Remark FROM Process ORDER BY ProcessId').fetchall()
-        productModel = self.env['product.product']
-        nCount = len(processes)
-        nDone = 0
-        for process in processes:
-            try:
-                if process.ProcessId and process.ProcessId.strip():
-                    processId = process.ProcessId.strip()
-                    odooProducts = productModel.search([('default_code', '=', processId)])
-                    if len(odooProducts) == 0:
-                        name = process.ProcessName
-                        sale_ok = False
-                        purchase_ok = True
-                        type = 'service'
-                        productValues = ({
-                            'name': name,
-                            'default_code': processId,
-                            'type': type,
-                            'sale_ok': sale_ok,
-                            'purchase_ok': purchase_ok,
-                            'description': process.Remark,
-                            'x_is_process': True,
-                            })
-                        
-                        odooProduct = productModel.create(productValues)
-                        if process.Remark and process.Remark.strip():
-                            engName = process.Remark
-                            _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
-            except Exception:
-                _logger.warning('Exception in migrate_product:', exc_info=True)
-                continue
-            nDone += 1
-            if nDone % 10 == 0:
-                print str(nDone) + '/' + str(nCount)
-                self.env.cr.commit()
-        self.env.cr.commit()
+        try:
+            inProcessSourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'Process')
+            inProcessImportTimestamp = inProcessSourceTable.get_import_timestamp()
+            sql = 'SELECT ProcessId, ProcessName, Remark, write_time FROM Process '
+            if inProcessImportTimestamp:
+                sql += "WHERE write_time > ? "
+            sql += 'ORDER BY write_time'
+            if inProcessImportTimestamp:
+                processes = cursorBatom.execute(sql, inProcessImportTimestamp).fetchall()
+            else:
+                processes = cursorBatom.execute(sql).fetchall()
+            productModel = self.env['product.product']
+            nCount = len(processes)
+            nDone = 0
+            for process in processes:
+                try:
+                    inProcessImportTimestamp = _max_timestamp(inProcessImportTimestamp, process.write_time)
+                    if process.ProcessId and process.ProcessId.strip():
+                        processId = process.ProcessId.strip()
+                        odooProducts = productModel.search([('default_code', '=', processId)])
+                        if len(odooProducts) == 0:
+                            name = process.ProcessName
+                            sale_ok = False
+                            purchase_ok = True
+                            type = 'service'
+                            productValues = ({
+                                'name': name,
+                                'default_code': processId,
+                                'type': type,
+                                'sale_ok': sale_ok,
+                                'purchase_ok': purchase_ok,
+                                'description': process.Remark,
+                                'x_is_process': True,
+                                })
+                            
+                            odooProduct = productModel.create(productValues)
+                            if process.Remark and process.Remark.strip():
+                                engName = process.Remark
+                                _updateTranslation(self, 'product.template,name', odooProduct.product_tmpl_id.id, engName, name)
+                    nDone += 1
+                    if nDone % 10 == 0:
+                        self.env.cr.commit()
+                        inProcessSourceTable.set_import_timestamp(inProcessImportTimestamp)
+                except Exception:
+                    _logger.warning('Exception in _migrate_inProcess:', exc_info=True)
+                    continue
+            self.env.cr.commit()
+            inProcessSourceTable.set_import_timestamp(inProcessImportTimestamp)
+        except Exception:
+           _logger.warning('Exception in _migrate_inProcess:', exc_info=True)
         
+        try:
+            _logger.info('_migrate_inProcess - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
+       
     def _migrate_inShopProcess(self, cursorBatom):
-        processes = cursorBatom.execute('SELECT ProcessId, ShopProcess, Type FROM ShopProcess ORDER BY ProcessId').fetchall()
-        productModel = self.env['product.product']
-        for process in processes:
-            try:
-                if process.ProcessId and process.ProcessId.strip():
-                    processId = process.ProcessId.strip()
-                    odooProducts = productModel.search([('default_code', '=', processId)])
-                    if len(odooProducts) == 0:
-                        name = process.ShopProcess
-                        sale_ok = False
-                        purchase_ok = True
-                        type = 'service'
-                        productValues = ({
-                            'name': name,
-                            'default_code': processId,
-                            'type': type,
-                            'sale_ok': sale_ok,
-                            'purchase_ok': purchase_ok,
-                            'description': process.Type,
-                            'x_is_process': True,
-                            })
-                        
-                        odooProduct = productModel.create(productValues)
-            except Exception:
-                _logger.warning('Exception in migrate_product:', exc_info=True)
-                continue
-        self.env.cr.commit()
+        try:
+            shopProcessSourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'ShopProcess')
+            shopProcessImportTimestamp = shopProcessSourceTable.get_import_timestamp()
+            sql = 'SELECT ProcessId, ShopProcess, Type, write_time FROM ShopProcess '
+            if shopProcessImportTimestamp:
+                sql += "WHERE write_time > ? "
+            sql += 'ORDER BY write_time'
+            if shopProcessImportTimestamp:
+                processes = cursorBatom.execute(sql, shopProcessImportTimestamp).fetchall()
+            else:
+                processes = cursorBatom.execute(sql).fetchall()
+            productModel = self.env['product.product']
+            for process in processes:
+                try:
+                    shopProcessImportTimestamp = _max_timestamp(shopProcessImportTimestamp, process.write_time)
+                    if process.ProcessId and process.ProcessId.strip():
+                        processId = process.ProcessId.strip()
+                        odooProducts = productModel.search([('default_code', '=', processId)])
+                        if len(odooProducts) == 0:
+                            name = process.ShopProcess
+                            sale_ok = False
+                            purchase_ok = True
+                            type = 'service'
+                            productValues = ({
+                                'name': name,
+                                'default_code': processId,
+                                'type': type,
+                                'sale_ok': sale_ok,
+                                'purchase_ok': purchase_ok,
+                                'description': process.Type,
+                                'x_is_process': True,
+                                })
+                            
+                            odooProduct = productModel.create(productValues)
+                except Exception:
+                    _logger.warning('Exception in _migrate_inShopProcess:', exc_info=True)
+                    continue
+            self.env.cr.commit()
+            shopProcessSourceTable.set_import_timestamp(shopProcessImportTimestamp)
+        except Exception:
+            _logger.warning('Exception in _migrate_inShopProcess:', exc_info=True)
             
-    @api.multi
+    @api.model
     def migrate_product(self):
         try:
-            self.ensure_one()
             dbChi = self.env['base.external.dbsource'].search([('name', '=', 'CHIComp01')])
             dbBatom = self.env['base.external.dbsource'].search([('name', '=', 'Batom')])
             connChi = dbChi.conn_open()
@@ -1181,14 +1412,18 @@ class BatomMigrateBom(models.TransientModel):
                     itemNo = chiBom.ItemNo
                     active = False
                 _createOdooBom(self, cursorChi, chiBom, itemNo, active)
+                nDone += 1
+                if nDone % 10 == 0:
+                    self.env.cr.commit()
             except Exception:
                 _logger.warning('Exception in migrate_bom:', exc_info=True)
                 continue
-            nDone += 1
-            if nDone % 10 == 0:
-                print str(nDone) + '/' + str(nCount)
-                self.env.cr.commit()
         self.env.cr.commit()
+        
+        try:
+            _logger.info('migrate_bom - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
 
     def _createProcessPrice(self, production, chiProduction, chiWorkorder):
         productSupplierInfoModel = self.env['product.supplierinfo']
@@ -1279,7 +1514,7 @@ class BatomMigrateBom(models.TransientModel):
                     productSupplierInfoModel.create(productSupplierInfoValues)
         except Exception:
             _logger.warning('Exception in migrate_bom:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
         
     def _migrate_inRouting(self, cursorBatom):
         inProducts = cursorBatom.execute('SELECT ProdId, ProdName, EngName, Remark, Unit FROM Product ORDER BY ProdId').fetchall()
@@ -1372,7 +1607,7 @@ class BatomMigrateBom(models.TransientModel):
                         break
         except Exception:
             _logger.warning('Exception in _matchBom:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
         
         return matched
         
@@ -1382,7 +1617,7 @@ class BatomMigrateBom(models.TransientModel):
         if templates:
             template = templates[0]
         else:
-            odooProduct = _createOdooProduct(self, cursorChi, productId)
+            odooProduct, newTimestamp = _addOdooProduct(self, cursorChi, productId)
             template = odooProduct.product_tmpl_id
             
         if template:
@@ -1408,7 +1643,7 @@ class BatomMigrateBom(models.TransientModel):
                         odooBoms.append(_createOdooBom(self, cursorChi, chiBom, itemNo, active))
                     except Exception:
                         _logger.warning('Exception in migrate_bom:', exc_info=True)
-                        import pdb; pdb.set_trace()
+                        #import pdb; pdb.set_trace()
                         continue
             if odooBoms:
                 materials = cursorChi.execute(
@@ -1483,7 +1718,7 @@ class BatomMigrateBom(models.TransientModel):
                                 self._createProcessPrice(production, manufactureOrder, workorder)
                 except Exception:
                     _logger.warning('Exception in migrate_bom:', exc_info=True)
-                    import pdb; pdb.set_trace()
+                    #import pdb; pdb.set_trace()
             self.env.cr.commit()
         return production
             
@@ -1503,7 +1738,7 @@ class BatomMigrateBom(models.TransientModel):
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_mo:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connChi:
                 connChi.close()
             if connBatom:
@@ -1643,7 +1878,7 @@ class BatomMigrateBom(models.TransientModel):
                             else:
                                 message =  'product code "' + productCodeCellValue + '" does not match "' + result.ProdId + '" "' + row[7].value + '"'
                         if not matched:
-                            print message
+                            _logger.info(message)
         except:
             _logger.warning('Exception in _updateMaterialAssignmentCodes:', exc_info=True)
             
@@ -1656,7 +1891,7 @@ class BatomMigrateBom(models.TransientModel):
                         ('inventory_code', '=', materialAssignment.inventory_code),
                         ('adjustment_code', '=', materialAssignment.adjustment_code),
                         ])):
-                    print ('Material assignment for' +
+                    _logger.info('Material assignment for' +
                         (' MO ' + materialAssignment.production_code if materialAssignment.production_code else '') +
                         (' iventory in ' + materialAssignment.inventory_code if materialAssignment.inventory_code else '') +
                         (' iventory adjustoment ' + materialAssignment.adjustment_code if materialAssignment.adjustment_code else '') +
@@ -1677,7 +1912,7 @@ class BatomMigrateBom(models.TransientModel):
                     'material_lot': materialAssignment.material_lot,
                     'dispatch_date': materialAssignment.dispatch_date,
                     })
-                print ('Creating material assignment for' +
+                _logger.info('Creating material assignment for' +
                     (' MO ' + materialAssignment.production_code if materialAssignment.production_code else '') +
                     (' iventory in ' + materialAssignment.inventory_code if materialAssignment.inventory_code else '') +
                     (' iventory adjustoment ' + materialAssignment.adjustment_code if materialAssignment.adjustment_code else ''))
@@ -1733,10 +1968,10 @@ class BatomMigrateBom(models.TransientModel):
     def migrate_mo_by_date(self, dateStart, dateEnd = '99999999'):
         self.ensure_one()
         if len(dateStart) != 8 or not dateStart.isdigit():
-            print '"' + dateStart + '" is not a valid date'
+            _logger.info('"' + dateStart + '" is not a valid date')
             return
         if len(dateEnd) != 8 or not dateEnd.isdigit():
-            print '"' + dateEnd + '" is not a valid date'
+            _logger.info('"' + dateEnd + '" is not a valid date')
             return
             
         try:
@@ -1758,18 +1993,22 @@ class BatomMigrateBom(models.TransientModel):
                 self._migrate_chiMo(cursorChi, cursorBatom, manufactureOrder.MkOrdNo, manufactureOrder.Flag)
                 nDone += 1
                 if nDone % 10 == 0:
-                    print str(nDone) + '/' + str(nCount)
                     self.env.cr.commit()
             self.env.cr.commit()
             connChi.close()
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_mo_by_date:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connChi:
                 connChi.close()
             if connBatom:
                 connBatom.close()
+        
+        try:
+            _logger.info('migrate_mo_by_date - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
             
     @api.multi
     def load_lot_sheet(self, xlsx_file):
@@ -1833,7 +2072,7 @@ class BatomMigrateBom(models.TransientModel):
             connChi.close()
         except Exception:
             _logger.warning('Exception in load_lot_sheet:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connChi:
                 connChi.close()
 
@@ -1860,15 +2099,15 @@ class BatomMigrateBom(models.TransientModel):
                 if materialAssignments:
                     for materialAssignment in materialAssignments:
                         if materialAssignment.production_code:
-                            print ('MO ' + materialAssignment.production_code + ' is used for ' + productionCode + '/' +
+                            _logger.info('MO ' + materialAssignment.production_code + ' is used for ' + productionCode + '/' +
                                 materialAssignment.product_code + '/' +
                                 str(materialAssignment.product_qty))
                         elif materialAssignment.inventory_code:
-                            print ('Warehouse in ' + materialAssignment.inventory_code + ' is used for ' + productionCode + '/' +
+                            _logger.info('Warehouse in ' + materialAssignment.inventory_code + ' is used for ' + productionCode + '/' +
                                 materialAssignment.product_code + '/' +
                                 str(materialAssignment.product_qty))
                         else:
-                            print ('Inventory adjustment ' + materialAssignment.adjustment_code + ' is used for ' + productionCode + '/' +
+                            _logger.info('Inventory adjustment ' + materialAssignment.adjustment_code + ' is used for ' + productionCode + '/' +
                                 materialAssignment.product_code + '/' +
                                 str(materialAssignment.product_qty))
                 else:
@@ -1895,7 +2134,7 @@ class BatomMigrateBom(models.TransientModel):
                         if not materialAssignments:
                             materialAssignments = self._getInventoryInFromChiMo(cursorChi, odooProduction.id, bom_product_quant.product_id.default_code, odooProduction.product_qty * bom_product_quant.product_qty, date_start, date_end)
                         if not materialAssignments:
-                            print ('Corresponding material assignment could not be fond for ' + productionCode + '/' +
+                            _logger.info('Corresponding material assignment could not be fond for ' + productionCode + '/' +
                                 bom_product_quant.product_id.default_code + '/' +
                                 str(odooProduction.product_qty * bom_product_quant.product_qty))
                         else:
@@ -1906,24 +2145,24 @@ class BatomMigrateBom(models.TransientModel):
                                     'used': True,
                                     })
                             if materialAssignment.production_code:
-                                print ('MO ' + materialAssignment.production_code + ' is used for ' + productionCode + '/' +
+                                _logger.info('MO ' + materialAssignment.production_code + ' is used for ' + productionCode + '/' +
                                     bom_product_quant.product_id.default_code + '/' +
                                     str(odooProduction.product_qty * bom_product_quant.product_qty))
                             elif materialAssignment.inventory_code:
-                                print ('Inventory in ' + 
+                                _logger.info('Inventory in ' + 
                                     (materialAssignment.inventory_flag + '/' if materialAssignment.inventory_flag else '') +
                                     materialAssignment.inventory_code + ' is used for ' + productionCode + '/' +
                                     bom_product_quant.product_id.default_code + '/' +
                                     str(odooProduction.product_qty * bom_product_quant.product_qty))
                             else:
-                                print ('Inventory adjustment ' + materialAssignment.adjustment_code + ' is used for ' + productionCode + '/' +
+                                _logger.info('Inventory adjustment ' + materialAssignment.adjustment_code + ' is used for ' + productionCode + '/' +
                                     bom_product_quant.product_id.default_code + '/' +
                                     str(odooProduction.product_qty * bom_product_quant.product_qty))
             else:
-                print 'Manufacture order ' + productionCode + ' can not be found'
+                _logger.info('Manufacture order ' + productionCode + ' can not be found')
         except Exception:
             _logger.warning('Exception in _check_migrate_workorders:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             
     @api.multi
     def check_migrate_workorders(self, mo_id, flag = 3):
@@ -1942,7 +2181,7 @@ class BatomMigrateBom(models.TransientModel):
             connBatom.close()
         except Exception:
             _logger.warning('Exception in check_migrate_workorders:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connChi:
                 connChi.close()
             if connBatom:
@@ -1952,10 +2191,10 @@ class BatomMigrateBom(models.TransientModel):
     def check_migrate_workorders_by_date(self, dateStart, dateEnd = '99999999'):
         self.ensure_one()
         if len(dateStart) != 8 or not dateStart.isdigit():
-            print '"' + dateStart + '" is not a valid date'
+            _logger.info('"' + dateStart + '" is not a valid date')
             return
         if len(dateEnd) != 8 or not dateEnd.isdigit():
-            print '"' + dateEnd + '" is not a valid date'
+            _logger.info('"' + dateEnd + '" is not a valid date')
             return
             
         try:
@@ -1984,7 +2223,7 @@ class BatomMigrateBom(models.TransientModel):
             connBatom.close()
         except Exception:
             _logger.warning('Exception in check_migrate_workorders_by_date:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connChi:
                 connChi.close()
             if connBatom:
@@ -2015,10 +2254,10 @@ class BatomMigrateBom(models.TransientModel):
                 #    for materialAssignment in materialAssignments:
                 #else:
             else:
-                print 'Manufacture order ' + productionCode + ' can not be found'
+                _logger.info('Manufacture order ' + productionCode + ' can not be found')
         except Exception:
             _logger.warning('Exception in _migrate_inWorkorders:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             
     @api.multi
     def migrate_workorders(self, mo_id, flag = 3):
@@ -2037,7 +2276,7 @@ class BatomMigrateBom(models.TransientModel):
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_workorders:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connChi:
                 connChi.close()
             if connBatom:
@@ -2047,10 +2286,10 @@ class BatomMigrateBom(models.TransientModel):
     def migrate_workorders_by_date(self, dateStart, dateEnd = '99999999'):
         self.ensure_one()
         if len(dateStart) != 8 or not dateStart.isdigit():
-            print '"' + dateStart + '" is not a valid date'
+            _logger.info('"' + dateStart + '" is not a valid date')
             return
         if len(dateEnd) != 8 or not dateEnd.isdigit():
-            print '"' + dateEnd + '" is not a valid date'
+            _logger.info('"' + dateEnd + '" is not a valid date')
             return
             
         try:
@@ -2072,14 +2311,14 @@ class BatomMigrateBom(models.TransientModel):
                 self._migrate_inWorkorders(cursorChi, cursorBatom, manufactureOrder.MkOrdNo, manufactureOrder.Flag)
                 nDone += 1
                 if nDone % 10 == 0:
-                    print str(nDone) + '/' + str(nCount)
+                    _logger.info(str(nDone) + '/' + str(nCount))
                     self.env.cr.commit()
             self.env.cr.commit()
             connChi.close()
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_workorders_by_date:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connChi:
                 connChi.close()
             if connBatom:
@@ -2101,7 +2340,7 @@ class BatomMigrateBom(models.TransientModel):
                     })
             except Exception:
                 _logger.warning('Exception in migrate_workorders_by_date:', exc_info=True)
-                import pdb; pdb.set_trace()
+                #import pdb; pdb.set_trace()
         return cutter_group
         
     _tool_sheet_format_column_mapping = ({
@@ -2255,7 +2494,7 @@ class BatomMigrateBom(models.TransientModel):
                     })
         except Exception:
             _logger.warning('Exception in _getCutterAction:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
         return action
     
     def _getXlrdCellStringValue(self, ws, row, col):
@@ -2573,7 +2812,7 @@ class BatomMigrateBom(models.TransientModel):
                             if value in self._state_mapping:
                                 value = self._state_mapping[value]
                             else:
-                                print u'invalid state: ' + cutter_group.name + u'/' + value
+                                _logger.info(u'invalid state: ' + cutter_group.name + u'/' + value)
                                 self._appendRemarks(cutter_values, original_column_name, (value if row[i].data_type == 's' else str(value)))
                                 value = None
                         elif column_name == 'product_code':
@@ -2691,7 +2930,7 @@ class BatomMigrateBom(models.TransientModel):
                                 self._createCutterHistories(cutter, cutter_histories)
         except Exception:
             _logger.warning('Exception in load_tool_sheet:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
         return cutter
     
     def _addToolSheet(self, ws):
@@ -2725,7 +2964,7 @@ class BatomMigrateBom(models.TransientModel):
                     self.env.cr.commit()
         except Exception:
             _logger.warning('Exception in load_tool_sheet:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             
     _employee_sheet_format_column_mapping = ({
         u'員工編號': 'code',
@@ -2888,7 +3127,7 @@ class BatomMigrateBom(models.TransientModel):
                     employee.write(employee_values)
         except Exception:
             _logger.warning('Exception in _addEmployeeRow:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
         return employee
         
     def _getEmployeeSheetFormatColumnName(self, column_title):
@@ -2936,7 +3175,7 @@ class BatomMigrateBom(models.TransientModel):
             self.env.cr.commit()
         except Exception:
             _logger.warning('Exception in load_employee_sheet:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
     
 class BatomPartnerMigration(models.Model):
     _name = 'batom.partner_migration'
@@ -2993,11 +3232,48 @@ class BatomDataSourceTable(models.Model):
     remarks = fields.Text('Remarks')
     active = fields.Boolean(default=True)
     column_ids = fields.One2many('batom.data_source_column', 'table_id', 'Columns')
+    timestamp_last_import = fields.Datetime(string='Record Timestamp Last Imported')
     
     @api.one
     @api.depends('dbsource', 'table')
     def _compute_name(self):
         self.name = self.dbsource + ':' + self.table
+            
+    @api.model
+    def get_dbsource_table(self, dbsource, table):
+        dbSourceTable = None
+        try:
+            dbsource_tables = self.env['batom.data_source_table'].search([
+                ('dbsource', '=', dbsource),
+                ('table', '=', table)
+                ])
+            if dbsource_tables:
+                dbSourceTable = dbsource_tables[0]
+        except Exception:
+            _logger.warning('Exception in get_dbsource_table:', exc_info=True)
+        
+        return dbSourceTable
+
+    @api.multi
+    def get_import_timestamp(self):
+        self.ensure_one()
+        if self.timestamp_last_import:
+            return datetime.strptime(self.timestamp_last_import, odoo.tools.misc.DEFAULT_SERVER_DATETIME_FORMAT)
+        else:
+            return None
+        
+    @api.multi
+    def set_import_timestamp(self, newTimestamp):
+        try:
+            self.ensure_one()
+            if newTimestamp and (not self.get_import_timestamp() or
+                    self.get_import_timestamp() <= newTimestamp):
+                self.write({
+                    'timestamp_last_import': newTimestamp,
+                    })
+        except Exception:
+            _logger.warning('Exception in set_import_timestamp:', exc_info=True)
+            #import pdb; pdb.set_trace()
     
 class BatomDataSourceColumn(models.Model):
     _name = 'batom.data_source_column'
@@ -3022,10 +3298,8 @@ class BatomDataSourceSchemaMigration(models.TransientModel):
     _name = "batom.data_source_migration"
     _description = "Data Source Migration"
             
-    @api.multi
+    @api.model
     def import_schema(self):
-        self.ensure_one()
-
         self._importSchema('CHIComp01')
         self._importSchema('Batom')
 

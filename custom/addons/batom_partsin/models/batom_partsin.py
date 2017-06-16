@@ -11,6 +11,17 @@ from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
+def _max_timestamp(time1, time2):
+    if not isinstance(time1, datetime):
+        time1 = None
+    if not isinstance(time2, datetime):
+        time2 = None
+    if time1 and time2:
+        maxTime = time1 if time1 > time2 else time2
+    else:
+        maxTime = time1 if time1 else time2
+    return maxTime
+
 class BatomPartsIn(models.Model):
     _name = 'batom.parts_in'
     _description = 'Parts In'
@@ -282,9 +293,8 @@ class BatomMigratePartsIn(models.TransientModel):
     _name = "batom.migrate_parts_in"
     _description = "Migrate PartsIn"
     
-    @api.multi
+    @api.model
     def migrate_parts_in_by_date(self, dateStart, dateEnd = '99991231'):
-        self.ensure_one()
         if len(dateStart) != 8 or not dateStart.isdigit():
             print '"' + dateStart + '" is not a valid date'
             return
@@ -297,32 +307,47 @@ class BatomMigratePartsIn(models.TransientModel):
             connBatom = dbBatom.conn_open()
             cursorBatom = connBatom.cursor()
             
+            partsInSourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'PartsIn')
+            partsInImportTimestamp = partsInSourceTable.get_import_timestamp()
             sql = (
                 "SELECT ID, PDate, Supplier, ProdID, ProcessID, wReport, Urgency, "
                 "Priority, Location, QDate, QProgress, IQCQty, Result, "
                 "Finish, WaitCA, WaitGT, Transfer, TransTime, Report, NGType, "
                 "NGRoot, NGAction, Memo, NextProcessID, nTags, Remarks, ForEngDept, "
-                "Creator, LastDate, LastPerson, RptPath "
+                "Creator, LastDate, LastPerson, RptPath, write_time "
                 "FROM PartsIn "
                 "WHERE PDate BETWEEN '" + dateStart + "' AND '" + dateEnd + "'")
+            if partsInImportTimestamp:
+                sql += " AND write_time > ? "
+            sql += 'ORDER BY write_time'
+            if partsInImportTimestamp:
+                partsIns = cursorBatom.execute(sql, partsInImportTimestamp).fetchall()
+            else:
+                partsIns = cursorBatom.execute(sql).fetchall()
             
-            partsIns = cursorBatom.execute(sql).fetchall()
-            columns = [column[0] for column in cursorBatom.description]
+            columns = [column[0] for column in cursorBatom.description if column[0] != 'write_time']
             nCount = len(partsIns)
             nDone = 0
             for partsIn in partsIns:
+                partsInImportTimestamp = _max_timestamp(partsInImportTimestamp, partsIn.write_time)
                 odooPartsIn = self._create_parts_in(cursorBatom, dict(zip(columns, partsIn)))
                 nDone += 1
                 if nDone % 10 == 0:
-                    print str(nDone) + '/' + str(nCount)
                     self.env.cr.commit()
+                    partsInSourceTable.set_import_timestamp(partsInImportTimestamp)
             self.env.cr.commit()
+            partsInSourceTable.set_import_timestamp(partsInImportTimestamp)
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_parts_in_by_date:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connBatom:
                 connBatom.close()
+        
+        try:
+            _logger.info('_migrate_chi_partner_data - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
 
     def _create_parts_in(self, cursorBatom, partsIn):
         odooPartsIn = False
@@ -364,19 +389,28 @@ class BatomMigratePartsIn(models.TransientModel):
                 self._create_parts_in_qc(cursorBatom, odooPartsIn.id, values['origin_id'])
         except Exception:
             _logger.warning('Exception in _create_parts_in:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             
         return odooPartsIn
 
     def _create_parts_in_qty(self, cursorBatom, partsInId, originId):
         try:
+            partsInQtySourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'PartsInQty')
+            partsInQtyImportTimestamp = partsInQtySourceTable.get_import_timestamp()
             sql = (
-                "SELECT PID, MvType, MkOrdID, MkOrdSer, Batch, Memo, InQty "
+                "SELECT PID, MvType, MkOrdID, MkOrdSer, Batch, Memo, InQty, write_time "
                 "FROM PartsInQty "
                 "WHERE ID = " + str(originId))
-            partsInQtys = cursorBatom.execute(sql).fetchall()
-            columns = [column[0] for column in cursorBatom.description]
+            if partsInQtyImportTimestamp:
+                sql += " AND write_time > ? "
+            sql += 'ORDER BY write_time'
+            if partsInQtyImportTimestamp:
+                partsInQtys = cursorBatom.execute(sql, partsInQtyImportTimestamp).fetchall()
+            else:
+                partsInQtys = cursorBatom.execute(sql).fetchall()
+            columns = [column[0] for column in cursorBatom.description if column[0] != 'write_time']
             for partsInQty in partsInQtys:
+                partsInQtyImportTimestamp = _max_timestamp(partsInQtyImportTimestamp, partsInQty.write_time)
                 values = {}
                 values['parts_in_id'] = partsInId
                 partsInQtyDict = dict(zip(columns, partsInQty))
@@ -400,19 +434,29 @@ class BatomMigratePartsIn(models.TransientModel):
                     odooPartsInQty.write(values)
                 else:
                     odooPartsInQty = self.env['batom.parts_in.qty'].create(values)
+            partsInQtySourceTable.set_import_timestamp(partsInQtyImportTimestamp)
         except Exception:
             _logger.warning('Exception in _create_parts_in_qty:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
 
     def _create_parts_in_qc(self, cursorBatom, partsInId, originId):
         try:
+            partsInQcSourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'PartsInQc')
+            partsInQcImportTimestamp = partsInQcSourceTable.get_import_timestamp()
             sql = (
-                "SELECT PID, Inspector, STime, ETime "
+                "SELECT PID, Inspector, STime, ETime, write_time "
                 "FROM PartsInQc "
                 "WHERE ID = " + str(originId))
-            partsInQcs = cursorBatom.execute(sql).fetchall()
-            columns = [column[0] for column in cursorBatom.description]
+            if partsInQcImportTimestamp:
+                sql += " AND write_time > ? "
+            sql += 'ORDER BY write_time'
+            if partsInQcImportTimestamp:
+                partsInQcs = cursorBatom.execute(sql, partsInQcImportTimestamp).fetchall()
+            else:
+                partsInQcs = cursorBatom.execute(sql).fetchall()
+            columns = [column[0] for column in cursorBatom.description if column[0] != 'write_time']
             for partsInQc in partsInQcs:
+                partsInQcImportTimestamp = _max_timestamp(partsInQcImportTimestamp, partsInQc.write_time)
                 values = {}
                 values['parts_in_id'] = partsInId
                 partsInQcDict = dict(zip(columns, partsInQc))
@@ -438,13 +482,13 @@ class BatomMigratePartsIn(models.TransientModel):
                     odooPartsInQc.write(values)
                 else:
                     odooPartsInQc = self.env['batom.parts_in.qc'].create(values)
+            partsInQcSourceTable.set_import_timestamp(partsInQcImportTimestamp)
         except Exception:
             _logger.warning('Exception in _create_parts_in_qty:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
     
-    @api.multi
+    @api.model
     def migrate_shop_in_by_date(self, dateStart, dateEnd = '99991231'):
-        self.ensure_one()
         if len(dateStart) != 8 or not dateStart.isdigit():
             print '"' + dateStart + '" is not a valid date'
             return
@@ -457,33 +501,48 @@ class BatomMigratePartsIn(models.TransientModel):
             connBatom = dbBatom.conn_open()
             cursorBatom = connBatom.cursor()
             
+            shopInSourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'ShopIn')
+            shopInImportTimestamp = shopInSourceTable.get_import_timestamp()
             sql = (
                 "SELECT ShopIn.ID AS ID, SID, PDate, Supplier, Customer, ProdID, ShopProcess.ProcessID AS ProcessID, "
                 "Process, InQty, NextPrcs, Creator, Urgency, Location, MkOrdID, "
                 "Batch, PNote, SDate, OutQty, NGQty, SProgress, SNote, Receiver, "
                 "Finish, Transfer, TransTime, LastDate, LastPerson, PrinterData, "
-                "MfBatch, InDate, QrInfo "
+                "MfBatch, InDate, QrInfo, ShopIn.write_time "
                 "FROM ShopIn "
                 "LEFT JOIN ShopProcess ON (ShopProcess.ID = ShopIn.ProcessID) "
                 "WHERE PDate BETWEEN '" + dateStart + "' AND '" + dateEnd + "'")
             
-            shopIns = cursorBatom.execute(sql).fetchall()
-            columns = [column[0] for column in cursorBatom.description]
+            if shopInImportTimestamp:
+                sql += " AND ShopIn.write_time > ? "
+            sql += 'ORDER BY ShopIn.write_time'
+            if shopInImportTimestamp:
+                shopIns = cursorBatom.execute(sql, shopInImportTimestamp).fetchall()
+            else:
+                shopIns = cursorBatom.execute(sql).fetchall()
+            columns = [column[0] for column in cursorBatom.description if column[0] != 'write_time']
             nCount = len(shopIns)
             nDone = 0
             for shopIn in shopIns:
+                shopInImportTimestamp = _max_timestamp(shopInImportTimestamp, shopIn.write_time)
                 odooShopIn = self._create_shop_in(cursorBatom, dict(zip(columns, shopIn)))
                 nDone += 1
                 if nDone % 10 == 0:
-                    print str(nDone) + '/' + str(nCount)
                     self.env.cr.commit()
+                    shopInSourceTable.set_import_timestamp(shopInImportTimestamp)
             self.env.cr.commit()
+            shopInSourceTable.set_import_timestamp(shopInImportTimestamp)
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_parts_in_by_date:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connBatom:
                 connBatom.close()
+        
+        try:
+            _logger.info('_migrate_chi_partner_data - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
 
     def _create_shop_in(self, cursorBatom, shopIn):
         odooShopIn = False
@@ -525,13 +584,12 @@ class BatomMigratePartsIn(models.TransientModel):
                 odooShopIn = self.env['batom.shop_in'].create(values)
         except Exception:
             _logger.warning('Exception in _create_shop_in:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             
         return odooShopIn
     
-    @api.multi
+    @api.model
     def migrate_parts_out_by_date(self, dateStart, dateEnd = '99991231'):
-        self.ensure_one()
         if len(dateStart) != 8 or not dateStart.isdigit():
             print '"' + dateStart + '" is not a valid date'
             return
@@ -544,29 +602,44 @@ class BatomMigratePartsIn(models.TransientModel):
             connBatom = dbBatom.conn_open()
             cursorBatom = connBatom.cursor()
             
+            partsOutSourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'PartsOut')
+            partsOutImportTimestamp = partsOutSourceTable.get_import_timestamp()
             sql = (
                 "SELECT ID, PDate, Supplier, Company, MvType, Urgency, "
-                "Memo, Finish, Creator, LastDate, LastPerson "
+                "Memo, Finish, Creator, LastDate, LastPerson, write_time "
                 "FROM PartsOut "
                 "WHERE PDate BETWEEN '" + dateStart + "' AND '" + dateEnd + "'")
             
-            partsOuts = cursorBatom.execute(sql).fetchall()
-            columns = [column[0] for column in cursorBatom.description]
+            if partsOutImportTimestamp:
+                sql += " AND write_time > ? "
+            sql += 'ORDER BY write_time'
+            if partsOutImportTimestamp:
+                partsOuts = cursorBatom.execute(sql, partsOutImportTimestamp).fetchall()
+            else:
+                partsOuts = cursorBatom.execute(sql).fetchall()
+            columns = [column[0] for column in cursorBatom.description if column[0] != 'write_time']
             nCount = len(partsOuts)
             nDone = 0
             for partsOut in partsOuts:
+                partsOutImportTimestamp = _max_timestamp(partsOutImportTimestamp, partsOut.write_time)
                 odooPartsOut = self._create_parts_out(cursorBatom, dict(zip(columns, partsOut)))
                 nDone += 1
                 if nDone % 10 == 0:
-                    print str(nDone) + '/' + str(nCount)
                     self.env.cr.commit()
+                    partsOutSourceTable.set_import_timestamp(partsOutImportTimestamp)
             self.env.cr.commit()
+            partsOutSourceTable.set_import_timestamp(partsOutImportTimestamp)
             connBatom.close()
         except Exception:
             _logger.warning('Exception in migrate_parts_in_by_date:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             if connBatom:
                 connBatom.close()
+        
+        try:
+            _logger.info('_migrate_chi_partner_data - ' + str(nDone) + '/' + str(nCount))
+        except Exception:
+            pass
 
     def _create_parts_out(self, cursorBatom, partsOut):
         odooPartsOut = False
@@ -604,19 +677,28 @@ class BatomMigratePartsIn(models.TransientModel):
                 self._create_parts_out_qty(cursorBatom, odooPartsOut.id, values['origin_id'])
         except Exception:
             _logger.warning('Exception in _create_parts_out:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             
         return odooPartsOut
 
     def _create_parts_out_qty(self, cursorBatom, partsOutId, originId):
         try:
+            partsOutQtySourceTable = self.env['batom.data_source_table'].get_dbsource_table('Batom', 'PartsOutQty')
+            partsOutQtyImportTimestamp = shopInSourceTable.get_import_timestamp()
             sql = (
-                "SELECT PID, ProdID, ProcessID, OutQty, MkOrdID, MkOrdSer, Batch, Remark, Location "
+                "SELECT PID, ProdID, ProcessID, OutQty, MkOrdID, MkOrdSer, Batch, Remark, Location, write_time "
                 "FROM PartsOutQty "
                 "WHERE ID = " + str(originId))
-            partsOutQtys = cursorBatom.execute(sql).fetchall()
-            columns = [column[0] for column in cursorBatom.description]
+            if partsOutQtyImportTimestamp:
+                sql += " AND write_time > ? "
+            sql += 'ORDER BY write_time'
+            if partsOutQtyImportTimestamp:
+                partsOutQtys = cursorBatom.execute(sql, partsOutQtyImportTimestamp).fetchall()
+            else:
+                partsOutQtys = cursorBatom.execute(sql).fetchall()
+            columns = [column[0] for column in cursorBatom.description if column[0] != 'write_time']
             for partsOutQty in partsOutQtys:
+                partsOutQtyImportTimestamp = _max_timestamp(partsOutQtyImportTimestamp, partsOutQty.write_time)
                 values = {}
                 values['parts_out_id'] = partsOutId
                 partsOutQtyDict = dict(zip(columns, partsOutQty))
@@ -642,9 +724,10 @@ class BatomMigratePartsIn(models.TransientModel):
                     odooPartsOutQty.write(values)
                 else:
                     odooPartsOutQty = self.env['batom.parts_out.qty'].create(values)
+            partsOutQtySourceTable.set_import_timestamp(partsOutQtyImportTimestamp)
         except Exception:
             _logger.warning('Exception in _create_parts_out_qty:', exc_info=True)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             
     def _getSupplierIdByCode(self, supplier_code):
         suppliers = self.env['res.partner'].search([
